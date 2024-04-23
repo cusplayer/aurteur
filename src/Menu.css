@@ -1,0 +1,99 @@
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.contentBody {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: top;
+  gap: 4px;
+  overflow: hidden;
+}
+.menu {
+  display: flex;
+  flex-direction: row;
+}
+
+.path {
+  font-family: 'Courier Prime', monospace;
+  color: #666;
+  height: 18px;
+  line-height: 18px;
+  text-align: left;
+  white-space: nowrap; /* Отключает перенос строки */
+}
+
+.leftPanel {
+  width: min-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.menu-list {
+  width: 128px;
+  min-width: 128px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  cursor: pointer;
+  padding: 6px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.menu-item:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.submenu {
+  width: 212px;
+  min-width: 212px;
+  list-style-type: none;
+  padding: 0;
+}
+
+.submenu .article-list {
+  cursor: pointer;
+  padding: 6px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.submenu .article-list:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.articleTags {
+  font-size: 14px;
+  color: #555;
+}
+
+.article-box {
+  width: 100%;
+  max-width: 1480px;
+  max-height: 100%;
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid #ccc;
+}
+
+.quote {
+  font-size: 0.8rem;
+  margin-top: 20px;
+  padding: 12px;
+  border: 1px solid #ccc;
+}

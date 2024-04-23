@@ -1,0 +1,45 @@
+@font-face {
+  font-family: 'Courier Prime';
+  src: url('fonts/CourierPrime-Regular.ttf') format('truetype');
+}
+
+body {
+  font-family: 'Courier Prime', monospace;
+  margin: 0; 
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  overflow: hidden;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.top {
+  align-self: flex-start;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.name {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.age {
+  font-size: 1.5rem;
+}
+
+.content {
+  margin-top: 24px;
+  height: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+}
