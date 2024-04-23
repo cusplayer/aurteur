@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.30c9f6d5.css",
+    "main.js": "/static/js/main.059cdb0a.js",
+    "static/js/453.1533cc42.chunk.js": "/static/js/453.1533cc42.chunk.js",
+    "static/media/CourierPrime-Regular.ttf": "/static/media/CourierPrime-Regular.7503a2e9660bb6f608fb.ttf",
+    "index.html": "/index.html",
+    "main.30c9f6d5.css.map": "/static/css/main.30c9f6d5.css.map",
+    "main.059cdb0a.js.map": "/static/js/main.059cdb0a.js.map",
+    "453.1533cc42.chunk.js.map": "/static/js/453.1533cc42.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.30c9f6d5.css",
+    "static/js/main.059cdb0a.js"
+  ]
+}
