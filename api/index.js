@@ -172,9 +172,13 @@ app.get('/api/quote', (req, res) => {
 });
 
 // Запуск сервера на порту 5000
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
-});
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Сервер запущен на порту ${PORT}`);
+// });
+
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
+app.listen(5000, () => console.log("Server ready on port 5000."));
 
 module.exports = app
