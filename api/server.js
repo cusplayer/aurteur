@@ -172,7 +172,7 @@ app.get('/api/quote', (req, res) => {
 });
 
 // Запуск сервера на порту 5000
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);
 });
