@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import Menu from './Menu';
-import axios from 'axios';
+// import axios from 'axios';
 
 function App() {
   const [age, setAge] = useState(null);
