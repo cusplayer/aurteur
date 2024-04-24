@@ -1,10 +1,14 @@
 {
     "version": 2,
     "routes": [
-      { "src": "/api/articles/:fileName", "dest": "server.js" },
-      { "src": "/api/articles", "dest": "server.js" },
-      { "src": "/api/quote", "dest": "server.js" },
-      { "src": "/(.*)", "dest": "index.js" }
+      {
+        "src": "/api/.*",
+        "dest": "/server.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
     ]
-}
+  }
   
