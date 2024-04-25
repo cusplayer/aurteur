@@ -177,6 +177,6 @@ app.get('/api/quote', (req, res) => {
 //   console.log(`Сервер запущен на порту ${PORT}`);
 // });
 
-app.listen(5005, () => console.log("Server ready on port 5000."));
+app.listen(5000, () => console.log("Server ready on port 5000."));
 
 module.exports = app
