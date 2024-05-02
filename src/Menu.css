@@ -20,7 +20,7 @@
 
 .path {
   font-family: 'Courier Prime', monospace;
-  color: #666;
+  color: #87878B;
   height: 18px;
   line-height: 18px;
   text-align: left;
@@ -45,7 +45,7 @@
 .menu-item {
   cursor: pointer;
   padding: 6px;
-  color: rgba(22, 22, 23, 0.8);
+  color: rgba(22, 22, 23, 0.88);
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -93,12 +93,14 @@
   max-height: 100%;
   overflow: auto;
   padding: 24px;
-  border: 1px solid #ccc;
+  border: 1px solid #C0C0C5;
+  border-radius: 2px;
 }
 
 .quote {
   font-size: 0.8rem;
   margin-top: 20px;
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #C0C0C5;
+  border-radius: 2px;
 }
