@@ -6,4 +6,4 @@ date: 2024-04-22
 ---
 Texthtdgx
 
-![](.\api\images\5head.png)
+![](https://github.com/cusplayer/aurteur/blob/main/api/images/5head.png?raw=true)
