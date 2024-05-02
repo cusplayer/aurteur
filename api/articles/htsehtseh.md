@@ -6,4 +6,4 @@ date: 2024-04-22
 ---
 Texthtdgx
 
-![](images/5head.png)
+![](.\api\images\5head.png)
