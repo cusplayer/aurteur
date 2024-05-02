@@ -45,7 +45,12 @@
 .menu-item {
   cursor: pointer;
   padding: 6px;
+  color: rgba(22, 22, 23, 0.8);
   transition: background-color 0.3s, color 0.3s;
+}
+
+.selected {
+  color: black;
 }
 
 .menu-item:hover {
