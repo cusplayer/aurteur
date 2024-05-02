@@ -19,7 +19,7 @@ const Menu = () => {
     axios.get('/api/articles')
       .then(response => {
         if (Array.isArray(response.data)) {
-          const allFolders = ['designs', 'works', 'feed']; // Заранее известные папки
+          const allFolders = ['designs', 'oeuvres', 'feed']; // Заранее известные папки
           const articlesByFolder = {};
 
           // Создаем объект с пустыми массивами для каждой папки
@@ -66,16 +66,14 @@ const Menu = () => {
         <div className='leftPanel'>
           <div className="menu">
             <ul className="menu-list">
-              {/* Отображение папки feed */}
               <li className={`menu-item ${selectedFolder === 'feed' ? 'selected' : ''}`} onClick={() => handleMenuClick('feed', null)}>
                 {selectedFolder === 'feed' ? '> ' : ''}feed
               </li>
-              {/* Отображение папок designs и works всегда */}
+              <li className={`menu-item ${selectedFolder === 'oeuvres' ? 'selected' : ''}`} onClick={() => handleMenuClick('oeuvres', null)}>
+                {selectedFolder === 'oeuvres' ? '> ' : ''}oeuvres
+              </li>
               <li className={`menu-item ${selectedFolder === 'designs' ? 'selected' : ''}`} onClick={() => handleMenuClick('designs', null)}>
                 {selectedFolder === 'designs' ? '> ' : ''}designs
-              </li>
-              <li className={`menu-item ${selectedFolder === 'works' ? 'selected' : ''}`} onClick={() => handleMenuClick('works', null)}>
-                {selectedFolder === 'works' ? '> ' : ''}works
               </li>
               <li className={`menu-item ${selectedFolder === 'contacts' ? 'selected' : ''}`} onClick={() => handleMenuClick('contacts', null)}>
                 {selectedFolder === 'contacts' ? '> ' : ''}contacts
