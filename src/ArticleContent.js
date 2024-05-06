@@ -8,7 +8,7 @@ const ArticleContent = ({ fileName }) => {
   const [articleContent, setArticleContent] = useState('');
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/articles/${fileName}`)
+    axios.get(`/api/articles/${fileName}`)
       .then(response => {
         // Разбиваем строку на абзацы и объединяем их в одну строку
         const content = response.data.split('\n').join('\n\n');
