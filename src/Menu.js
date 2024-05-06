@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import './Menu.css';
-import './quote.js'
+import React, { useState, useEffect, Suspense } from 'react';
 import axios from 'axios';
 import ArticleContent from './ArticleContent';
 import Quote from './quote';
 import Contacts from './contacts.js';
 
+const ContactsModal = React.lazy(() => import('./ContactsModal'));
+const ArticleModal = React.lazy(() => import('./ArticleModal'));
 const Menu = () => {
   const [articles, setArticles] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
@@ -13,10 +13,13 @@ const Menu = () => {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [submenuPath, setSubmenuPath] = useState('');
   const [path, setPath] = useState('aurteur/');
+  const [isMobile, setIsMobile] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedItemType, setSelectedItemType] = useState(null);
 
   useEffect(() => {
     // Запрос на сервер для получения списка статей
-    axios.get('/api/articles')
+    axios.get('http://localhost:5000/api/articles')
       .then(response => {
         if (Array.isArray(response.data)) {
           const allFolders = ['designs', 'ouvres', 'feed']; // Заранее известные папки
@@ -42,19 +45,45 @@ const Menu = () => {
       .catch(error => {
         console.error('Error fetching articles:', error);
       });
+
+    // Проверяем, является ли устройство мобильным
+    const isMobileDevice = () => {
+      return (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        window.innerWidth < 768 // Например, мобильным будем считать устройства с шириной менее 768px
+      );
+    };
+
+    setIsMobile(isMobileDevice());
   }, []);
-  
+
   const handleMenuClick = (menuItem, index) => {
     setPath('aurteur/' + menuItem + '/');
     setSelectedFolder(menuItem); // Устанавливаем выбранную папку
     setSelectedItemIndex(index);
     setSubmenuPath('');
     setSelectedArticle(null); // Сбрасываем выбранную статью
+    setShowModal(false); // Закрываем модальное окно при выборе пункта меню
+    if (isMobile) {
+      setShowModal(true);
+    }
   };
 
   const handleSubMenuClick = (submenuItem, article) => {
     setSubmenuPath(submenuItem.toLowerCase());
     setSelectedArticle(article); // Устанавливаем выбранную статью
+    setSelectedItemType('article'); // Устанавливаем тип выбранного элемента (статья)
+
+    // Открываем модальное окно статьи
+    if (isMobile) {
+      setShowModal(true);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedArticle(null);
+    setSelectedItemType(null);
   };
 
   return (
@@ -101,14 +130,23 @@ const Menu = () => {
           <Quote/>
         </div>
         {/* Отображение содержимого выбранной статьи */}
-        {selectedArticle && <ArticleContent fileName={selectedArticle.fileName} />}
-        {/* Отображение компонента Contacts, если выбрана папка contacts */}
-        {selectedFolder === 'contacts' && <Contacts />}
+        {selectedArticle && !isMobile && <ArticleContent fileName={selectedArticle.fileName} />}
+        {selectedFolder === 'contacts' && !isMobile && (
+          <Contacts />
+        )}
+        {isMobile && showModal && (
+          <Suspense fallback={<div>Loading...</div>}>
+            {selectedFolder === 'contacts' && (
+              <ContactsModal closeModal={closeModal} />
+            )}
+            {selectedItemType === 'article' && (
+              <ArticleModal fileName={selectedArticle.fileName} closeModal={closeModal} />
+            )}
+          </Suspense>
+        )}
       </div>
     </div>
   );
 };
 
 export default Menu;
-
-

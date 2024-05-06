@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './Menu.css';
 import axios from 'axios';
 import Markdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw'
+import rehypeRaw from 'rehype-raw';
 
-const ArticleContent = ({ fileName }) => {
+const ArticleModal = ({ fileName, closeModal }) => {
   const [articleContent, setArticleContent] = useState('');
 
   useEffect(() => {
@@ -20,13 +20,18 @@ const ArticleContent = ({ fileName }) => {
   }, [fileName]);
 
   return (
-    <div className="article-box">
-      <div className="article-content">
-        <h1>{fileName.split('.').slice(0, -1).join('.')}</h1>
-        <Markdown rehypePlugins={[rehypeRaw]}>{articleContent}</Markdown>
+    <div className="modal-overlay" onClick={closeModal}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="article-box">
+          <div className="article-content">
+            <h1>{fileName.split('.').slice(0, -1).join('.')}</h1>
+            <Markdown rehypePlugins={[rehypeRaw]}>{articleContent}</Markdown>
+          </div>
+        </div>
+        <button className="close-modal-button" onClick={closeModal}>Close</button>
       </div>
     </div>
   );
 };
 
-export default ArticleContent;
+export default ArticleModal;
