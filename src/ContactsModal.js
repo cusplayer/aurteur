@@ -20,7 +20,7 @@ const ContactsModal = ({ closeModal }) => {
             <p> <a href="https://www.behance.net/aurteur" target="_blank" rel="noopener noreferrer" title="my behance">behance</a> </p>
           </div>
         </div>
-        <button className="close-modal-button" onClick={closeModal}>Close</button>
+        <button className="close-modal-button" onClick={closeModal}><span role="img" aria-label="Close">❌</span></button>
       </div>
     </div>
   );

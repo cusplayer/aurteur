@@ -49,7 +49,7 @@ const Menu = () => {
     // Проверяем, является ли устройство мобильным
     const isMobileDevice = () => {
       return (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
         window.innerWidth < 768 // Например, мобильным будем считать устройства с шириной менее 768px
       );
     };
