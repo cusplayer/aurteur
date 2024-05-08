@@ -6,12 +6,12 @@ import rehypeRaw from 'rehype-raw';
 
 const moment = require('moment');
 
-const ArticleModal = ({ fileName }) => {
+const ArticleModal = ({ fileName, closeModal }) => {
   const [metadata, setMetadata] = useState(null);
   const [content, setContent] = useState('');
 
   useEffect(() => {
-    axios.get(`api/articles/${fileName}`)
+    axios.get(`/api/articles/${fileName}`)
       .then(response => {
         setMetadata(response.data.metadata);
         setContent(response.data.content);
