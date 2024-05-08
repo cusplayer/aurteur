@@ -4,15 +4,17 @@ import axios from 'axios';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
-const ArticleModal = ({ fileName, closeModal }) => {
-  const [articleContent, setArticleContent] = useState('');
+const moment = require('moment');
+
+const ArticleModal = ({ fileName }) => {
+  const [metadata, setMetadata] = useState(null);
+  const [content, setContent] = useState('');
 
   useEffect(() => {
-    axios.get(`/api/articles/${fileName}`)
+    axios.get(`api/articles/${fileName}`)
       .then(response => {
-        // Разбиваем строку на абзацы и объединяем их в одну строку
-        const content = response.data.split('\n').join('\n\n');
-        setArticleContent(content);
+        setMetadata(response.data.metadata);
+        setContent(response.data.content);
       })
       .catch(error => {
         console.error('Error fetching article content:', error);
@@ -25,7 +27,15 @@ const ArticleModal = ({ fileName, closeModal }) => {
         <div className="article-box">
           <div className="article-content">
             <h1>{fileName.split('.').slice(0, -1).join('.')}</h1>
-            <Markdown rehypePlugins={[rehypeRaw]}>{articleContent}</Markdown>
+              {metadata && (
+                <div className="article-metadata">
+                  <h1>{metadata.title}</h1>
+                  <p>Folder: {metadata.folder}</p>
+                  <p>Tags: {metadata.tags.map(tag => `#${tag}`).join(' ')}</p>
+                  <p>Date: {moment(metadata.date).format('DD/MM/YYYY')}</p>
+                </div>
+              )}
+            <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
           </div>
         </div>
         <button className="close-modal-button" onClick={closeModal}>Close</button>
