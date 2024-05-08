@@ -1,5 +1,12 @@
 import './App.css';
 import Menu from './Menu';
+import {
+  initArrowNavigation,
+  FocusableElement,
+  FocusableGroup
+} from '@arrow-navigation/react'
+
+initArrowNavigation()
 
 function App() {
   return (

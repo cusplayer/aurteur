@@ -17,22 +17,61 @@ const articlesDir = path.join(__dirname, 'articles');
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
   const filePath = path.join(articlesDir, fileName);
-
+  // Прочитать файл статьи
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      console.error('Error reading file:', err);
-      return res.status(500).send('Error reading file');
+      console.error('Error reading article file:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    try {
-      const article = parseFullArticle(data, fileName);
-      res.json(article);
-    } catch (error) {
-      console.error('Error parsing article:', error);
-      return res.status(500).send('Error parsing article');
-    }
+    // Разделить содержимое файла на метаданные и контент статьи
+    const { metadata, content } = splitArticleData(fileName, data);
+
+    res.json({ metadata, content });
   });
 });
+
+function splitArticleData(fileName, data) {
+  const lines = data.split('\n');
+  let metadataLines = [];
+  let isMetadataSection = false;
+
+  for (const line of lines) {
+    if (line.trim() === '---') {
+      if (isMetadataSection) {
+        break;
+      }
+      isMetadataSection = true;
+      continue;
+    }
+
+    if (isMetadataSection) {
+      metadataLines.push(line);
+    }
+  }
+
+  const metadataString = metadataLines.join('\n');
+
+  try {
+    const metadata = yaml.safeLoad(metadataString);
+    metadata['fileName'] = fileName;
+
+    if (metadata.folder) {
+      metadata['folder'] = metadata.folder;
+    }
+    if (metadata.date) {
+      metadata['date'] = new Date(metadata.date);
+    }
+
+    const content = lines.slice(metadataLines.length + 1).join('\n');
+
+    return { metadata, content };
+  } catch (error) {
+    console.error('Error parsing YAML metadata:', error);
+    return { metadata: null, content: null };
+  }
+}
+
 
 function parseFullArticle(data) {
   return data;
@@ -96,11 +135,8 @@ function parseArticle(data, fileName) {
 
   try {
     const metadata = yaml.safeLoad(metadataString);
-
-    // Добавляем свойство fileName
     metadata['fileName'] = fileName;
 
-    // Добавляем свойства folder и date, если они есть в метаданных
     if (metadata.folder) {
       metadata['folder'] = metadata.folder;
     }
@@ -131,7 +167,12 @@ function getRandomQuoteFromFile() {
   }, {});
   const highlights = lines.slice(highlightsIndex + 1);
   const randomHighlight = highlights[Math.floor(Math.random() * highlights.length)];
-  const [quote, location] = randomHighlight.split(' — ');
+
+  // Находим последнее длинное тире и обрезаем строку после него
+  const lastLongDashIndex = randomHighlight.lastIndexOf('—');
+  const quote = randomHighlight.slice(0, lastLongDashIndex);
+
+  const [location] = randomHighlight.slice(lastLongDashIndex + 1).split(' — ');
   const bookTitle = metadata.title;
   const author = metadata.author;
   return {
@@ -170,12 +211,6 @@ app.get('/api/quote', (req, res) => {
   // Отправляем последнюю выбранную цитату как ответ на запрос
   res.json({ quote: lastQuote, bookTitle, author });
 });
-
-// Запуск сервера на порту 5000
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log(`Сервер запущен на порту ${PORT}`);
-// });
 
 app.listen(5000, () => console.log("Server ready on port 5000."));
 

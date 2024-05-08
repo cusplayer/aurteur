@@ -10,8 +10,8 @@
   display: flex;
   flex-direction: row;
   justify-content: top;
-  gap: 4px;
-  overflow: hidden;
+  gap: 8px;
+  /* overflow: hidden; */
 }
 
 .menu {
@@ -89,25 +89,30 @@
 }
 
 .article-box {
+  background-color: #fff;
   width: 100%;
   max-width: 1480px;
   max-height: 100%;
   overflow: auto;
   padding: 24px;
-  border: 1px solid #C0C0C5;
-  border-radius: 2px;
+  border-radius: 4px;
+  box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.2);
 }
 
 .quote {
   font-size: 0.8rem;
   margin-top: 20px;
   padding: 12px;
-  border: 1px solid #C0C0C5;
-  border-radius: 2px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
 }
 
 
 @media screen and (max-width: 768px) {
+
+  .path {
+    display: none;
+  }
   
   .leftPanel {
     width: 100%;

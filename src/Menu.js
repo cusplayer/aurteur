@@ -6,6 +6,7 @@ import Contacts from './contacts.js';
 
 const ContactsModal = React.lazy(() => import('./ContactsModal'));
 const ArticleModal = React.lazy(() => import('./ArticleModal'));
+
 const Menu = () => {
   const [articles, setArticles] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
@@ -19,23 +20,23 @@ const Menu = () => {
 
   useEffect(() => {
     // Запрос на сервер для получения списка статей
-    axios.get('/api/articles')
+    axios.get('api/articles')
       .then(response => {
         if (Array.isArray(response.data)) {
-          const allFolders = ['designs', 'ouvres', 'feed']; // Заранее известные папки
+          const allFolders = [...new Set(response.data.map(article => article.folder || 'feed'))]; // Получаем уникальные значения папок из статей
           const articlesByFolder = {};
-
+  
           // Создаем объект с пустыми массивами для каждой папки
           allFolders.forEach(folder => {
             articlesByFolder[folder] = [];
           });
-
+  
           // Группируем статьи по папкам
           response.data.forEach(article => {
-            const folder = article.folder || 'feed'; // Если у статьи нет папки, добавляем ее в папку "feed"
+            const folder = article.folder || 'feed'; // Если у статьи нет папки, добавляем ее в папку "feed"          
             articlesByFolder[folder].push(article);
           });
-
+  
           // Устанавливаем статьи по папкам
           setArticles(articlesByFolder);
         } else {
@@ -45,7 +46,7 @@ const Menu = () => {
       .catch(error => {
         console.error('Error fetching articles:', error);
       });
-
+  
     // Проверяем, является ли устройство мобильным
     const isMobileDevice = () => {
       return (
@@ -53,17 +54,18 @@ const Menu = () => {
         window.innerWidth < 768 // Например, мобильным будем считать устройства с шириной менее 768px
       );
     };
-
+  
     setIsMobile(isMobileDevice());
   }, []);
+  
 
   const handleMenuClick = (menuItem, index) => {
-    setPath('aurteur/' + menuItem + '/');
     setSelectedFolder(menuItem); // Устанавливаем выбранную папку
     setSelectedItemIndex(index);
     setSubmenuPath('');
     setSelectedArticle(null); // Сбрасываем выбранную статью
     setShowModal(false); // Закрываем модальное окно при выборе пункта меню
+    setPath('aurteur/' + (menuItem === 'feed' ? '' : menuItem + '/')); // Устанавливаем путь в зависимости от выбранной папки
     if (isMobile) {
       setShowModal(true);
     }
@@ -89,7 +91,7 @@ const Menu = () => {
   return (
     <div className="menu-container">
       <div className="path">
-        {path + submenuPath}
+        {path + (selectedFolder === 'feed' && selectedArticle ? (selectedArticle.folder + '/') : '') + submenuPath}
       </div>
       <div className="contentBody">
         <div className='leftPanel'>
