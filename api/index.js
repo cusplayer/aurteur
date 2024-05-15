@@ -11,7 +11,7 @@ app.use(cors());
 
 const CLIENT_ID = '6a697c4bd2b0491c9e479ee5a3cdb33e';
 const CLIENT_SECRET = '3b77e0c2f1ca448dbee0aaac14e2719a';
-const REDIRECT_URI = 'https://aurteur.com/api/callback';
+const REDIRECT_URI = 'https://aurteur.com/callback';
 
 let accessToken = null;
 let refreshToken = null;
@@ -37,19 +37,12 @@ async function authorize() {
 
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+
+    console.log('Access token:', accessToken);
   } catch (error) {
     console.error('Error during authorization:', error);
   }
 }
-
-app.get('api/auth', (req, res) => {
-  res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
-    response_type: 'code',
-    client_id: CLIENT_ID,
-    scope: 'user-read-currently-playing user-read-playback-state',
-    redirect_uri: REDIRECT_URI,
-  })}`);
-});
 
 // Middleware для проверки токена доступа
 function checkAccessToken(req, res, next) {
@@ -59,7 +52,16 @@ function checkAccessToken(req, res, next) {
   next();
 }
 
-app.get('api/callback', async (req, res) => {
+app.get('/auth', (req, res) => {
+  res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
+    response_type: 'code',
+    client_id: CLIENT_ID,
+    scope: 'user-read-currently-playing user-read-playback-state',
+    redirect_uri: REDIRECT_URI,
+  })}`);
+});
+
+app.get('/callback', async (req, res) => {
   const { code } = req.query;
 
   try {
@@ -85,14 +87,14 @@ app.get('api/callback', async (req, res) => {
 
     console.log('Access token:', accessToken);
 
-    res.redirect('api/current-track');
+    res.redirect('/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
     res.status(500).json({ error: 'Error during callback' });
   }
 });
 
-app.get('api/current-track', checkAccessToken, async (req, res) => {
+app.get('/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {

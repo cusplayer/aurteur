@@ -17,12 +17,13 @@ function App() {
 
   useEffect(() => {
     const intervalId = setInterval(fetchCurrentTrack, 1000);
+    
     return () => clearInterval(intervalId);
   }, []);
 
   async function fetchCurrentTrack() {
     try {
-      const response = await axios.get('api/current-track');
+      const response = await axios.get('/current-track');
       if (response && response.data) {
         const { name, album, artist, is_playing } = response.data;
         setIsPlaying(is_playing);
