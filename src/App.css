@@ -16,7 +16,8 @@ body {
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
-  /* overflow: hidden; */
+  padding-bottom: 20px;
+  overflow: hidden;
   height: 100vh;
   box-sizing: border-box;
 }
@@ -27,6 +28,11 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.trackInfo {
+  font-size: 14px;
+  font-weight: normal;
 }
 
 .name {
@@ -42,5 +48,5 @@ body {
   margin-top: 24px;
   height: 100%;
   flex-grow: 1;
-  /* overflow: hidden; */
+  overflow: hidden;
 }

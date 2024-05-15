@@ -2,22 +2,128 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-
 const app = express();
+const axios = require('axios');
+const qs = require('querystring');
+const cron = require('node-cron');
 
 app.use(cors()); 
 
-let lastQuote = ''; // Последняя выбранная цитата
-let lastUpdateDate = ''; // Дата последнего обновления цитаты
+const CLIENT_ID = '6a697c4bd2b0491c9e479ee5a3cdb33e';
+const CLIENT_SECRET = '3b77e0c2f1ca448dbee0aaac14e2719a';
+const REDIRECT_URI = 'https://aurteur.com/callback';
+
+let accessToken = null;
+let refreshToken = null;
+let accessTokenExpiresAt = null;
+
+app.get('api/auth', (req, res) => {
+  const scopes = 'user-read-currently-playing user-read-playback-state';
+
+  res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
+    response_type: 'code',
+    client_id: CLIENT_ID,
+    scope: ['user-read-currently-playing', 'user-read-playback-state'],
+    redirect_uri: REDIRECT_URI,
+  })}`);
+});
+
+app.get('/callback', async (req, res) => {
+  const { code } = req.query;
+
+  try {
+    const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: REDIRECT_URI,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET
+    }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    accessToken = response.data.access_token;
+    refreshToken = response.data.refresh_token;
+    accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+
+    res.redirect('/current-track');
+  } catch (error) {
+    console.error('Error during callback:', error);
+    res.status(500).json({ error: 'Error during callback' });
+  }
+});
+
+app.get('/current-track', async (req, res) => {
+  try {
+    if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
+      throw new Error('Access token is missing or expired');
+    }
+
+    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const currentTrack = response.data.item;
+    const trackInfo = {
+      name: currentTrack.name,
+      album: currentTrack.album.name,
+      artist: currentTrack.artists[0].name,
+      is_playing: response.data.is_playing
+    };
+
+    res.json(trackInfo);
+  } catch (error) {
+    console.error('Error fetching current track:', error.response.data);
+    res.status(500).json({ error: 'Error fetching current track' });
+  }
+});
+
+// Обновляем refreshToken каждый час
+cron.schedule('0 * * * *', async () => {
+  if (!refreshToken) {
+    console.error('Refresh token is missing');
+    return;
+  }
+
+  try {
+    const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET
+    }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    accessToken = response.data.access_token;
+    accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+
+    console.log(`New access token: ${accessToken}`);
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+  }
+});
+
+
+
+let lastQuote = '';
+let lastUpdateDate = '';
 let bookTitle = '';
 let author = '';
 
 const articlesDir = path.join(__dirname, 'articles');
 
+
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
   const filePath = path.join(articlesDir, fileName);
-  // Прочитать файл статьи
+
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading article file:', err);
@@ -211,6 +317,7 @@ app.get('/api/quote', (req, res) => {
   // Отправляем последнюю выбранную цитату как ответ на запрос
   res.json({ quote: lastQuote, bookTitle, author });
 });
+
 
 app.listen(5000, () => console.log("Server ready on port 5000."));
 

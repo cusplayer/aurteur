@@ -11,7 +11,8 @@
   flex-direction: row;
   justify-content: top;
   gap: 8px;
-  /* overflow: hidden; */
+  padding-bottom: 4px;
+  overflow: hidden;
 }
 
 .menu {
