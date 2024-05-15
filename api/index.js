@@ -52,7 +52,7 @@ function checkAccessToken(req, res, next) {
   next();
 }
 
-app.get('/auth', (req, res) => {
+app.get('/login', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
