@@ -17,17 +17,6 @@ function App() {
 
   useEffect(() => {
     const intervalId = setInterval(fetchCurrentTrack, 1000);
-    blabla();
-
-async function blabla() {
-  try {
-    await axios.get('/auth');
-    console.log('Authorization completed');
-    fetchCurrentTrack(); // Выполняем запрос на /current-track после успешной авторизации
-  } catch (error) {
-    console.error('Error during authorization:', error.response.data);
-  }
-}
     return () => clearInterval(intervalId);
   }, []);
 
