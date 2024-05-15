@@ -17,36 +17,86 @@ let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 
-app.get('api/auth', (req, res) => {
-  const scopes = 'user-read-currently-playing user-read-playback-state';
+authorize();
 
+async function authorize() {
+  try {
+    const response = await axios.post(
+      'https://accounts.spotify.com/api/token',
+      qs.stringify({
+        grant_type: 'client_credentials',
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    accessToken = response.data.access_token;
+    accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+    authorizeWithScope();
+    console.log('Access token:', accessToken);
+
+    // После получения access токена выполняем авторизацию с нужным scope
+  } catch (error) {
+    console.error('Error during authorization:', error);
+  }
+}
+// Функция для выполнения авторизации с нужным scope
+async function authorizeWithScope() {
+  try {
+    const response = await axios.get(`/auth`);
+    console.log('Authorization with scope completed');
+  } catch (error) {
+    console.error('Error during authorization with scope:', error);
+  }
+}
+
+app.get('/auth', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
-    scope: ['user-read-currently-playing', 'user-read-playback-state'],
+    scope: 'user-read-currently-playing user-read-playback-state',
     redirect_uri: REDIRECT_URI,
   })}`);
 });
+
+// Middleware для проверки токена доступа
+function checkAccessToken(req, res, next) {
+  if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
+    authorize();
+  }
+  next();
+}
 
 app.get('/callback', async (req, res) => {
   const { code } = req.query;
 
   try {
-    const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-      grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: REDIRECT_URI,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET
-    }), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+    const response = await axios.post(
+      'https://accounts.spotify.com/api/token',
+      qs.stringify({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: REDIRECT_URI,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
       }
-    });
+    );
 
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
-    accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+    accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+
+    console.log('Access token:', accessToken);
 
     res.redirect('/current-track');
   } catch (error) {
@@ -55,12 +105,8 @@ app.get('/callback', async (req, res) => {
   }
 });
 
-app.get('/current-track', async (req, res) => {
+app.get('/current-track', checkAccessToken, async (req, res) => {
   try {
-    if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-      throw new Error('Access token is missing or expired');
-    }
-
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -72,7 +118,7 @@ app.get('/current-track', async (req, res) => {
       name: currentTrack.name,
       album: currentTrack.album.name,
       artist: currentTrack.artists[0].name,
-      is_playing: response.data.is_playing
+      is_playing: response.data.is_playing,
     };
 
     res.json(trackInfo);
