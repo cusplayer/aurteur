@@ -38,7 +38,6 @@ async function authorize() {
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
     authorizeWithScope();
-    console.log('Access token:', accessToken);
 
     // После получения access токена выполняем авторизацию с нужным scope
   } catch (error) {
