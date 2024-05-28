@@ -16,6 +16,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callba
 let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
+let currentTrack = null; // Variable to store the current track information
 
 authorize();
 
@@ -44,6 +45,7 @@ async function authorize() {
   }
 }
 
+// Middleware for checking access token
 function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
     authorize().then(() => next());
@@ -120,7 +122,24 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   }
 });
 
-app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+let longPollingClients = [];
+
+app.get('/api/long-polling', checkAccessToken, (req, res) => {
+  const client = res;
+  longPollingClients.push(client);
+  req.on('close', () => {
+    longPollingClients = longPollingClients.filter(c => c !== client);
+  });
+});
+
+function notifyClients(trackInfo) {
+  longPollingClients.forEach(client => {
+    client.json(trackInfo);
+  });
+  longPollingClients = [];
+}
+
+async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -128,27 +147,35 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
       },
     });
 
-    if (response.data && response.data.item) {
-      const currentTrack = response.data.item;
-      const trackInfo = {
-        name: currentTrack.name,
-        album: currentTrack.album.name,
-        artist: currentTrack.artists[0].name,
-        is_playing: response.data.is_playing,
-      };
-
-      console.log('Current track:', trackInfo);
-
-      res.json(trackInfo);
-    } else {
-      res.status(204).send(); // No Content
-    }
+    return response.data.item;
   } catch (error) {
-    console.error('Error in long-polling:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Error in long-polling' });
+    console.error('Error fetching current track:', error.response ? error.response.data : error.message);
+    return null;
   }
-});
+}
 
+function trackChanges() {
+  setInterval(async () => {
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
+      };
+      notifyClients(trackInfo);
+    } else if (newTrack && !newTrack.is_playing) {
+      currentTrack = null;
+      notifyClients({ is_playing: false });
+    }
+  }, 5000); // Check for changes every 5 seconds
+}
+
+trackChanges();
+
+// Refresh access token every hour
 cron.schedule('0 * * * *', async () => {
   if (!refreshToken) {
     console.error('Refresh token is missing');
