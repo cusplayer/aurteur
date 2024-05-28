@@ -90,7 +90,7 @@ app.get('/api/callback', async (req, res) => {
 
     console.log('Access token:', accessToken);
 
-    res.redirect('/api/long-polling');
+    res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
     res.status(500).json({ error: 'Error during callback' });
@@ -98,35 +98,6 @@ app.get('/api/callback', async (req, res) => {
 });
 
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
-  try {
-    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.data || !response.data.item) {
-      return res.status(204).send(); // No content if no track is currently playing
-    }
-
-    const currentTrack = response.data.item;
-    const trackInfo = {
-      name: currentTrack.name,
-      album: currentTrack.album.name,
-      artist: currentTrack.artists[0].name,
-      is_playing: response.data.is_playing,
-    };
-
-    lastTrackInfo = trackInfo; // Сохраняем последнее состояние трека
-    res.json(trackInfo);
-  } catch (error) {
-    console.error('Error fetching current track:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error fetching current track' });
-  }
-});
-
-// Лонг-пуллинг для получения текущего трека
-app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   let interval;
   const timeout = setTimeout(() => {
     clearInterval(interval);
