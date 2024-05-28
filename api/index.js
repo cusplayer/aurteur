@@ -13,10 +13,11 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
+
 let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
-let lastTrackInfo = null;
+let lastTrackInfo = null; // Добавлено для отслеживания изменений
 
 authorize();
 
@@ -54,6 +55,7 @@ function checkAccessToken(req, res, next) {
 }
 
 app.get('/api/login', (req, res) => {
+  console.log('Login route accessed'); // Отладочное сообщение
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
