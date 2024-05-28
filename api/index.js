@@ -2,16 +2,16 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-const app = express();
 const axios = require('axios');
 const qs = require('querystring');
 const cron = require('node-cron');
 
-app.use(cors()); 
+const app = express();
+app.use(cors());
 
-const CLIENT_ID = '6a697c4bd2b0491c9e479ee5a3cdb33e';
-const CLIENT_SECRET = '3b77e0c2f1ca448dbee0aaac14e2719a';
-const REDIRECT_URI = 'https://aurteur.com/callback';
+const CLIENT_ID = process.env.CLIENT_ID || '6a697c4bd2b0491c9e479ee5a3cdb33e';
+const CLIENT_SECRET = process.env.CLIENT_SECRET || '3b77e0c2f1ca448dbee0aaac14e2719a';
+const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/callback';
 
 let accessToken = null;
 let refreshToken = null;
@@ -53,6 +53,7 @@ function checkAccessToken(req, res, next) {
 }
 
 app.get('/login', (req, res) => {
+  console.log('Login route accessed'); // Отладочное сообщение
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
@@ -144,7 +145,6 @@ cron.schedule('0 * * * *', async () => {
     console.error('Error refreshing access token:', error);
   }
 });
-
 
 
 let lastQuote = '';
@@ -353,7 +353,9 @@ app.get('/api/quote', (req, res) => {
   res.json({ quote: lastQuote, bookTitle, author });
 });
 
-
-app.listen(5000, () => console.log("Server ready on port 5000."));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 module.exports = app
