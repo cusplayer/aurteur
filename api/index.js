@@ -146,12 +146,13 @@ async function fetchCurrentTrack() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
     if (response.data && response.data.item) {
-      const currentTrack = response.data.item;
+      const newTrack = response.data.item;
       const trackInfo = {
-        name: currentTrack.name,
-        album: currentTrack.album.name,
-        artist: currentTrack.artists[0].name,
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
         is_playing: response.data.is_playing,
       };
       res.json(trackInfo);
@@ -167,7 +168,7 @@ async function fetchCurrentTrack() {
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
+    if (currentTrack.id !== newTrack.id) {
       currentTrack = newTrack;
       const trackInfo = {
         name: newTrack.name,
@@ -176,7 +177,7 @@ function trackChanges() {
         is_playing: true,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
+    } else if (newTrack.is_playing = false) {
       currentTrack = null;
       notifyClients({ is_playing: false });
     }
