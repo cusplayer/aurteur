@@ -167,7 +167,7 @@ function trackChanges() {
       };
       notifyClients(trackInfo);
     } else {
-      notifyClients(trackInfo);
+      notifyClients(currentTrack);
     }
   }, 5000); // Check for changes every 5 seconds
 }
