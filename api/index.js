@@ -146,8 +146,18 @@ async function fetchCurrentTrack() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
-    return response.data.item;
+    if (response.data && response.data.item) {
+      const currentTrack = response.data.item;
+      const trackInfo = {
+        name: currentTrack.name,
+        album: currentTrack.album.name,
+        artist: currentTrack.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+      res.json(trackInfo);
+    } else {
+      res.status(204).send(); // No Content
+    }
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -167,14 +177,8 @@ function trackChanges() {
       };
       notifyClients(trackInfo);
     } else if (newTrack && !newTrack.is_playing) {
-      currentTrack = response.data.item;
-      const trackInfo = {
-        name: currentTrack.name,
-        album: currentTrack.album.name,
-        artist: currentTrack.artists[0].name,
-        is_playing: response.data.is_playing,
-      };
-      notifyClients(trackInfo);  
+      currentTrack = null;
+      notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
 }
