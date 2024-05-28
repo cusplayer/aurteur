@@ -166,9 +166,8 @@ function trackChanges() {
         is_playing: true,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
-      currentTrack = null;
-      notifyClients({ is_playing: false });
+    } else {
+      notifyClients(trackInfo);
     }
   }, 5000); // Check for changes every 5 seconds
 }
