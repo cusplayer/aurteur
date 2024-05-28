@@ -103,6 +103,10 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
       },
     });
 
+    if (!response.data || !response.data.item) {
+      return res.status(204).send(); // No content if no track is currently playing
+    }
+
     const currentTrack = response.data.item;
     const trackInfo = {
       name: currentTrack.name,
@@ -121,11 +125,9 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
 // Лонг-пуллинг для получения текущего трека
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
-  console.log('Long polling started');
   let interval;
   const timeout = setTimeout(() => {
     clearInterval(interval);
-    console.log('Long polling timed out');
     res.status(204).send(); // Отправляем пустой ответ, если ничего не изменилось
   }, 30000); // 30 секунд
 
@@ -136,6 +138,12 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+
+      if (!response.data || !response.data.item) {
+        clearInterval(interval);
+        clearTimeout(timeout);
+        return res.status(204).send(); // No content if no track is currently playing
+      }
 
       const currentTrack = response.data.item;
       const trackInfo = {
@@ -149,10 +157,7 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
         clearInterval(interval);
         clearTimeout(timeout);
         lastTrackInfo = trackInfo;
-        console.log('Track info changed:', trackInfo);
         res.json(trackInfo); // Отправляем измененные данные
-      } else {
-        console.log('No changes in track info');
       }
     } catch (error) {
       clearInterval(interval);
