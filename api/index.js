@@ -16,6 +16,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callba
 let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
+let currentTrack = null; // Variable to store the current track information
 
 authorize();
 
@@ -44,12 +45,12 @@ async function authorize() {
   }
 }
 
+// Middleware for checking access token
 function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize().then(() => next());
-  } else {
-    next();
+    authorize();
   }
+  next();
 }
 
 app.get('/api/login', (req, res) => {
@@ -102,53 +103,68 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
       },
     });
 
-    if (response.data && response.data.item) {
-      const currentTrack = response.data.item;
-      const trackInfo = {
-        name: currentTrack.name,
-        album: currentTrack.album.name,
-        artist: currentTrack.artists[0].name,
-        is_playing: response.data.is_playing,
-      };
-      res.json(trackInfo);
-    } else {
-      res.status(204).send(); // No Content
-    }
+    currentTrack = response.data.item;
+    const trackInfo = {
+      name: currentTrack.name,
+      album: currentTrack.album.name,
+      artist: currentTrack.artists[0].name,
+      is_playing: response.data.is_playing,
+    };
+
+    res.json(trackInfo);
   } catch (error) {
-    console.error('Error fetching current track:', error.response ? error.response.data : error.message);
+    console.error('Error fetching current track:', error.response.data);
     res.status(500).json({ error: 'Error fetching current track' });
   }
 });
 
-app.get('/api/long-polling', checkAccessToken, async (req, res) => {
-  try {
-    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+let longPollingClients = [];
 
-    if (response.data && response.data.item) {
-      const currentTrack = response.data.item;
+app.get('/api/long-polling', checkAccessToken, (req, res) => {
+  const client = res;
+  longPollingClients.push(client);
+  req.on('close', () => {
+    longPollingClients = longPollingClients.filter(c => c !== client);
+  });
+});
+
+function notifyClients(trackInfo) {
+  longPollingClients.forEach(client => {
+    client.json(trackInfo);
+  });
+  longPollingClients = [];
+}
+
+function trackChanges() {
+  setInterval(async () => {
+    try {
+      const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const newTrack = response.data.item;
       const trackInfo = {
-        name: currentTrack.name,
-        album: currentTrack.album.name,
-        artist: currentTrack.artists[0].name,
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
         is_playing: response.data.is_playing,
       };
 
-      console.log('Current track:', trackInfo);
-
-      res.json(trackInfo);
-    } else {
-      res.status(204).send(); // No Content
+      if (!currentTrack || currentTrack.id !== newTrack.id || !response.data.is_playing) {
+        currentTrack = newTrack;
+        notifyClients(trackInfo);
+      }
+    } catch (error) {
+      console.error('Error fetching current track:', error.response.data);
     }
-  } catch (error) {
-    console.error('Error in long-polling:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Error in long-polling' });
-  }
-});
+  }, 5000); // Check for changes every 5 seconds
+}
 
+trackChanges();
+
+// Refresh access token every hour
 cron.schedule('0 * * * *', async () => {
   if (!refreshToken) {
     console.error('Refresh token is missing');
@@ -175,7 +191,6 @@ cron.schedule('0 * * * *', async () => {
     console.error('Error refreshing access token:', error);
   }
 });
-
 
 let lastQuote = '';
 let lastUpdateDate = '';

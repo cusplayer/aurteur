@@ -32,10 +32,10 @@ function App() {
         } else {
           console.error('Response or response.data is undefined');
         }
-        fetchCurrentTrack(); // Recursive call for long-polling
+        fetchCurrentTrack(); // Initiate next long-polling request
       } catch (error) {
         console.error('Error fetching current track:', error.response ? error.response.data : error.message);
-        setTimeout(fetchCurrentTrack, 5000); // Retry after 5 seconds in case of error
+        fetchCurrentTrack(); // Retry in case of error
       }
     };
 
