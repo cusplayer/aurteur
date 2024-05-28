@@ -167,7 +167,14 @@ function trackChanges() {
       };
       notifyClients(trackInfo);
     } else if (newTrack && !newTrack.is_playing) {
-      currentTrack = currentTrack;
+      currentTrack = response.data.item;
+      const trackInfo = {
+        name: currentTrack.name,
+        album: currentTrack.album.name,
+        artist: currentTrack.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+      notifyClients(trackInfo);  
     }
   }, 5000); // Check for changes every 5 seconds
 }
