@@ -37,8 +37,6 @@ async function authorize() {
 
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
-
-    console.log('Access token:', accessToken);
   } catch (error) {
     console.error('Error during authorization:', error);
   }
@@ -85,9 +83,6 @@ app.get('/api/callback', async (req, res) => {
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
-
-    console.log('Access token:', accessToken);
-
     res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
@@ -140,7 +135,6 @@ cron.schedule('0 * * * *', async () => {
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
 
-    console.log(`New access token: ${accessToken}`);
   } catch (error) {
     console.error('Error refreshing access token:', error);
   }
@@ -153,7 +147,6 @@ let bookTitle = '';
 let author = '';
 
 const articlesDir = path.join(__dirname, 'articles');
-
 
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
