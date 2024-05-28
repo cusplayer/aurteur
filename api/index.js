@@ -52,7 +52,7 @@ function checkAccessToken(req, res, next) {
   next();
 }
 
-app.get('api/login', (req, res) => {
+app.get('/api/login', (req, res) => {
   console.log('Login route accessed'); // Отладочное сообщение
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
@@ -62,7 +62,7 @@ app.get('api/login', (req, res) => {
   })}`);
 });
 
-app.get('api/callback', async (req, res) => {
+app.get('/api/callback', async (req, res) => {
   const { code } = req.query;
 
   try {
@@ -88,14 +88,14 @@ app.get('api/callback', async (req, res) => {
 
     console.log('Access token:', accessToken);
 
-    res.redirect('api/current-track');
+    res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
     res.status(500).json({ error: 'Error during callback' });
   }
 });
 
-app.get('api/current-track', checkAccessToken, async (req, res) => {
+app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
