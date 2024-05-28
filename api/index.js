@@ -18,7 +18,6 @@ let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null; // Variable to store the current track information
 
-
 authorize();
 
 async function authorize() {
@@ -47,11 +46,12 @@ async function authorize() {
 }
 
 // Middleware for checking access token
-async function checkAccessToken(req, res, next) {
+function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    await authorize();
+    authorize().then(() => next());
+  } else {
+    next();
   }
-  next();
 }
 
 app.get('/api/login', (req, res) => {
@@ -147,7 +147,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    return response.data;
+    return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -156,22 +156,17 @@ async function fetchCurrentTrack() {
 
 function trackChanges() {
   setInterval(async () => {
-    const response = await fetchCurrentTrack();
-    if (response && response.item) {
-      const newTrack = response.item;
-      const isPlaying = response.is_playing;
-
-      if (!currentTrack || currentTrack.id !== newTrack.id || currentTrack.is_playing !== isPlaying) {
-        currentTrack = { id: newTrack.id, is_playing: isPlaying };
-        const trackInfo = {
-          name: newTrack.name,
-          album: newTrack.album.name,
-          artist: newTrack.artists[0].name,
-          is_playing: isPlaying,
-        };
-        notifyClients(trackInfo);
-      }
-    } else if (currentTrack && response && !response.is_playing) {
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
+      };
+      notifyClients(trackInfo);
+    } else if (newTrack && !newTrack.is_playing) {
       currentTrack = null;
       notifyClients({ is_playing: false });
     }
