@@ -125,7 +125,7 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   const timeout = setTimeout(() => {
     clearInterval(interval);
     res.status(204).send(); // Отправляем пустой ответ, если ничего не изменилось
-  }, 30000); // 30 секунд
+  }, 3000); // 3 секунд
 
   interval = setInterval(async () => {
     try {
