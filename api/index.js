@@ -147,7 +147,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    return response.data;
+    return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -156,32 +156,18 @@ async function fetchCurrentTrack() {
 
 function trackChanges() {
   setInterval(async () => {
-    try {
-      const response = await fetchCurrentTrack();
-
-      if (response && response.item) {
-        const newTrack = response.item;
-        const isPlaying = response.is_playing;
-
-        console.log('New track fetched:', newTrack.name, 'Is playing:', isPlaying);
-
-        if (!currentTrack || currentTrack.id !== newTrack.id || currentTrack.is_playing !== isPlaying) {
-          currentTrack = { id: newTrack.id, is_playing: isPlaying };
-          const trackInfo = {
-            name: newTrack.name,
-            album: newTrack.album.name,
-            artist: newTrack.artists[0].name,
-            is_playing: isPlaying,
-          };
-          notifyClients(trackInfo);
-        }
-      } else if (currentTrack && (!response || !response.is_playing)) {
-        console.log('Track stopped playing or no track info available');
-        currentTrack = null;
-        notifyClients({ is_playing: false });
-      }
-    } catch (error) {
-      console.error('Error in trackChanges:', error);
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
+      };
+      notifyClients(trackInfo);
+    } else if (newTrack && !newTrack.is_playing) {
+      currentTrack = currentTrack;
     }
   }, 5000); // Check for changes every 5 seconds
 }
