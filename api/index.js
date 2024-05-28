@@ -121,11 +121,13 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
 // Лонг-пуллинг для получения текущего трека
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+  console.log('Long polling started');
   let interval;
   const timeout = setTimeout(() => {
     clearInterval(interval);
+    console.log('Long polling timed out');
     res.status(204).send(); // Отправляем пустой ответ, если ничего не изменилось
-  }, 3000); // 3 секунд
+  }, 30000); // 30 секунд
 
   interval = setInterval(async () => {
     try {
@@ -147,7 +149,10 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
         clearInterval(interval);
         clearTimeout(timeout);
         lastTrackInfo = trackInfo;
+        console.log('Track info changed:', trackInfo);
         res.json(trackInfo); // Отправляем измененные данные
+      } else {
+        console.log('No changes in track info');
       }
     } catch (error) {
       clearInterval(interval);
@@ -185,7 +190,6 @@ cron.schedule('0 * * * *', async () => {
     console.error('Error refreshing access token:', error);
   }
 });
-
 
 
 let lastQuote = '';
