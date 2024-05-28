@@ -36,7 +36,6 @@ function App() {
         console.error('Response or response.data is undefined');
       }
     } catch (error) {
-      console.error('Error fetching current track:', error.response.data);
     }
   }
 
