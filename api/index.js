@@ -44,17 +44,15 @@ async function authorize() {
   }
 }
 
-// Middleware для проверки токена доступа
 function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize().then(next);
+    authorize().then(() => next());
   } else {
     next();
   }
 }
 
 app.get('/api/login', (req, res) => {
-  console.log('Login route accessed');
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
@@ -104,15 +102,18 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
       },
     });
 
-    const currentTrack = response.data.item;
-    const trackInfo = {
-      name: currentTrack.name,
-      album: currentTrack.album.name,
-      artist: currentTrack.artists[0].name,
-      is_playing: response.data.is_playing,
-    };
-
-    res.json(trackInfo);
+    if (response.data && response.data.item) {
+      const currentTrack = response.data.item;
+      const trackInfo = {
+        name: currentTrack.name,
+        album: currentTrack.album.name,
+        artist: currentTrack.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+      res.json(trackInfo);
+    } else {
+      res.status(204).send(); // No Content
+    }
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     res.status(500).json({ error: 'Error fetching current track' });
@@ -148,7 +149,6 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   }
 });
 
-// Обновляем refreshToken каждый час
 cron.schedule('0 * * * *', async () => {
   if (!refreshToken) {
     console.error('Refresh token is missing');
