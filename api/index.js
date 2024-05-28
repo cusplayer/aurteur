@@ -13,11 +13,9 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
-
 let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
-let lastTrackInfo = null; // Добавлено для отслеживания изменений
 
 authorize();
 
@@ -49,13 +47,14 @@ async function authorize() {
 // Middleware для проверки токена доступа
 function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize();
+    authorize().then(next);
+  } else {
+    next();
   }
-  next();
 }
 
 app.get('/api/login', (req, res) => {
-  console.log('Login route accessed'); // Отладочное сообщение
+  console.log('Login route accessed');
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
@@ -98,26 +97,37 @@ app.get('/api/callback', async (req, res) => {
 });
 
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
-  let interval;
-  const timeout = setTimeout(() => {
-    clearInterval(interval);
-    res.status(204).send(); // Отправляем пустой ответ, если ничего не изменилось
-  }, 30000); // 30 секунд
+  try {
+    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-  interval = setInterval(async () => {
-    try {
-      const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+    const currentTrack = response.data.item;
+    const trackInfo = {
+      name: currentTrack.name,
+      album: currentTrack.album.name,
+      artist: currentTrack.artists[0].name,
+      is_playing: response.data.is_playing,
+    };
 
-      if (!response.data || !response.data.item) {
-        clearInterval(interval);
-        clearTimeout(timeout);
-        return res.status(204).send(); // No content if no track is currently playing
-      }
+    res.json(trackInfo);
+  } catch (error) {
+    console.error('Error fetching current track:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Error fetching current track' });
+  }
+});
 
+app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+  try {
+    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.data && response.data.item) {
       const currentTrack = response.data.item;
       const trackInfo = {
         name: currentTrack.name,
@@ -126,19 +136,16 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
         is_playing: response.data.is_playing,
       };
 
-      if (JSON.stringify(trackInfo) !== JSON.stringify(lastTrackInfo)) {
-        clearInterval(interval);
-        clearTimeout(timeout);
-        lastTrackInfo = trackInfo;
-        res.json(trackInfo); // Отправляем измененные данные
-      }
-    } catch (error) {
-      clearInterval(interval);
-      clearTimeout(timeout);
-      console.error('Error fetching current track:', error.response?.data || error.message);
-      res.status(500).json({ error: 'Error fetching current track' });
+      console.log('Current track:', trackInfo);
+
+      res.json(trackInfo);
+    } else {
+      res.status(204).send(); // No Content
     }
-  }, 5000); // Проверяем каждые 5 секунд
+  } catch (error) {
+    console.error('Error in long-polling:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Error in long-polling' });
+  }
 });
 
 // Обновляем refreshToken каждый час
