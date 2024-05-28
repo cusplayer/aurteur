@@ -48,9 +48,10 @@ async function authorize() {
 // Middleware for checking access token
 function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize();
+    authorize().then(() => next());
+  } else {
+    next();
   }
-  next();
 }
 
 app.get('/api/login', (req, res) => {
@@ -135,29 +136,36 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
+async function fetchCurrentTrack() {
+  try {
+    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response.data.item;
+  } catch (error) {
+    console.error('Error fetching current track:', error.response ? error.response.data : error.message);
+    return null;
+  }
+}
+
 function trackChanges() {
   setInterval(async () => {
-    try {
-      const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const newTrack = response.data.item;
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
+      currentTrack = newTrack;
       const trackInfo = {
         name: newTrack.name,
         album: newTrack.album.name,
         artist: newTrack.artists[0].name,
-        is_playing: response.data.is_playing,
+        is_playing: true,
       };
-
-      if (!currentTrack || currentTrack.id !== newTrack.id || !response.data.is_playing) {
-        currentTrack = newTrack;
-        notifyClients(trackInfo);
-      }
-    } catch (error) {
-      console.error('Error fetching current track:', error.response.data);
+      notifyClients(trackInfo);
+    } else if (newTrack && !newTrack.is_playing) {
+      currentTrack = null;
+      notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
 }
