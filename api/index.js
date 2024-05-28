@@ -9,8 +9,8 @@ const cron = require('node-cron');
 const app = express();
 app.use(cors());
 
-const CLIENT_ID = process.env.CLIENT_ID || '6a697c4bd2b0491c9e479ee5a3cdb33e';
-const CLIENT_SECRET = process.env.CLIENT_SECRET || '3b77e0c2f1ca448dbee0aaac14e2719a';
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
