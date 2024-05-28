@@ -147,18 +147,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    if (response.data && response.data.item) {
-      const newTrack = response.data.item;
-      const trackInfo = {
-        name: newTrack.name,
-        album: newTrack.album.name,
-        artist: newTrack.artists[0].name,
-        is_playing: response.data.is_playing,
-      };
-      res.json(trackInfo);
-    } else {
-      res.status(204).send(); // No Content
-    }
+    return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -168,7 +157,7 @@ async function fetchCurrentTrack() {
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (currentTrack.name !== newTrack.name) {
+    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
       currentTrack = newTrack;
       const trackInfo = {
         name: newTrack.name,
@@ -177,7 +166,7 @@ function trackChanges() {
         is_playing: true,
       };
       notifyClients(trackInfo);
-    } else if (newTrack.is_playing = false) {
+    } else if (newTrack && !newTrack.is_playing) {
       currentTrack = null;
       notifyClients({ is_playing: false });
     }
