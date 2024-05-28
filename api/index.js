@@ -147,7 +147,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    return response.data.item;
+    return response.data;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -166,7 +166,7 @@ function trackChanges() {
         is_playing: true,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
+    } else if (currentTrack && response && !response.is_playing) {
       currentTrack = null;
       notifyClients({ is_playing: false });
     }
