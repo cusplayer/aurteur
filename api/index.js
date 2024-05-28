@@ -90,7 +90,7 @@ app.get('/api/callback', async (req, res) => {
 
     console.log('Access token:', accessToken);
 
-    res.redirect('/api/current-track');
+    res.redirect('/api/long-polling');
   } catch (error) {
     console.error('Error during callback:', error);
     res.status(500).json({ error: 'Error during callback' });
@@ -135,8 +135,10 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
 
   interval = setInterval(async () => {
     try {
-      const response = await axios.get('https://aurteur.com/api/current-track', {
-
+      const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (!response.data || !response.data.item) {
