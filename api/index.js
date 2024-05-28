@@ -16,6 +16,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callba
 let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
+let lastTrackInfo = null;
 
 authorize();
 
@@ -37,6 +38,8 @@ async function authorize() {
 
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+
+    console.log('Access token:', accessToken);
   } catch (error) {
     console.error('Error during authorization:', error);
   }
@@ -51,7 +54,6 @@ function checkAccessToken(req, res, next) {
 }
 
 app.get('/api/login', (req, res) => {
-  console.log('Login route accessed'); // Отладочное сообщение
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
     client_id: CLIENT_ID,
@@ -83,6 +85,9 @@ app.get('/api/callback', async (req, res) => {
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+
+    console.log('Access token:', accessToken);
+
     res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
@@ -106,11 +111,51 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
       is_playing: response.data.is_playing,
     };
 
+    lastTrackInfo = trackInfo; // Сохраняем последнее состояние трека
     res.json(trackInfo);
   } catch (error) {
-    console.error('Error fetching current track:', error.response.data);
+    console.error('Error fetching current track:', error.response?.data || error.message);
     res.status(500).json({ error: 'Error fetching current track' });
   }
+});
+
+// Лонг-пуллинг для получения текущего трека
+app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+  let interval;
+  const timeout = setTimeout(() => {
+    clearInterval(interval);
+    res.status(204).send(); // Отправляем пустой ответ, если ничего не изменилось
+  }, 30000); // 30 секунд
+
+  interval = setInterval(async () => {
+    try {
+      const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const currentTrack = response.data.item;
+      const trackInfo = {
+        name: currentTrack.name,
+        album: currentTrack.album.name,
+        artist: currentTrack.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+
+      if (JSON.stringify(trackInfo) !== JSON.stringify(lastTrackInfo)) {
+        clearInterval(interval);
+        clearTimeout(timeout);
+        lastTrackInfo = trackInfo;
+        res.json(trackInfo); // Отправляем измененные данные
+      }
+    } catch (error) {
+      clearInterval(interval);
+      clearTimeout(timeout);
+      console.error('Error fetching current track:', error.response?.data || error.message);
+      res.status(500).json({ error: 'Error fetching current track' });
+    }
+  }, 5000); // Проверяем каждые 5 секунд
 });
 
 // Обновляем refreshToken каждый час
@@ -135,10 +180,12 @@ cron.schedule('0 * * * *', async () => {
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
 
+    console.log(`New access token: ${accessToken}`);
   } catch (error) {
     console.error('Error refreshing access token:', error);
   }
 });
+
 
 
 let lastQuote = '';

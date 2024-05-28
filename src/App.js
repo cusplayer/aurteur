@@ -16,28 +16,40 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    const intervalId = setInterval(fetchCurrentTrack, 1000);
-    
-    return () => clearInterval(intervalId);
-  }, []);
+    let isMounted = true;
 
-  async function fetchCurrentTrack() {
-    try {
-      const response = await axios.get('/api/current-track');
-      if (response && response.data) {
-        const { name, album, artist, is_playing } = response.data;
-        setIsPlaying(is_playing);
-        if (is_playing) {
-          setTrackInfo({ name, album, artist });
-        } else {
-          setTrackInfo({});
+    async function fetchTrackInfo() {
+      try {
+        const response = await axios.get('/api/long-polling');
+        if (response.status === 200 && response.data) {
+          const { name, album, artist, is_playing } = response.data;
+          setIsPlaying(is_playing);
+          if (is_playing) {
+            setTrackInfo({ name, album, artist });
+          } else {
+            setTrackInfo({});
+          }
         }
-      } else {
-        console.error('Response or response.data is undefined');
+      } catch (error) {
+        if (error.response && error.response.status === 204) {
+          // No content, no changes detected
+          console.log('No changes in the current track');
+        } else {
+          console.error('Error fetching current track:', error.response?.data || error.message);
+        }
+      } finally {
+        if (isMounted) {
+          fetchTrackInfo(); // Continue long-polling
+        }
       }
-    } catch (error) {
     }
-  }
+
+    fetchTrackInfo();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="main-page">
