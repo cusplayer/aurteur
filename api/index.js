@@ -147,7 +147,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    return response.data.item;
+    return response.data;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -156,17 +156,22 @@ async function fetchCurrentTrack() {
 
 function trackChanges() {
   setInterval(async () => {
-    const newTrack = await fetchCurrentTrack();
-    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
-      currentTrack = newTrack;
-      const trackInfo = {
-        name: newTrack.name,
-        album: newTrack.album.name,
-        artist: newTrack.artists[0].name,
-        is_playing: true,
-      };
-      notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
+    const response = await fetchCurrentTrack();
+    if (response && response.item) {
+      const newTrack = response.item;
+      const isPlaying = response.is_playing;
+
+      if (!currentTrack || currentTrack.id !== newTrack.id || currentTrack.is_playing !== isPlaying) {
+        currentTrack = { id: newTrack.id, is_playing: isPlaying };
+        const trackInfo = {
+          name: newTrack.name,
+          album: newTrack.album.name,
+          artist: newTrack.artists[0].name,
+          is_playing: isPlaying,
+        };
+        notifyClients(trackInfo);
+      }
+    } else if (currentTrack && response && !response.is_playing) {
       currentTrack = null;
       notifyClients({ is_playing: false });
     }
