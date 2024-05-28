@@ -11,7 +11,7 @@ app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID || '6a697c4bd2b0491c9e479ee5a3cdb33e';
 const CLIENT_SECRET = process.env.CLIENT_SECRET || '3b77e0c2f1ca448dbee0aaac14e2719a';
-const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/callback';
+const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
 let refreshToken = null;
@@ -52,7 +52,7 @@ function checkAccessToken(req, res, next) {
   next();
 }
 
-app.get('/login', (req, res) => {
+app.get('api/login', (req, res) => {
   console.log('Login route accessed'); // Отладочное сообщение
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
@@ -62,7 +62,7 @@ app.get('/login', (req, res) => {
   })}`);
 });
 
-app.get('/callback', async (req, res) => {
+app.get('api/callback', async (req, res) => {
   const { code } = req.query;
 
   try {
@@ -88,14 +88,14 @@ app.get('/callback', async (req, res) => {
 
     console.log('Access token:', accessToken);
 
-    res.redirect('/current-track');
+    res.redirect('api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
     res.status(500).json({ error: 'Error during callback' });
   }
 });
 
-app.get('/current-track', checkAccessToken, async (req, res) => {
+app.get('api/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
