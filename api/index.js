@@ -18,6 +18,7 @@ let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null; // Variable to store the current track information
 
+
 authorize();
 
 async function authorize() {
@@ -46,12 +47,11 @@ async function authorize() {
 }
 
 // Middleware for checking access token
-function checkAccessToken(req, res, next) {
+async function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize().then(() => next());
-  } else {
-    next();
+    await authorize();
   }
+  next();
 }
 
 app.get('/api/login', (req, res) => {
