@@ -135,10 +135,8 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
 
   interval = setInterval(async () => {
     try {
-      const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+      const response = await axios.get('https://aurteur.com/api/current-track', {
+
       });
 
       if (!response.data || !response.data.item) {
