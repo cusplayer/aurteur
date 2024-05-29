@@ -168,7 +168,7 @@ async function fetchCurrentTrack() {
 }
 
 function trackChanges() {
-  console.log('userAccessToken:', userAccessToken);
+  console.log('userAccessToken1:', userAccessToken);
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
     if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying) {
