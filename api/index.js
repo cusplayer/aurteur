@@ -139,7 +139,6 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
-
 async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -147,45 +146,28 @@ async function fetchCurrentTrack() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
-    if (response.data && response.data.item) {
-      return {
-        name: response.data.item.name,
-        album: response.data.item.album.name,
-        artist: response.data.item.artists[0].name,
-        is_playing: response.data.is_playing,
-      };
-    } else {
-      return { is_playing: false };
-    }
+    return response.data.item;
+    console.log(response.data.item.name)
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
-    return { is_playing: false };
+    return null;
   }
 }
-
-
-let currentIsPlaying = false;
 
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    console.log('Fetched new track:', newTrack);
-    
-    if (newTrack && newTrack.name && (!currentTrack || currentTrack.name !== newTrack.name || currentIsPlaying !== newTrack.is_playing)) {
+    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name)) {
       currentTrack = newTrack;
-      currentIsPlaying = newTrack.is_playing;
       const trackInfo = {
         name: newTrack.name,
-        album: newTrack.album,
-        artist: newTrack.artist,
-        is_playing: newTrack.is_playing,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
       };
-      console.log('Notifying clients with new track info:', trackInfo);
       notifyClients(trackInfo);
     } else if (newTrack && !newTrack.is_playing) {
       currentTrack = null;
-      console.log('Notifying clients with playback stopped');
       notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
