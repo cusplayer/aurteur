@@ -154,7 +154,6 @@ async function updateAccessToken() {
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
         client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET
       }), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -170,6 +169,7 @@ async function updateAccessToken() {
   }
 }
 
+updateAccessToken()
 
 let nowPlaying = false;
 
