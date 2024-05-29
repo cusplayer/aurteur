@@ -17,7 +17,6 @@ let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null; // Variable to store the current track information
-let currentIsPlaying = false;
 
 authorize();
 
@@ -46,11 +45,13 @@ async function authorize() {
   }
 }
 
-async function checkAccessToken(req, res, next) {
+// Middleware for checking access token
+function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    await authorize();
+    authorize().then(() => next());
+  } else {
+    next();
   }
-  next();
 }
 
 app.get('/api/login', (req, res) => {
@@ -106,7 +107,6 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
     if (response.data && response.data.item) {
       const currentTrack = response.data.item;
       const trackInfo = {
-        id: currentTrack.id,
         name: currentTrack.name,
         album: currentTrack.album.name,
         artist: currentTrack.artists[0].name,
@@ -147,7 +147,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    return response.data;
+    return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -156,35 +156,18 @@ async function fetchCurrentTrack() {
 
 function trackChanges() {
   setInterval(async () => {
-    try {
-      const response = await fetchCurrentTrack();
-
-      if (response && response.item) {
-        const newTrack = response.item;
-        const isPlaying = response.is_playing;
-
-        console.log('New track fetched:', newTrack.name, 'Is playing:', isPlaying);
-
-        if (!currentTrack || currentTrack.id !== newTrack.id || currentIsPlaying !== isPlaying) {
-          currentTrack = newTrack;
-          currentIsPlaying = isPlaying;
-          const trackInfo = {
-            id: newTrack.id,
-            name: newTrack.name,
-            album: newTrack.album.name,
-            artist: newTrack.artists[0].name,
-            is_playing: isPlaying,
-          };
-          notifyClients(trackInfo);
-        }
-      } else if (currentIsPlaying) {
-        console.log('Track stopped playing or no track info available');
-        currentTrack = null;
-        currentIsPlaying = false;
-        notifyClients({ is_playing: false });
-      }
-    } catch (error) {
-      console.error('Error in trackChanges:', error);
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name)) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
+      };
+      notifyClients(trackInfo);
+    } else {
+      return;
     }
   }, 5000); // Check for changes every 5 seconds
 }
