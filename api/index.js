@@ -144,6 +144,7 @@ function notifyClients(trackInfo) {
 let nowPlaying = false;
 
 async function fetchCurrentTrack() {
+  console.log('userAccessToken:', userAccessToken);
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -167,6 +168,7 @@ async function fetchCurrentTrack() {
 }
 
 function trackChanges() {
+  console.log('userAccessToken:', userAccessToken);
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
     if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying) {
