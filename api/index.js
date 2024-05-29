@@ -158,7 +158,7 @@ async function fetchCurrentTrack() {
       res.json(newTrackrackInfo);
     }
 
-    console.log(response.data.item.name)
+    console.log(newTrackrackInfo.name)
     return newTrackrackInfo;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
@@ -169,7 +169,7 @@ async function fetchCurrentTrack() {
 function trackChanges() {
   setInterval(async () => {
     await fetchCurrentTrack();
-    if (currentTrack.name !== newTrack.name) {
+    if (TrackrackInfo.name !== newTrackrackInfo.name) {
       trackInfo = newTrackrackInfo;
       notifyClients(trackInfo);
     } 
