@@ -144,7 +144,7 @@ function notifyClients(trackInfo) {
 let nowPlaying = false;
 
 async function fetchCurrentTrack() {
-  console.log('userAccessToken:', userAccessToken);
+  console.log('Fetching current track with userAccessToken:', userAccessToken);
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -168,7 +168,6 @@ async function fetchCurrentTrack() {
 }
 
 function trackChanges() {
-  console.log('userAccessToken1:', userAccessToken);
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
     if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying) {
@@ -215,11 +214,6 @@ cron.schedule('0 * * * *', async () => {
     console.error('Error refreshing access token:', error);
   }
 });
-
-console.log('userAccessToken:', userAccessToken);
-console.log('refreshToken:', refreshToken);
-console.log('accessTokenExpiresAt:', new Date(accessTokenExpiresAt).toLocaleString());
-
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
