@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -14,7 +16,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-let userAccessToken = null;
+const [userAccessToken, setUserAccessToken] = useState({});
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -86,7 +88,7 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-    userAccessToken = response.data.access_token;
+    setUserAccessToken(response.data.refresh_token);
     refreshToken = response.data.refresh_token;
     console.log('Ref token1:', refreshToken);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
@@ -149,35 +151,35 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
-function updateAccessToken() {
-  // if (new Date().getTime() >= accessTokenExpiresAt) {
-    console.log('Ref token2:', refreshToken);
-    axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: CLIENT_ID,
-    }), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-    .then(response => {
-      userAccessToken = response.data.access_token;
-      accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-      console.log('Access token refreshed, new userAccessToken:', userAccessToken);
-    })
-    .catch(error => {
-      console.error('Error refreshing user access token:', error);
-    });
-  // }
-}
+// function updateAccessToken() {
+//   // if (new Date().getTime() >= accessTokenExpiresAt) {
+//     console.log('Ref token2:', refreshToken);
+//     axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+//       grant_type: 'refresh_token',
+//       refresh_token: refreshToken,
+//       client_id: CLIENT_ID,
+//     }), {
+//       headers: {
+//         'Content-Type': 'application/x-www-form-urlencoded'
+//       }
+//     })
+//     .then(response => {
+//       userAccessToken = response.data.access_token;
+//       accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+//       console.log('Access token refreshed, new userAccessToken:', userAccessToken);
+//     })
+//     .catch(error => {
+//       console.error('Error refreshing user access token:', error);
+//     });
+//   // }
+// }
 
 
 let nowPlaying = false;
 
 async function fetchCurrentTrack() {
   try {
-    await updateAccessToken();
+    // await updateAccessToken();
 
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
