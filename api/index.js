@@ -75,12 +75,13 @@ app.get('/api/callback', async (req, res) => {
         grant_type: 'authorization_code',
         code: code,
         redirect_uri: REDIRECT_URI,
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        // client_id: CLIENT_ID,
+        // client_secret: CLIENT_SECRET,
       }),
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
         },
       }
     );
