@@ -88,7 +88,7 @@ app.get('/api/callback', async (req, res) => {
 
     userAccessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
-    console.log('Ref token1:', refresh_token);
+    console.log('Ref token1:', refreshToken);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
     console.log('User access token:', userAccessToken);
