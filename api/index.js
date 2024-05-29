@@ -100,7 +100,7 @@ app.get('/api/callback', async (req, res) => {
   }
 });
 
-app.get('/api/current-track', checkAccessToken, async (req, res) => {
+app.get('/api/current-track', async (req, res) => {
   console.log('userAccessToken before fetching current track:', userAccessToken); // Add this line
   // await updateAccessToken(); // Ensure the access token is updated before making a request
   try {
@@ -134,7 +134,7 @@ console.log('random userAccessToken:', userAccessToken);
 
 let longPollingClients = [];
 
-app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+app.get('/api/long-polling', async (req, res) => {
   // await updateAccessToken(); // Ensure the access token is updated before making a request
   console.log('during app long-polling:', userAccessToken);
   const client = res;
