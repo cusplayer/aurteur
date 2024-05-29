@@ -149,9 +149,9 @@ async function fetchCurrentTrack() {
 
     if (response.data && response.data.item) {
       return {
-        name: response.data.item.name,
-        album: response.data.item.album.name,
-        artist: response.data.item.artists[0].name,
+        name: response.data.name,
+        album: response.data.album.name,
+        artist: response.data.artists[0].name,
         is_playing: response.data.is_playing,
       };
     } else {
