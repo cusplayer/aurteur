@@ -5,7 +5,6 @@ const cors = require('cors');
 const axios = require('axios');
 const qs = require('querystring');
 const cron = require('node-cron');
-import React, { useState, useEffect } from 'react';
 
 const app = express();
 app.use(cors());
@@ -15,7 +14,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-const [userAccessToken, setUserAccessToken] = useState({});
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -87,7 +86,7 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-    setUserAccessToken(response.data.refresh_token);
+    userAccessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     console.log('Ref token1:', refreshToken);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
