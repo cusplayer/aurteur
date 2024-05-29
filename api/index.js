@@ -48,13 +48,13 @@ async function authorize() {
 }
 
 // Middleware for checking access token
-// function checkAccessToken(req, res, next) {
-//   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-//     authorize().then(() => next());
-//   } else {
-//     next();
-//   }
-// }
+function checkAccessToken(req, res, next) {
+  if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
+    authorize().then(() => next());
+  } else {
+    next();
+  }
+}
 
 app.get('/api/login', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
@@ -100,7 +100,7 @@ app.get('/api/callback', async (req, res) => {
   }
 });
 
-app.get('/api/current-track', async (req, res) => {
+app.get('/api/current-track', checkAccessToken, async (req, res) => {
   console.log('userAccessToken before fetching current track:', userAccessToken); // Add this line
   // await updateAccessToken(); // Ensure the access token is updated before making a request
   try {
@@ -130,11 +130,11 @@ app.get('/api/current-track', async (req, res) => {
   console.log('userAccessToken after updating:', userAccessToken); // Add this line
 });
 
-console.log('random userAccessToken:', userAccessToken);
+console.log('After fetching current track, userAccessToken:', userAccessToken);
 
 let longPollingClients = [];
 
-app.get('/api/long-polling', async (req, res) => {
+app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   // await updateAccessToken(); // Ensure the access token is updated before making a request
   console.log('during app long-polling:', userAccessToken);
   const client = res;
