@@ -40,6 +40,7 @@ async function authorize() {
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
+    console.log('Access token:', accessToken);
   } catch (error) {
     console.error('Error during authorization:', error);
   }
@@ -86,6 +87,8 @@ app.get('/api/callback', async (req, res) => {
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+
+    console.log('Access token:', accessToken);
 
     res.redirect('/api/current-track');
   } catch (error) {
