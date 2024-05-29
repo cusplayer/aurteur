@@ -164,14 +164,14 @@ function trackChanges() {
         name: newTrack.name,
         album: newTrack.album.name,
         artist: newTrack.artists[0].name,
-        is_playing: response.data.is_playing,
+        is_playing: data.is_playing,
       };
       notifyClients(trackInfo);
     } 
-    // else if (newTrack && currentTrack.name == newTrack.name) {
-    //   currentTrack = null;
-    //   notifyClients({ is_playing: false });
-    // }
+    else if (newTrack && currentTrack.name == newTrack.name) {
+      currentTrack = null;
+      notifyClients({ is_playing: false });
+    }
   }, 5000); // Check for changes every 5 seconds
 }
 
