@@ -1,6 +1,4 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
 const axios = require('axios');
 const qs = require('querystring');
@@ -14,13 +12,13 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
 
 authorize();
 
-// Authorization function
 async function authorize() {
   try {
     const response = await axios.post(
@@ -55,7 +53,6 @@ function checkAccessToken(req, res, next) {
   }
 }
 
-// Login route
 app.get('/api/login', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
     response_type: 'code',
@@ -65,7 +62,6 @@ app.get('/api/login', (req, res) => {
   })}`);
 });
 
-// Callback route
 app.get('/api/callback', async (req, res) => {
   const { code } = req.query;
 
@@ -86,11 +82,11 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-    accessToken = response.data.access_token;
+    userAccessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
-    console.log('Access token:', accessToken);
+    console.log('User access token:', userAccessToken);
 
     res.redirect('/api/current-track');
   } catch (error) {
@@ -99,12 +95,11 @@ app.get('/api/callback', async (req, res) => {
   }
 });
 
-// Current track route
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
 
@@ -129,7 +124,6 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
 let longPollingClients = [];
 
-// Long polling route
 app.get('/api/long-polling', checkAccessToken, (req, res) => {
   const client = res;
   longPollingClients.push(client);
@@ -138,7 +132,6 @@ app.get('/api/long-polling', checkAccessToken, (req, res) => {
   });
 });
 
-// Function to notify clients
 function notifyClients(trackInfo) {
   longPollingClients.forEach(client => {
     client.json(trackInfo);
@@ -148,18 +141,17 @@ function notifyClients(trackInfo) {
 
 let nowPlaying = false;
 
-// Function to fetch current track
 async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
 
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
-      console.log(response.data.item.name);
+      console.log('Current track:', response.data.item.name);
       return response.data.item;
     } else {
       nowPlaying = false;
@@ -172,7 +164,6 @@ async function fetchCurrentTrack() {
   }
 }
 
-// Function to track changes
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
@@ -220,6 +211,12 @@ cron.schedule('0 * * * *', async () => {
     console.error('Error refreshing access token:', error);
   }
 });
+
+
+console.log('userAccessToken:', userAccessToken);
+console.log('refreshToken:', refreshToken);
+console.log('accessTokenExpiresAt:', new Date(accessTokenExpiresAt).toLocaleString());
+
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
