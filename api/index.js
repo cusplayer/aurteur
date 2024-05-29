@@ -151,6 +151,7 @@ function notifyClients(trackInfo) {
 
 async function updateAccessToken() {
   // if (new Date().getTime() >= accessTokenExpiresAt) {
+    console.log('Ref token2:', refreshToken);
     try {
       const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
         grant_type: 'refresh_token',
