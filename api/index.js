@@ -99,6 +99,7 @@ app.get('/api/callback', async (req, res) => {
 });
 
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
+  await updateAccessToken(); // Ensure the access token is updated before making a request
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -127,7 +128,8 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
 let longPollingClients = [];
 
-app.get('/api/long-polling', checkAccessToken, (req, res) => {
+app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+  await updateAccessToken(); // Ensure the access token is updated before making a request
   const client = res;
   longPollingClients.push(client);
   req.on('close', () => {
@@ -142,9 +144,33 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
+async function updateAccessToken() {
+  if (new Date().getTime() >= accessTokenExpiresAt) {
+    try {
+      const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET
+      }), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+
+      userAccessToken = response.data.access_token;
+      accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+      console.log('Refreshed user access token:', userAccessToken);
+    } catch (error) {
+      console.error('Error refreshing user access token:', error);
+    }
+  }
+}
+
 let nowPlaying = false;
 
 async function fetchCurrentTrack() {
+  await updateAccessToken(); // Ensure the access token is updated before making a request
   console.log('Fetching current track with userAccessToken:', userAccessToken);
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
