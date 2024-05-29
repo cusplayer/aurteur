@@ -164,13 +164,15 @@ async function fetchCurrentTrack() {
   }
 }
 
+
 let currentIsPlaying = false;
 
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && newTrack.name !== undefined && 
-        (!currentTrack || currentTrack.name !== newTrack.name || currentIsPlaying !== newTrack.is_playing)) {
+    console.log('Fetched new track:', newTrack);
+    
+    if (newTrack && newTrack.name && (!currentTrack || currentTrack.name !== newTrack.name || currentIsPlaying !== newTrack.is_playing)) {
       currentTrack = newTrack;
       currentIsPlaying = newTrack.is_playing;
       const trackInfo = {
@@ -179,7 +181,12 @@ function trackChanges() {
         artist: newTrack.artist,
         is_playing: newTrack.is_playing,
       };
+      console.log('Notifying clients with new track info:', trackInfo);
       notifyClients(trackInfo);
+    } else if (newTrack && !newTrack.is_playing) {
+      currentTrack = null;
+      console.log('Notifying clients with playback stopped');
+      notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
 }
