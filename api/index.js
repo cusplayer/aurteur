@@ -146,20 +146,10 @@ async function fetchCurrentTrack() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
-    if (response.data && response.data.item) {
-      const newTrack = response.data.item;
-      const newTrackrackInfo = {
-        name: newTrack.name,
-        album: newTrack.album.name,
-        artist: newTrack.artists[0].name,
-        is_playing: response.data.is_playing,
-      };
-      res.json(newTrackrackInfo);
-    }
-
-    console.log(newTrackrackInfo.name)
-    return newTrackrackInfo;
+    console.log(response.data.item.name)
+    console.log(response.data.item.is_playing)
+    console.log(currentTrack.name)
+    return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -167,13 +157,21 @@ async function fetchCurrentTrack() {
 }
 
 function trackChanges() {
-  console.log(currentTrack, trackInfo)
   setInterval(async () => {
-    await fetchCurrentTrack();
-    if (currentTrack.name !== newTrackrackInfo.name) {
-      trackInfo = newTrackrackInfo;
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name)) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
+      };
       notifyClients(trackInfo);
-    } 
+    } else if (newTrack && !newTrack.is_playing) {
+      currentTrack = null;
+      notifyClients({ is_playing: false });
+    }
   }, 5000); // Check for changes every 5 seconds
 }
 
