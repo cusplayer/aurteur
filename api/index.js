@@ -149,29 +149,27 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
-async function updateAccessToken() {
-  if (new Date().getTime() >= accessTokenExpiresAt) {
-    try {
-      const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-        client_id: CLIENT_ID,
-      }), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
+// async function updateAccessToken() {
+//   if (new Date().getTime() >= accessTokenExpiresAt) {
+//     try {
+//       const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+//         grant_type: 'refresh_token',
+//         refresh_token: refreshToken,
+//         client_id: CLIENT_ID,
+//       }), {
+//         headers: {
+//           'Content-Type': 'application/x-www-form-urlencoded'
+//         }
+//       });
 
-      userAccessToken = response.data.access_token;
-      accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-      console.log('Access token refreshed, new userAccessToken:', userAccessToken);
-    } catch (error) {
-      console.error('Error refreshing user access token:', error);
-    }
-  }
-}
-
-updateAccessToken()
+//       userAccessToken = response.data.access_token;
+//       accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+//       console.log('Access token refreshed, new userAccessToken:', userAccessToken);
+//     } catch (error) {
+//       console.error('Error refreshing user access token:', error);
+//     }
+//   }
+// }
 
 let nowPlaying = false;
 
