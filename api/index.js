@@ -14,7 +14,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-localStorage.setItem('userAccessToken', null);
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -86,7 +86,7 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-    localStorage.setItem('userAccessToken', response.data.access_token);
+    userAccessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     console.log('Ref token1:', refreshToken);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
@@ -106,7 +106,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('userAccessToken')}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
 
@@ -134,7 +134,7 @@ let longPollingClients = [];
 
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   // await updateAccessToken(); // Ensure the access token is updated before making a request
-  console.log('during app long-polling:', localStorage.getItem('userAccessToken'));
+  console.log('during app long-polling:', userAccessToken);
   const client = res;
   longPollingClients.push(client);
   req.on('close', () => {
@@ -149,45 +149,47 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
-// async function updateAccessToken() {
-//   // if (new Date().getTime() >= accessTokenExpiresAt) {
-//     console.log('Ref token2:', refreshToken);
-//     try {
-//       const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-//         grant_type: 'refresh_token',
-//         refresh_token: refreshToken,
-//         client_id: CLIENT_ID,
-//       }), {
-//         headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//       });
+function updateAccessToken() {
+  // if (new Date().getTime() >= accessTokenExpiresAt) {
+    console.log('Ref token2:', refreshToken);
+    axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: CLIENT_ID,
+    }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(response => {
+      userAccessToken = response.data.access_token;
+      accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+      console.log('Access token refreshed, new userAccessToken:', userAccessToken);
+    })
+    .catch(error => {
+      console.error('Error refreshing user access token:', error);
+    });
+  // }
+}
 
-//       userAccessToken = response.data.access_token;
-//       accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-//       console.log('Access token refreshed, new userAccessToken:', userAccessToken);
-//     } catch (error) {
-//       console.error('Error refreshing user access token:', error);
-//     }
-//   // }
-// }
 
 let nowPlaying = false;
 
 async function fetchCurrentTrack() {
   try {
-    // await updateAccessToken();
-    console.log('Before fetching current track, userAccessToken:', localStorage.getItem('userAccessToken'));
+    await updateAccessToken();
+
+    console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('userAccessToken')}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
 
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
       console.log('Current track:', response.data.item.name);
-      console.log('After fetching current track, userAccessToken:', localStorage.getItem('userAccessToken'));
+      console.log('After fetching current track, userAccessToken:', userAccessToken);
       return response.data.item;
     } else {
       nowPlaying = false;
