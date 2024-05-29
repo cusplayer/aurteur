@@ -139,6 +139,7 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
+
 async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -149,9 +150,9 @@ async function fetchCurrentTrack() {
 
     if (response.data && response.data.item) {
       return {
-        name: response.data.name,
-        album: response.data.album.name,
-        artist: response.data.artists[0].name,
+        name: response.data.item.name,
+        album: response.data.item.album.name,
+        artist: response.data.item.artists[0].name,
         is_playing: response.data.is_playing,
       };
     } else {
@@ -168,13 +169,14 @@ let currentIsPlaying = false;
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name || currentIsPlaying !== newTrack.is_playing)) {
+    if (newTrack && newTrack.name !== undefined && 
+        (!currentTrack || currentTrack.name !== newTrack.name || currentIsPlaying !== newTrack.is_playing)) {
       currentTrack = newTrack;
       currentIsPlaying = newTrack.is_playing;
       const trackInfo = {
         name: newTrack.name,
-        album: newTrack.album.name,
-        artist: newTrack.artists[0].name,
+        album: newTrack.album,
+        artist: newTrack.artist,
         is_playing: newTrack.is_playing,
       };
       notifyClients(trackInfo);
