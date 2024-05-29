@@ -146,8 +146,9 @@ async function fetchCurrentTrack() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response.data.item;
     console.log(response.data.item.name)
+    return response.data.item;
+
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
