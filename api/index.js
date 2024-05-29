@@ -130,6 +130,8 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   console.log('userAccessToken after updating:', userAccessToken); // Add this line
 });
 
+console.log('random log:', userAccessToken);
+
 let longPollingClients = [];
 
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
