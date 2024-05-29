@@ -14,7 +14,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-let userAccessToken = null;
+const userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -99,7 +99,9 @@ app.get('/api/callback', async (req, res) => {
 });
 
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
+  console.log('userAccessToken before fetching current track:', userAccessToken); // Add this line
   await updateAccessToken(); // Ensure the access token is updated before making a request
+  console.log('userAccessToken after updating:', userAccessToken); // Add this line
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
