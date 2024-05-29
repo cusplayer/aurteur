@@ -168,21 +168,20 @@ let currentIsPlaying = false;
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name)) {
+    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name || currentIsPlaying !== newTrack.is_playing)) {
       currentTrack = newTrack;
+      currentIsPlaying = newTrack.is_playing;
       const trackInfo = {
         name: newTrack.name,
         album: newTrack.album.name,
         artist: newTrack.artists[0].name,
-        is_playing: true,
+        is_playing: newTrack.is_playing,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
-      currentTrack = null;
-      notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
 }
+
 
 trackChanges();
 
