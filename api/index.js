@@ -87,6 +87,7 @@ app.get('/api/callback', async (req, res) => {
 
     userAccessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
+    console.log('Ref token1:', refresh_token);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
     console.log('User access token:', userAccessToken);
@@ -148,6 +149,7 @@ function notifyClients(trackInfo) {
 }
 
 async function updateAccessToken() {
+  console.log('Ref token2:', refresh_token);
   if (new Date().getTime() >= accessTokenExpiresAt) {
     try {
       const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
