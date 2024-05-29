@@ -19,6 +19,7 @@ let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
 
+
 authorize();
 
 async function authorize() {
