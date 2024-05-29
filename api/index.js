@@ -167,8 +167,15 @@ function trackChanges() {
         is_playing: true,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
-      notifyClients(trackInfo)
+    } else if (newTrack && currentTrack.name == newTrack.name) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+      notifyClients({ trackInfo });
     }
   }, 5000); // Check for changes every 5 seconds
 }
