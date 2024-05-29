@@ -148,7 +148,6 @@ async function fetchCurrentTrack() {
     });
     console.log(response.data.item.name)
     console.log(response.data.item.is_playing)
-    console.log(currentTrack.name)
     return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
