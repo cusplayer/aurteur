@@ -164,7 +164,7 @@ function trackChanges() {
         name: newTrack.name,
         album: newTrack.album.name,
         artist: newTrack.artists[0].name,
-        is_playing: true,
+        is_playing: response.data.is_playing,
       };
       notifyClients(trackInfo);
     } else if (newTrack && !newTrack.is_playing) {
