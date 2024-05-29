@@ -172,7 +172,7 @@ function trackChanges() {
       };
       notifyClients(trackInfo);
     } 
-    else if (!newTrack && nowPlaying == false) {
+    else if (newTrack && nowPlaying == false) {
       currentTrack, currentTrackId = null;
       notifyClients({ is_playing: false });
     }
@@ -207,7 +207,8 @@ cron.schedule('0 * * * *', async () => {
   }
 });
 
-/////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 let lastQuote = '';
 let lastUpdateDate = '';
