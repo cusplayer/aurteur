@@ -89,7 +89,7 @@ app.get('/api/callback', async (req, res) => {
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
-    console.log('Access token:', userAccessToken);
+    console.log('userAccessToken:', accessToken);
 
     res.redirect('/api/current-track');
   } catch (error) {
@@ -102,7 +102,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${userAccessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
