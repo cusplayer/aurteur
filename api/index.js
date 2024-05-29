@@ -102,7 +102,7 @@ app.get('/api/callback', async (req, res) => {
 
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
   console.log('userAccessToken before fetching current track:', userAccessToken); // Add this line
-  await updateAccessToken(); // Ensure the access token is updated before making a request
+  // await updateAccessToken(); // Ensure the access token is updated before making a request
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -133,7 +133,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 let longPollingClients = [];
 
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
-  await updateAccessToken(); // Ensure the access token is updated before making a request
+  // await updateAccessToken(); // Ensure the access token is updated before making a request
   console.log('during app long-polling:', userAccessToken);
   const client = res;
   longPollingClients.push(client);
@@ -175,7 +175,7 @@ let nowPlaying = false;
 
 async function fetchCurrentTrack() {
   try {
-    userAccessToken = await updateAccessToken();
+    // userAccessToken = await updateAccessToken();
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -202,7 +202,7 @@ async function fetchCurrentTrack() {
 
 function trackChanges() {
   setInterval(async () => {
-    await updateAccessToken();
+    // await updateAccessToken();
     console.log('Before fetching current track in trackChanges, userAccessToken:', userAccessToken);
     const newTrack = await fetchCurrentTrack();
     console.log('After fetching current track in trackChanges, userAccessToken:', userAccessToken);
