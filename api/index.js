@@ -17,7 +17,6 @@ let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null; // Variable to store the current track information
-let currentIsPlaying = false;
 
 authorize();
 
@@ -46,34 +45,13 @@ async function authorize() {
   }
 }
 
-async function refreshAccessToken() {
-  try {
-    const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET
-    }), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    });
-
-    accessToken = response.data.access_token;
-    accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-
-    console.log('New access token:', accessToken);
-  } catch (error) {
-    console.error('Error refreshing access token:', error.response ? error.response.data : error.message);
-  }
-}
-
-// Middleware для проверки токена доступа
-async function checkAccessToken(req, res, next) {
+// Middleware for checking access token
+function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    await refreshAccessToken();
+    authorize().then(() => next());
+  } else {
+    next();
   }
-  next();
 }
 
 app.get('/api/login', (req, res) => {
@@ -169,43 +147,39 @@ async function fetchCurrentTrack() {
       },
     });
 
-    return response.data;
+    if (response.data && response.data.item) {
+      return {
+        name: response.data.item.name,
+        album: response.data.item.album.name,
+        artist: response.data.item.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+    } else {
+      return { is_playing: false };
+    }
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
-    return null;
+    return { is_playing: false };
   }
 }
 
+let currentIsPlaying = false;
+
 function trackChanges() {
   setInterval(async () => {
-    try {
-      const response = await fetchCurrentTrack();
-
-      if (response && response.item) {
-        const newTrack = response.item;
-        const isPlaying = response.is_playing;
-
-        console.log('New track fetched:', newTrack.name, 'Is playing:', isPlaying);
-
-        if (!currentTrack || currentTrack.id !== newTrack.id || currentIsPlaying !== isPlaying) {
-          currentTrack = newTrack;
-          currentIsPlaying = isPlaying;
-          const trackInfo = {
-            name: newTrack.name,
-            album: newTrack.album.name,
-            artist: newTrack.artists[0].name,
-            is_playing: isPlaying,
-          };
-          notifyClients(trackInfo);
-        }
-      } else if (response && !response.is_playing && currentIsPlaying) {
-        console.log('Track stopped playing');
-        currentTrack = null;
-        currentIsPlaying = false;
-        notifyClients({ is_playing: false });
-      }
-    } catch (error) {
-      console.error('Error in trackChanges:', error);
+    const newTrack = await fetchCurrentTrack();
+    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name)) {
+      currentTrack = newTrack;
+      const trackInfo = {
+        name: newTrack.name,
+        album: newTrack.album.name,
+        artist: newTrack.artists[0].name,
+        is_playing: true,
+      };
+      notifyClients(trackInfo);
+    } else if (newTrack && !newTrack.is_playing) {
+      currentTrack = null;
+      notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
 }
@@ -214,7 +188,30 @@ trackChanges();
 
 // Refresh access token every hour
 cron.schedule('0 * * * *', async () => {
-  await refreshAccessToken();
+  if (!refreshToken) {
+    console.error('Refresh token is missing');
+    return;
+  }
+
+  try {
+    const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET
+    }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    accessToken = response.data.access_token;
+    accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+
+    console.log(`New access token: ${accessToken}`);
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+  }
 });
 
 
