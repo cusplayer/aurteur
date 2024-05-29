@@ -14,7 +14,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-let userAccessToken = process.env.userAccessToken;
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -150,7 +150,7 @@ function notifyClients(trackInfo) {
 }
 
 async function updateAccessToken() {
-  if (new Date().getTime() >= accessTokenExpiresAt) {
+  // if (new Date().getTime() >= accessTokenExpiresAt) {
     try {
       const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
         grant_type: 'refresh_token',
@@ -168,7 +168,7 @@ async function updateAccessToken() {
     } catch (error) {
       console.error('Error refreshing user access token:', error);
     }
-  }
+  // }
 }
 
 let nowPlaying = false;
