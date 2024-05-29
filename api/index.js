@@ -167,7 +167,7 @@ async function fetchCurrentTrack() {
 }
 
 function trackChanges() {
-  console.log(currentTrack)
+  console.log(currentTrack, trackInfo)
   setInterval(async () => {
     await fetchCurrentTrack();
     if (currentTrack.name !== newTrackrackInfo.name) {
