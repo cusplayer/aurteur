@@ -13,15 +13,15 @@ initArrowNavigation()
 
 function App() {
   const [trackInfo, setTrackInfo] = useState({});
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState({});
 
   useEffect(() => {
-    let isSubscribed = true;
+    let isMounted = true;
 
-    const fetchCurrentTrack = async () => {
+    async function fetchTrackInfo() {
       try {
         const response = await axios.get('/api/long-polling');
-        if (isSubscribed && response && response.data) {
+        if (response.data) {
           const { name, album, artist, is_playing } = response.data;
           setIsPlaying(is_playing);
           if (is_playing) {
@@ -29,20 +29,25 @@ function App() {
           } else {
             setTrackInfo({});
           }
-        } else {
-          console.error('Response or response.data is undefined');
         }
-        fetchCurrentTrack(); // Initiate next long-polling request
       } catch (error) {
-        console.error('Error fetching current track:', error.response ? error.response.data : error.message);
-        fetchCurrentTrack(); // Retry in case of error
+        if (error.response && error.response.status === 204) {
+          // No content, no changes detected
+          console.log('No changes in the current track');
+        } else {
+          console.error('Error fetching current track:', error.response?.data || error.message);
+        }
+      } finally {
+        if (isMounted) {
+          fetchTrackInfo(); // Continue long-polling
+        }
       }
-    };
+    }
 
-    fetchCurrentTrack();
+    fetchTrackInfo();
 
     return () => {
-      isSubscribed = false;
+      isMounted = false;
     };
   }, []);
 

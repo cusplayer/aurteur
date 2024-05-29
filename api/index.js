@@ -11,12 +11,13 @@ app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
+const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:5000/api/callback';
 
 let accessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
-let currentTrack = null; // Variable to store the current track information
+let currentTrack = null;
+let currentTrackId = null;
 
 authorize();
 
@@ -39,7 +40,6 @@ async function authorize() {
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
-    console.log('Access token:', accessToken);
   } catch (error) {
     console.error('Error during authorization:', error);
   }
@@ -87,8 +87,6 @@ app.get('/api/callback', async (req, res) => {
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
-    console.log('Access token:', accessToken);
-
     res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
@@ -106,6 +104,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
     if (response.data && response.data.item) {
       const currentTrack = response.data.item;
+      currentTrackId = response.data.item.id;
       const trackInfo = {
         name: currentTrack.name,
         album: currentTrack.album.name,
@@ -139,6 +138,8 @@ function notifyClients(trackInfo) {
   longPollingClients = [];
 }
 
+let nowPlaying = false;
+
 async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -146,8 +147,7 @@ async function fetchCurrentTrack() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response.data.item.name)
-    console.log(response.data.item.is_playing)
+    nowPlaying = response.data.is_playing;
     return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
@@ -158,17 +158,19 @@ async function fetchCurrentTrack() {
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && (!currentTrack || currentTrack.id !== newTrack.id)) {
+    if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying == true) {
+      currentTrackId = newTrack.id;
       currentTrack = newTrack;
       const trackInfo = {
         name: newTrack.name,
         album: newTrack.album.name,
         artist: newTrack.artists[0].name,
-        is_playing: true,
+        is_playing: nowPlaying,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
-      currentTrack = null;
+    } 
+    else if (!newTrack && nowPlaying == false) {
+      currentTrack, currentTrackId = null;
       notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
@@ -197,13 +199,12 @@ cron.schedule('0 * * * *', async () => {
 
     accessToken = response.data.access_token;
     accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-
-    console.log(`New access token: ${accessToken}`);
   } catch (error) {
     console.error('Error refreshing access token:', error);
   }
 });
 
+/////////////////
 
 let lastQuote = '';
 let lastUpdateDate = '';
