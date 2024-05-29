@@ -175,7 +175,7 @@ let nowPlaying = false;
 
 async function fetchCurrentTrack() {
   try {
-    await updateAccessToken();
+    userAccessToken = await updateAccessToken();
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
