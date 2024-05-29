@@ -39,7 +39,7 @@ async function authorize() {
     );
 
     accessToken = response.data.access_token;
-    // accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+    accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
     console.log('Access token:', accessToken);
   } catch (error) {
@@ -129,8 +129,6 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   }
   console.log('userAccessToken after updating:', userAccessToken); // Add this line
 });
-
-console.log('After fetching current track, userAccessToken:', userAccessToken);
 
 let longPollingClients = [];
 
