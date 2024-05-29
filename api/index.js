@@ -148,10 +148,11 @@ async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
     nowPlaying = response.data.is_playing;
+    console.log(response.data.item.name)
     return response.data.item;
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
