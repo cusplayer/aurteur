@@ -39,7 +39,7 @@ async function authorize() {
     );
 
     accessToken = response.data.access_token;
-    accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+    // accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
     console.log('Access token:', accessToken);
   } catch (error) {
@@ -48,13 +48,13 @@ async function authorize() {
 }
 
 // Middleware for checking access token
-function checkAccessToken(req, res, next) {
-  if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize().then(() => next());
-  } else {
-    next();
-  }
-}
+// function checkAccessToken(req, res, next) {
+//   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
+//     authorize().then(() => next());
+//   } else {
+//     next();
+//   }
+// }
 
 app.get('/api/login', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
@@ -129,6 +129,8 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   }
   console.log('userAccessToken after updating:', userAccessToken); // Add this line
 });
+
+console.log('random userAccessToken:', userAccessToken);
 
 let longPollingClients = [];
 
@@ -226,7 +228,6 @@ function trackChanges() {
     }
   }, 5000); // Check for changes every 5 seconds
 }
-
 
 trackChanges();
 
