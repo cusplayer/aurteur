@@ -14,6 +14,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null;
@@ -84,11 +85,11 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-    accessToken = response.data.access_token;
+    userAccessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
-    console.log('Access token:', accessToken);
+    console.log('Access token:', userAccessToken);
 
     res.redirect('/api/current-track');
   } catch (error) {
@@ -101,7 +102,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
 
@@ -147,7 +148,7 @@ async function fetchCurrentTrack() {
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${userAccessToken}`,
       },
     });
     nowPlaying = response.data.is_playing;
