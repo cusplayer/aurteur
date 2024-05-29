@@ -158,7 +158,7 @@ async function fetchCurrentTrack() {
 function trackChanges() {
   setInterval(async () => {
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && (!currentTrack || currentTrack.name !== newTrack.name)) {
+    if (newTrack && (currentTrack.name !== newTrack.name)) {
       currentTrack = newTrack;
       const trackInfo = {
         name: newTrack.name,
@@ -167,7 +167,7 @@ function trackChanges() {
         is_playing: true,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && !newTrack.is_playing) {
+    } else if (newTrack && (newTrack.is_playing == false)) {
       currentTrack = null;
       notifyClients({ is_playing: false });
     }
