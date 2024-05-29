@@ -169,11 +169,11 @@ async function updateAccessToken() {
   }
 }
 
+
 let nowPlaying = false;
 
 async function fetchCurrentTrack() {
-  await updateAccessToken(); // Ensure the access token is updated before making a request
-  console.log('Fetching current track with userAccessToken:', userAccessToken);
+  console.log('Before fetching current track, userAccessToken:', userAccessToken);
   try {
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -184,6 +184,7 @@ async function fetchCurrentTrack() {
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
       console.log('Current track:', response.data.item.name);
+      console.log('After fetching current track, userAccessToken:', userAccessToken);
       return response.data.item;
     } else {
       nowPlaying = false;
@@ -192,6 +193,7 @@ async function fetchCurrentTrack() {
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     nowPlaying = false;
+    console.log('After fetching current track error, userAccessToken:', userAccessToken);
     return null;
   }
 }
@@ -201,8 +203,10 @@ function trackChanges() {
     await updateAccessToken();
     console.log('Before fetching current track in trackChanges, userAccessToken:', userAccessToken);
     const newTrack = await fetchCurrentTrack();
-    if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying) {
+    console.log('After fetching current track in trackChanges, userAccessToken:', userAccessToken);
+    if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying === true) {
       currentTrackId = newTrack.id;
+      currentTrack = newTrack;
       const trackInfo = {
         name: newTrack.name,
         album: newTrack.album.name,
@@ -210,12 +214,14 @@ function trackChanges() {
         is_playing: nowPlaying,
       };
       notifyClients(trackInfo);
-    } else if (!newTrack || !nowPlaying) {
+    } else if (newTrack && nowPlaying === false) {
+      currentTrack = null;
       currentTrackId = null;
       notifyClients({ is_playing: false });
     }
   }, 5000); // Check for changes every 5 seconds
 }
+
 
 trackChanges();
 
