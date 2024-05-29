@@ -132,6 +132,7 @@ let longPollingClients = [];
 
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   await updateAccessToken(); // Ensure the access token is updated before making a request
+  console.log('during app long-polling:', userAccessToken);
   const client = res;
   longPollingClients.push(client);
   req.on('close', () => {
