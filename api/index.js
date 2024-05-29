@@ -148,7 +148,6 @@ async function fetchCurrentTrack() {
     });
     console.log(response.data.item.name)
     return response.data.item;
-
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     return null;
@@ -164,7 +163,7 @@ function trackChanges() {
         name: newTrack.name,
         album: newTrack.album.name,
         artist: newTrack.artists[0].name,
-        is_playing: response.data.item.is_playing,
+        is_playing: true,
       };
       notifyClients(trackInfo);
     } else if (newTrack && !newTrack.is_playing) {
