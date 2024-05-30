@@ -179,9 +179,7 @@ let nowPlaying = false;
 async function fetchCurrentTrack() {
   try {
     // await updateAccessToken();
-    while(userAccessToken === null) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+    const userAccessToken = await getUserAccessToken();
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -203,6 +201,28 @@ async function fetchCurrentTrack() {
     nowPlaying = false;
     console.log('After fetching current track error, userAccessToken:', userAccessToken);
     return null;
+  }
+}
+
+function getUserAccessToken() {
+  if (userAccessToken !== null) {
+    // If userAccessToken is already available, return it immediately
+    return Promise.resolve(userAccessToken);
+  } else if (accessTokenPromise) {
+    // If userAccessToken is not available but we're already waiting for it, return the existing promise
+    return accessTokenPromise;
+  } else {
+    // If userAccessToken is not available and we're not already waiting for it, start waiting
+    accessTokenPromise = new Promise((resolve) => {
+      let checkInterval = setInterval(() => {
+        if (userAccessToken !== null) {
+          clearInterval(checkInterval);
+          resolve(userAccessToken);
+          accessTokenPromise = null; // Reset the promise so we can start waiting again if necessary
+        }
+      }, 1000); // check every second
+    });
+    return accessTokenPromise;
   }
 }
 
