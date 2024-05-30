@@ -1,7 +1,9 @@
 import kv from '@vercel/kv';
 import express from 'express';
 import fs from 'fs';
-import path from 'path';
+import { fileURLToPath } from 'url';
+import { path, dirname, join } from 'path';
+import { readFile } from 'fs/promises';
 import cors from 'cors';
 import axios from 'axios';
 import qs from 'querystring';
@@ -261,7 +263,7 @@ cron.schedule('0 * * * *', async () => {
 });
 
 
-// How can I handle environment variables in a Node.js application deployed on Vercel?
+// How can I handle environment variables in a Node.js application deployed on
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
@@ -270,7 +272,9 @@ let lastUpdateDate = '';
 let bookTitle = '';
 let author = '';
 
-const articlesDir = path.join('api', 'articles');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const articlesDir = path.join(__dirname, 'articles');
 
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
@@ -411,7 +415,7 @@ function parseArticle(data, fileName) {
 
 // Функция для получения случайной цитаты из файла
 function getRandomQuoteFromFile() {
-  const quotesPath = path.join('api', 'quotes');
+  const quotesPath = path.join(__dirname, 'quotes');
   const files = fs.readdirSync(quotesPath);
   const randomFile = files[Math.floor(Math.random() * files.length)];
   const filePath = path.join(quotesPath, randomFile);
