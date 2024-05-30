@@ -309,6 +309,7 @@ function splitArticleData(fileName, data) {
     }
   }
 
+  
   const metadataString = metadataLines.join('\n');
 
   try {
