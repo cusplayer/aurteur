@@ -14,11 +14,10 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-var userAccessToken = null;
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
-
 
 authorize();
 
@@ -180,7 +179,9 @@ let nowPlaying = false;
 async function fetchCurrentTrack() {
   try {
     // await updateAccessToken();
-
+    while(userAccessToken === null) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
