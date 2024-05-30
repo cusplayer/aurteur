@@ -1,3 +1,4 @@
+import { kv } from '@vercel/kv';
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -14,7 +15,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-let userAccessToken = null;
+const userAccessToken = await kv.get('userAccessToken');
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -85,7 +86,7 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-    userAccessToken = response.data.access_token;
+    await kv.set('userAccessToken', response.data.access_token);
     refreshToken = response.data.refresh_token;
     console.log('Ref token1:', refreshToken);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
@@ -179,7 +180,6 @@ let nowPlaying = false;
 async function fetchCurrentTrack() {
   try {
     // await updateAccessToken();
-    const userAccessToken = await getUserAccessToken();
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -201,28 +201,6 @@ async function fetchCurrentTrack() {
     nowPlaying = false;
     console.log('After fetching current track error, userAccessToken:', userAccessToken);
     return null;
-  }
-}
-
-function getUserAccessToken() {
-  if (userAccessToken !== null) {
-    // If userAccessToken is already available, return it immediately
-    return Promise.resolve(userAccessToken);
-  } else if (accessTokenPromise) {
-    // If userAccessToken is not available but we're already waiting for it, return the existing promise
-    return accessTokenPromise;
-  } else {
-    // If userAccessToken is not available and we're not already waiting for it, start waiting
-    accessTokenPromise = new Promise((resolve) => {
-      let checkInterval = setInterval(() => {
-        if (userAccessToken !== null) {
-          clearInterval(checkInterval);
-          resolve(userAccessToken);
-          accessTokenPromise = null; // Reset the promise so we can start waiting again if necessary
-        }
-      }, 1000); // check every second
-    });
-    return accessTokenPromise;
   }
 }
 
