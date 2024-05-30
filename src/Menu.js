@@ -4,8 +4,8 @@ import ArticleContent from './ArticleContent.js';
 import Quote from './quote.js';
 import Contacts from './contacts.js';
 
-const ContactsModal = React.lazy(() => import('./ContactsModal'));
-const ArticleModal = React.lazy(() => import('./ArticleModal'));
+const ContactsModal = React.lazy(() => import('./ContactsModal.js'));
+const ArticleModal = React.lazy(() => import('./ArticleModal.js'));
 
 const Menu = () => {
   const [articles, setArticles] = useState([]);
