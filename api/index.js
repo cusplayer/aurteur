@@ -112,7 +112,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
         Authorization: `Bearer ${userAccessToken}`,
       },
     });
-
+    console.log('Response on ct:', response.data, response.data.item);
     if (response.data && response.data.item) {
       const currentTrack = response.data.item;
       currentTrackId = currentTrack.id;
@@ -188,6 +188,7 @@ async function fetchCurrentTrack() {
       },
     });
 
+    console.log('Response on fetching:', response.data);
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
       console.log('Current track:', response.data.item.name);
