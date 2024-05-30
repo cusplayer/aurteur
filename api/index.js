@@ -15,7 +15,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-// let userAccessToken = null;
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
