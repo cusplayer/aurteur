@@ -65,7 +65,6 @@ app.get('/api/login', (req, res) => {
     scope: 'user-read-currently-playing user-read-playback-state',
     redirect_uri: REDIRECT_URI,
   })}`);
-  console.log('User access token:', response.data.access_token);
 });
 
 app.get('/api/callback', async (req, res) => {
@@ -88,7 +87,7 @@ app.get('/api/callback', async (req, res) => {
         },
       }
     );
-
+    console.log('response data from callback:', response.data);
     console.log('User access token2:', response.data.access_token);
     await kv.set('userAccessToken', response.data.access_token);
     refreshToken = response.data.refresh_token;
@@ -107,6 +106,7 @@ app.get('/api/callback', async (req, res) => {
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const userAccessToken = await kv.get('userAccessToken');
+    console.log('userAccessToken after updating ct:', userAccessToken); // Add this line
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
         Authorization: `Bearer ${userAccessToken}`,
