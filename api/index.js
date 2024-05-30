@@ -2,7 +2,7 @@ import kv from '@vercel/kv';
 import express from 'express';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { path, dirname, join } from 'path';
+import { dirname, join } from 'path';
 import { readFile } from 'fs/promises';
 import cors from 'cors';
 import axios from 'axios';
