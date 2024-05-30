@@ -274,7 +274,7 @@ let author = '';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const articlesDir = path.join(__dirname, 'articles');
+const articlesDir = join(__dirname, 'articles');
 
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
@@ -415,7 +415,7 @@ function parseArticle(data, fileName) {
 
 // Функция для получения случайной цитаты из файла
 function getRandomQuoteFromFile() {
-  const quotesPath = path.join(__dirname, 'quotes');
+  const quotesPath = join(__dirname, 'quotes');
   const files = fs.readdirSync(quotesPath);
   const randomFile = files[Math.floor(Math.random() * files.length)];
   const filePath = path.join(quotesPath, randomFile);
