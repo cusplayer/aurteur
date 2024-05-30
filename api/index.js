@@ -6,7 +6,6 @@ import { dirname, join } from 'path';
 import cors from 'cors';
 import axios from 'axios';
 import qs from 'querystring';
-import cron from 'node-cron';
 import yaml from 'js-yaml';
 
 const app = express();
@@ -233,31 +232,31 @@ function trackChanges(res) {
 }
 
 // Refresh access token every hour
-cron.schedule('0 * * * *', async () => {
-  if (!refreshToken) {
-    console.error('Refresh token is missing');
-    return;
-  }
+// cron.schedule('0 * * * *', async () => {
+//   if (!refreshToken) {
+//     console.error('Refresh token is missing');
+//     return;
+//   }
 
-  try {
-    const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET
-    }), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    });
+//   try {
+//     const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+//       grant_type: 'refresh_token',
+//       refresh_token: refreshToken,
+//       client_id: CLIENT_ID,
+//       client_secret: CLIENT_SECRET
+//     }), {
+//       headers: {
+//         'Content-Type': 'application/x-www-form-urlencoded'
+//       }
+//     });
 
-    accessToken = response.data.access_token;
-    accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-    console.log('Refreshed access token:', accessToken);
-  } catch (error) {
-    console.error('Error refreshing access token:', error);
-  }
-});
+//     accessToken = response.data.access_token;
+//     accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
+//     console.log('Refreshed access token:', accessToken);
+//   } catch (error) {
+//     console.error('Error refreshing access token:', error);
+//   }
+// });
 
 
 // How can I handle environment variables in a Node.js application deployed on
@@ -283,7 +282,7 @@ app.get('/api/articles/:fileName', (req, res) => {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    // Разделить содержимое файла на метаданные и контент статьи
+    // Ð Ð°Ð·Ð´ÐµÐ»Ð¸ÑÑ ÑÐ¾Ð´ÐµÑÐ¶Ð¸Ð¼Ð¾Ðµ ÑÐ°Ð¹Ð»Ð° Ð½Ð° Ð¼ÐµÑÐ°Ð´Ð°Ð½Ð½ÑÐµ Ð¸ ÐºÐ¾Ð½ÑÐµÐ½Ñ ÑÑÐ°ÑÑÐ¸
     const { metadata, content } = splitArticleData(fileName, data);
 
     res.json({ metadata, content });
@@ -309,7 +308,6 @@ function splitArticleData(fileName, data) {
     }
   }
 
-  
   const metadataString = metadataLines.join('\n');
 
   try {
@@ -337,7 +335,7 @@ function parseFullArticle(data) {
   return data;
 }
 
-// Обработчик GET запроса для получения списка файлов и их свойств
+// ÐÐ±ÑÐ°Ð±Ð¾ÑÑÐ¸Ðº GET Ð·Ð°Ð¿ÑÐ¾ÑÐ° Ð´Ð»Ñ Ð¿Ð¾Ð»ÑÑÐµÐ½Ð¸Ñ ÑÐ¿Ð¸ÑÐºÐ° ÑÐ°Ð¹Ð»Ð¾Ð² Ð¸ Ð¸Ñ ÑÐ²Ð¾Ð¹ÑÑÐ²
 app.get('/api/articles', (req, res) => {
   fs.readdir(articlesDir, (err, files) => {
     if (err) {
@@ -357,7 +355,7 @@ app.get('/api/articles', (req, res) => {
         }
 
         try {
-          const article = parseArticle(data, fileName); // Передаем также имя файла
+          const article = parseArticle(data, fileName); // ÐÐµÑÐµÐ´Ð°ÐµÐ¼ ÑÐ°ÐºÐ¶Ðµ Ð¸Ð¼Ñ ÑÐ°Ð¹Ð»Ð°
           articles.push(article);
           if (articles.length === files.length) {
             res.send(articles);
@@ -371,7 +369,7 @@ app.get('/api/articles', (req, res) => {
   });
 });
 
-// Функция для парсинга содержимого файла .md и получения свойств
+// Ð¤ÑÐ½ÐºÑÐ¸Ñ Ð´Ð»Ñ Ð¿Ð°ÑÑÐ¸Ð½Ð³Ð° ÑÐ¾Ð´ÐµÑÐ¶Ð¸Ð¼Ð¾Ð³Ð¾ ÑÐ°Ð¹Ð»Ð° .md Ð¸ Ð¿Ð¾Ð»ÑÑÐµÐ½Ð¸Ñ ÑÐ²Ð¾Ð¹ÑÑÐ²
 function parseArticle(data, fileName) {
   const lines = data.split('\n');
   let metadataLines = [];
@@ -411,7 +409,7 @@ function parseArticle(data, fileName) {
   }
 }
 
-// Функция для получения случайной цитаты из файла
+// Ð¤ÑÐ½ÐºÑÐ¸Ñ Ð´Ð»Ñ Ð¿Ð¾Ð»ÑÑÐµÐ½Ð¸Ñ ÑÐ»ÑÑÐ°Ð¹Ð½Ð¾Ð¹ ÑÐ¸ÑÐ°ÑÑ Ð¸Ð· ÑÐ°Ð¹Ð»Ð°
 function getRandomQuoteFromFile() {
   const quotesPath = join(__dirname, 'quotes');
   const files = fs.readdirSync(quotesPath);
@@ -428,11 +426,11 @@ function getRandomQuoteFromFile() {
   const highlights = lines.slice(highlightsIndex + 1);
   const randomHighlight = highlights[Math.floor(Math.random() * highlights.length)];
 
-  // Находим последнее длинное тире и обрезаем строку после него
-  const lastLongDashIndex = randomHighlight.lastIndexOf('—');
+  // ÐÐ°ÑÐ¾Ð´Ð¸Ð¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ Ð´Ð»Ð¸Ð½Ð½Ð¾Ðµ ÑÐ¸ÑÐµ Ð¸ Ð¾Ð±ÑÐµÐ·Ð°ÐµÐ¼ ÑÑÑÐ¾ÐºÑ Ð¿Ð¾ÑÐ»Ðµ Ð½ÐµÐ³Ð¾
+  const lastLongDashIndex = randomHighlight.lastIndexOf('â');
   const quote = randomHighlight.slice(0, lastLongDashIndex);
 
-  const [location] = randomHighlight.slice(lastLongDashIndex + 1).split(' — ');
+  const [location] = randomHighlight.slice(lastLongDashIndex + 1).split(' â ');
   const bookTitle = metadata.title;
   const author = metadata.author;
   return {
@@ -442,13 +440,13 @@ function getRandomQuoteFromFile() {
   };
 }
 
-// Обработчик GET запроса к /api/quote
+// ÐÐ±ÑÐ°Ð±Ð¾ÑÑÐ¸Ðº GET Ð·Ð°Ð¿ÑÐ¾ÑÐ° Ðº /api/quote
 app.get('/api/quote', (req, res) => {
-  const currentDate = new Date().toISOString().split('T')[0]; // Текущая дата
+  const currentDate = new Date().toISOString().split('T')[0]; // Ð¢ÐµÐºÑÑÐ°Ñ Ð´Ð°ÑÐ°
 
-  // Проверяем, прошел ли уже день с момента последнего обновления цитаты
+  // ÐÑÐ¾Ð²ÐµÑÑÐµÐ¼, Ð¿ÑÐ¾ÑÐµÐ» Ð»Ð¸ ÑÐ¶Ðµ Ð´ÐµÐ½Ñ Ñ Ð¼Ð¾Ð¼ÐµÐ½ÑÐ° Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ ÑÐ¸ÑÐ°ÑÑ
   if (currentDate !== lastUpdateDate) {
-    // Выбираем новую цитату
+    // ÐÑÐ±Ð¸ÑÐ°ÐµÐ¼ Ð½Ð¾Ð²ÑÑ ÑÐ¸ÑÐ°ÑÑ
     let processedQuote;
     let words;
     let newBookTitle;
@@ -457,18 +455,18 @@ app.get('/api/quote', (req, res) => {
       const { quote, bookTitle: bTitle, author: aName } = getRandomQuoteFromFile();
       newBookTitle  = bTitle;
       newAuthor  = aName;
-      processedQuote = quote.replace(/— location:.*$/, '');
+      processedQuote = quote.replace(/â location:.*$/, '');
       words = processedQuote.split(/\s+/).filter(word => word !== '');
     } while (words.length < 3 || words.length > 200);
 
-    // Форматируем цитату в формате Markdown
+    // Ð¤Ð¾ÑÐ¼Ð°ÑÐ¸ÑÑÐµÐ¼ ÑÐ¸ÑÐ°ÑÑ Ð² ÑÐ¾ÑÐ¼Ð°ÑÐµ Markdown
     lastQuote = `${processedQuote}`;
     bookTitle = newBookTitle;
     author = newAuthor;
-    lastUpdateDate = currentDate; // Обновляем дату последнего обновления
+    lastUpdateDate = currentDate; // ÐÐ±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð´Ð°ÑÑ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ
   }
 
-  // Отправляем последнюю выбранную цитату как ответ на запрос
+  // ÐÑÐ¿ÑÐ°Ð²Ð»ÑÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÑÑ Ð²ÑÐ±ÑÐ°Ð½Ð½ÑÑ ÑÐ¸ÑÐ°ÑÑ ÐºÐ°Ðº Ð¾ÑÐ²ÐµÑ Ð½Ð° Ð·Ð°Ð¿ÑÐ¾Ñ
   res.json({ quote: lastQuote, bookTitle, author });
 });
 
