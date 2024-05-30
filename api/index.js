@@ -157,7 +157,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    console.log('Response on fetching:', response.data, response.data.item);
+    console.log('Response on fetching:', response.data,);
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
       console.log('Current track:', response.data.item.name);
@@ -221,6 +221,7 @@ app.get('/api/token_refresher', async (req, res) => {
           'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
           }
       });
+      console.log('refresh response:', response.data)
       await kv.set('userAccessToken', response.data.access_token);
       await kv.set('refreshToken', response.data.refresh_token);
       console.log('refreshed refreshtoken:', response.data.refresh_token)
