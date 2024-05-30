@@ -8,6 +8,7 @@ import cors from 'cors';
 import axios from 'axios';
 import qs from 'querystring';
 import cron from 'node-cron';
+import yaml from 'js-yaml';
 
 const app = express();
 app.use(cors());
@@ -372,7 +373,7 @@ app.get('/api/articles', (req, res) => {
     });
   });
 });
-const yaml = require('js-yaml');
+
 // Функция для парсинга содержимого файла .md и получения свойств
 function parseArticle(data, fileName) {
   const lines = data.split('\n');
