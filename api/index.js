@@ -91,6 +91,7 @@ app.get('/api/callback', async (req, res) => {
 
     await kv.set('userAccessToken', response.data.access_token);
     await kv.set('refreshToken', response.data.refresh_token);
+    console.log('refreshed refreshtoken:', response.data.refresh_token);
     // userAccessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
     res.redirect('/.');
   } catch (error) {
@@ -221,7 +222,7 @@ app.get('/api/token_refresher', async (req, res) => {
           'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
           }
       });
-      console.log('refresh response:', response.data)
+      console.log('refresh response:', response.data);
       await kv.set('userAccessToken', response.data.access_token);
       await kv.set('refreshToken', response.data.refresh_token);
       console.log('refreshed refreshtoken:', response.data.refresh_token)
