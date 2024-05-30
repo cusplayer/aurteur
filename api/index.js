@@ -16,7 +16,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-let userAccessToken = null;
+// let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null;
@@ -65,6 +65,7 @@ app.get('/api/login', (req, res) => {
     scope: 'user-read-currently-playing user-read-playback-state',
     redirect_uri: REDIRECT_URI,
   })}`);
+  console.log('User access token:', response.data.access_token);
 });
 
 app.get('/api/callback', async (req, res) => {
