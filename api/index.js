@@ -21,6 +21,7 @@ let accessToken = null;
 let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
+let currentTrack = null;
 let currentTrackId = null;
 
 authorize();
