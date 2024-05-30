@@ -206,11 +206,9 @@ async function fetchCurrentTrack() {
 }
 
 function trackChanges(res) {
-  setInterval(async () => {
+  const intervalId = setInterval(async () => {
     // await updateAccessToken();
-    console.log('Before fetching current track in trackChanges, userAccessToken:', userAccessToken);
     const newTrack = await fetchCurrentTrack();
-    console.log('After fetching current track in trackChanges, userAccessToken:', userAccessToken);
     if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying === true) {
       currentTrackId = newTrack.id;
       currentTrack = newTrack;
@@ -220,12 +218,15 @@ function trackChanges(res) {
         artist: newTrack.artists[0].name,
         is_playing: nowPlaying,
       };
+      clearInterval(intervalId);
       notifyClients(trackInfo);
     } else if (nowPlaying === false) {
       currentTrack = null;
       currentTrackId = null;
+      clearInterval(intervalId);
       notifyClients({ is_playing: false });
     } else {
+      clearInterval(intervalId);
       res.status(204).send(); // No Content
     }
   }, 7000); // Check for changes every 5 seconds
