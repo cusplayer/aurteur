@@ -8,7 +8,7 @@ import axios from 'axios';
 import qs from 'querystring';
 import cron from 'node-cron';
 import yaml from 'js-yaml';
-import { ws, Server } from 'ws';
+import ws from 'ws';
 
 const app = express();
 app.use(cors());
