@@ -2,6 +2,7 @@ import './App.css';
 import Menu from './Menu.js';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import useSWR from 'swr';
 import {
   initArrowNavigation,
   FocusableElement,
@@ -10,21 +11,18 @@ import {
 
 initArrowNavigation()
 
+async function fetcher(url) {
+  const response = await axios.get(url);
+  return response.data;
+}
 
 function App() {
   const [trackInfo, setTrackInfo] = useState({});
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [ws, setWs] = useState(null);
+  const [isPlaying, setIsPlaying] = useState({});
+  const { data, error } = useSWR('/api/long-polling', fetcher, { revalidateOnFocus: false });
 
   useEffect(() => {
-    const websocket = new WebSocket('wss://aurteur.com');
-
-    websocket.onopen = () => {
-      console.log('Connected to WebSocket');
-    };
-
-    websocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    if (data) {
       const { name, album, artist, is_playing } = data;
       setIsPlaying(is_playing);
       if (is_playing) {
@@ -32,22 +30,8 @@ function App() {
       } else {
         setTrackInfo({});
       }
-    };
-
-    websocket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    websocket.onclose = () => {
-      console.log('Disconnected from WebSocket');
-    };
-
-    setWs(websocket);
-
-    return () => {
-      websocket.close();
-    };
-  }, []);
+    }
+  }, [data]);
 
 
   return (

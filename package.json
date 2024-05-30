@@ -23,6 +23,7 @@
     "react-scripts": "5.0.1",
     "react-use-arrows": "^1.1.0",
     "rehype-raw": "^7.0.0",
+    "swr": "^2.2.5",
     "web-vitals": "^2.1.4",
     "ws": "^8.17.0"
   },

@@ -8,21 +8,9 @@ import axios from 'axios';
 import qs from 'querystring';
 import cron from 'node-cron';
 import yaml from 'js-yaml';
-import ws from 'ws';
 
 const app = express();
 app.use(cors());
-
-const wss = new ws.Server({ noServer: true });
-wss.on('connection', (ws) => {
-  ws.on('message', (message) => {
-    console.log('Received:', message);
-  });
-
-  ws.send('Hello client!');
-});
-
-///////////////////////////////////////////////
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -149,18 +137,20 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
 let longPollingClients = [];
 
-wss.on('connection', (ws) => {
-  ws.on('close', () => {
-    // Handle client disconnecting
+app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+  // await updateAccessToken(); // Ensure the access token is updated before making a request
+  const client = res;
+  longPollingClients.push(client);
+  req.on('close', () => {
+    longPollingClients = longPollingClients.filter(c => c !== client);
   });
 });
 
 function notifyClients(trackInfo) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(trackInfo));
-    }
+  longPollingClients.forEach(client => {
+    client.json(trackInfo);
   });
+  longPollingClients = [];
 }
 
 // function updateAccessToken() {
@@ -485,11 +475,6 @@ app.get('/api/quote', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-server.on('upgrade', (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request);
-  });
 });
 
 export default app;
