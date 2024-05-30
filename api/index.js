@@ -16,7 +16,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-// let userAccessToken = null;
+let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrack = null;
@@ -89,7 +89,7 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-
+    console.log('User access token2:', response.data.access_token);
     await kv.set('userAccessToken', response.data.access_token);
     refreshToken = response.data.refresh_token;
     console.log('Ref token1:', refreshToken);
