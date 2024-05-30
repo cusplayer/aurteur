@@ -105,7 +105,7 @@ app.get('/api/callback', async (req, res) => {
 
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
-    // const userAccessToken = await kv.get('userAccessToken');
+    const userAccessToken = await kv.get('userAccessToken');
     console.log('userAccessToken after updating ct:', userAccessToken); // Add this line
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
@@ -188,7 +188,7 @@ async function fetchCurrentTrack() {
       },
     });
 
-    console.log('Response on fetching:', response.data);
+    console.log('Response on fetching:', response.data, response.data.item);
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
       console.log('Current track:', response.data.item.name);
