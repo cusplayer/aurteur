@@ -2,6 +2,7 @@
   "name": "aurteur",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@arrow-navigation/core": "^2.2.0",
     "@arrow-navigation/react": "^2.2.0",
