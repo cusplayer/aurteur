@@ -211,21 +211,23 @@ app.get('/api/token_refresher', async (req, res) => {
   //   }
   try {
     const refreshToken = await kv.get('refreshToken');
-    console.log('kved refreshtoken:', refreshToken)
+    console.log('kved refreshtoken:', refreshToken);
     const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
       grant_type: 'refresh_token',
-      refresh_token: refreshToken
+      refresh_token: refreshToken,
       }), 
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
-          }
-      });
+          },
+      }
+    );
+    console.log('id and secret:', CLIENT_ID, CLIENT_SECRET);
       console.log('refresh response:', response.data);
       await kv.set('userAccessToken', response.data.access_token);
       await kv.set('refreshToken', response.data.refresh_token);
-      console.log('refreshed refreshtoken:', response.data.refresh_token)
+      console.log('refreshed refreshtoken:', response.data.refresh_token);
     
     
     //   const response = await axios.post(
