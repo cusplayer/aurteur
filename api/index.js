@@ -203,14 +203,14 @@ function trackChanges(res) {
 }
 
 app.get('/api/token_refresher', async (req, res) => {
-  const refreshToken = await kv.get('refreshToken');
-  console.log('kved refreshtoken:', refreshToken)
   // this code is so fucking wacky
-  if (!refreshToken) {
-    console.error('Refresh token is missing');
-    return;
-    }
+  // if (!refreshToken) {
+  //   console.error('Refresh token is missing');
+  //   return;
+  //   }
   try {
+    const refreshToken = await kv.get('refreshToken');
+    console.log('kved refreshtoken:', refreshToken)
     const response = axios.post('https://accounts.spotify.com/api/token', qs.stringify({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
