@@ -3,8 +3,7 @@ import './Menu.css';
 import axios from 'axios';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
-
-const moment = require('moment');
+import moment from 'moment';
 
 const ArticleModal = ({ fileName, closeModal }) => {
   const [metadata, setMetadata] = useState(null);
