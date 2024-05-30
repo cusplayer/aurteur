@@ -136,7 +136,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 let longPollingClients = [];
 
 app.get('/api/long-polling', checkAccessToken, async (req, res) => {
-  await trackChanges(res);
+  trackChanges(res);
   const client = res;
   longPollingClients.push(client);
   req.on('close', () => {
@@ -231,8 +231,6 @@ function trackChanges(res) {
     }
   }, 7000); // Check for changes every 5 seconds
 }
-
-trackChanges();
 
 // Refresh access token every hour
 cron.schedule('0 * * * *', async () => {
