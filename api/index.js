@@ -3,15 +3,26 @@ import express from 'express';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { readFile } from 'fs/promises';
 import cors from 'cors';
 import axios from 'axios';
 import qs from 'querystring';
 import cron from 'node-cron';
 import yaml from 'js-yaml';
+import { Server } from 'ws';
 
 const app = express();
 app.use(cors());
+
+const wss = new Server({ noServer: true });
+wss.on('connection', (ws) => {
+  ws.on('message', (message) => {
+    console.log('Received:', message);
+  });
+
+  ws.send('Hello client!');
+});
+
+///////////////////////////////////////////////
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -136,25 +147,20 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   console.log('userAccessToken after updating:', userAccessToken); // Add this line
 });
 
-console.log('random log:', userAccessToken);
-
 let longPollingClients = [];
 
-app.get('/api/long-polling', checkAccessToken, async (req, res) => {
-  // await updateAccessToken(); // Ensure the access token is updated before making a request
-  console.log('during app long-polling:', userAccessToken);
-  const client = res;
-  longPollingClients.push(client);
-  req.on('close', () => {
-    longPollingClients = longPollingClients.filter(c => c !== client);
+wss.on('connection', (ws) => {
+  ws.on('close', () => {
+    // Handle client disconnecting
   });
 });
 
 function notifyClients(trackInfo) {
-  longPollingClients.forEach(client => {
-    client.json(trackInfo);
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(trackInfo));
+    }
   });
-  longPollingClients = [];
 }
 
 // function updateAccessToken() {
@@ -232,7 +238,7 @@ function trackChanges() {
       currentTrackId = null;
       notifyClients({ is_playing: false });
     }
-  }, 5000); // Check for changes every 5 seconds
+  }, 10000); // Check for changes every 5 seconds
 }
 
 trackChanges();
@@ -479,6 +485,11 @@ app.get('/api/quote', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
+  });
 });
 
 export default app;
