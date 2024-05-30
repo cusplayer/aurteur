@@ -260,6 +260,8 @@ cron.schedule('0 * * * *', async () => {
   }
 });
 
+
+// How can I handle environment variables in a Node.js application deployed on Vercel?
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
@@ -268,7 +270,7 @@ let lastUpdateDate = '';
 let bookTitle = '';
 let author = '';
 
-const articlesDir = path.join(__dirname, 'articles');
+const articlesDir = path.join('api', 'articles');
 
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
@@ -409,7 +411,7 @@ function parseArticle(data, fileName) {
 
 // Функция для получения случайной цитаты из файла
 function getRandomQuoteFromFile() {
-  const quotesPath = path.join(__dirname, 'quotes');
+  const quotesPath = path.join('api', 'quotes');
   const files = fs.readdirSync(quotesPath);
   const randomFile = files[Math.floor(Math.random() * files.length)];
   const filePath = path.join(quotesPath, randomFile);
