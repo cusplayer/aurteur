@@ -278,7 +278,7 @@ const articlesDir = join(__dirname, 'articles');
 
 app.get('/api/articles/:fileName', (req, res) => {
   const { fileName } = req.params;
-  const filePath = path.join(articlesDir, fileName);
+  const filePath = join(articlesDir, fileName);
 
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -350,7 +350,7 @@ app.get('/api/articles', (req, res) => {
     const articles = [];
 
     files.forEach((fileName) => {
-      const filePath = path.join(articlesDir, fileName);
+      const filePath = join(articlesDir, fileName);
 
       fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
@@ -418,7 +418,7 @@ function getRandomQuoteFromFile() {
   const quotesPath = join(__dirname, 'quotes');
   const files = fs.readdirSync(quotesPath);
   const randomFile = files[Math.floor(Math.random() * files.length)];
-  const filePath = path.join(quotesPath, randomFile);
+  const filePath = join(quotesPath, randomFile);
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   const lines = fileContent.split('\n');
   const highlightsIndex = lines.indexOf('## Highlights');
