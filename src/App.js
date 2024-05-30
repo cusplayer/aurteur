@@ -19,7 +19,7 @@ async function fetcher(url) {
 function App() {
   const [trackInfo, setTrackInfo] = useState({});
   const [isPlaying, setIsPlaying] = useState({});
-  const { data, error } = useSWR('/api/long-polling', fetcher, { revalidateOnFocus: false });
+  const { data, error, mutate } = useSWR('/api/long-polling', fetcher, { revalidateOnFocus: false });
 
   useEffect(() => {
     if (data) {
@@ -30,6 +30,7 @@ function App() {
       } else {
         setTrackInfo({});
       }
+      mutate('/api/long-polling');
     }
   }, [data]);
 
