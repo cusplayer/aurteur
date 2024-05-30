@@ -8,12 +8,12 @@ import axios from 'axios';
 import qs from 'querystring';
 import cron from 'node-cron';
 import yaml from 'js-yaml';
-import { Server } from 'ws';
+import { ws, Server } from 'ws';
 
 const app = express();
 app.use(cors());
 
-const wss = new Server({ noServer: true });
+const wss = new ws.Server({ noServer: true });
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     console.log('Received:', message);
