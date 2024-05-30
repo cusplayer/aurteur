@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import axios from 'axios';
-import ArticleContent from './ArticleContent';
-import Quote from './quote';
+import ArticleContent from './ArticleContent.js';
+import Quote from './quote.js';
 import Contacts from './contacts.js';
 
 const ContactsModal = React.lazy(() => import('./ContactsModal'));
