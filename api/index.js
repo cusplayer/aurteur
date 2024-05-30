@@ -213,8 +213,7 @@ app.get('/api/token_refresher', async (req, res) => {
   try {
     const response = axios.post('https://accounts.spotify.com/api/token', qs.stringify({
       grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: CLIENT_ID,
+      refresh_token: refreshToken
       }), 
       {
         headers: {
