@@ -40,7 +40,7 @@ async function authorize() {
       }
     );
 
-    accessToken = response.data.access_token;
+    await kv.set('accessToken', response.data.access_token);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
 
     console.log('Access token:', accessToken);
@@ -50,7 +50,7 @@ async function authorize() {
 }
 
 // Middleware for checking access token
-function checkAccessToken(req, res, next) {
+async function checkAccessToken(req, res, next) {
   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
     authorize().then(() => next());
   } else {
@@ -87,15 +87,11 @@ app.get('/api/callback', async (req, res) => {
         },
       }
     );
-    console.log('response data from callback:', response.data);
-    console.log('User access token2:', response.data.access_token);
+
+
     await kv.set('userAccessToken', response.data.access_token);
-    refreshToken = response.data.refresh_token;
-    console.log('Ref token1:', refreshToken);
-    accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
-
-    console.log('User access token:', userAccessToken);
-
+    await kv.set('refreshToken', response.data.refresh_token);
+    useAccessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
     res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
@@ -106,13 +102,11 @@ app.get('/api/callback', async (req, res) => {
 app.get('/api/current-track', checkAccessToken, async (req, res) => {
   try {
     const userAccessToken = await kv.get('userAccessToken');
-    console.log('userAccessToken after updating ct:', userAccessToken); // Add this line
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
         Authorization: `Bearer ${userAccessToken}`,
       },
     });
-    console.log('Response on ct:', response.data, response.data.item);
     if (response.data && response.data.item) {
       const currentTrack = response.data.item;
       currentTrackId = currentTrack.id;
@@ -130,7 +124,6 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     res.status(500).json({ error: 'Error fetching current track' });
   }
-  console.log('userAccessToken after updating:', userAccessToken); // Add this line
 });
 
 let longPollingClients = [];
@@ -150,30 +143,6 @@ function notifyClients(trackInfo) {
   });
   longPollingClients = [];
 }
-
-// function updateAccessToken() {
-//   // if (new Date().getTime() >= accessTokenExpiresAt) {
-//     console.log('Ref token2:', refreshToken);
-//     axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-//       grant_type: 'refresh_token',
-//       refresh_token: refreshToken,
-//       client_id: CLIENT_ID,
-//     }), {
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     })
-//     .then(response => {
-//       userAccessToken = response.data.access_token;
-//       accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-//       console.log('Access token refreshed, new userAccessToken:', userAccessToken);
-//     })
-//     .catch(error => {
-//       console.error('Error refreshing user access token:', error);
-//     });
-//   // }
-// }
-
 
 let nowPlaying = false;
 
@@ -233,35 +202,49 @@ function trackChanges(res) {
   }, 7000); // Check for changes every 5 seconds
 }
 
-// Refresh access token every hour
-// cron.schedule('0 * * * *', async () => {
-//   if (!refreshToken) {
-//     console.error('Refresh token is missing');
-//     return;
-//   }
+app.get('/api/token_refresher', async (req, res) => {
+  const refreshToken = await kv.get('refreshToken');
+  // this code is so fucking wacky
+  if (!refreshToken) {
+    console.error('Refresh token is missing');
+    return;
+    }
+  try {
+    axios.post('https://accounts.spotify.com/api/token', qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: CLIENT_ID,
+      }), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+          }
+      })
+      await kv.set('userAccessToken', response.data.access_token);
+      await kv.set('refreshToken', response.data.refresh_token);
+      console.log('refreshed refreshtoken:', response.data.refresh_token)
+    
+    
+      const response = await axios.post(
+      'https://accounts.spotify.com/api/token',
+      qs.stringify({
+        grant_type: 'client_credentials',
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+      );
+  
+    await kv.set('accessToken', response.data.access_token);
+    console.log('refreshed token:', response.data.access_token)
+  } catch (error) {
+      console.error('Error refreshing tokens:', error);
+  }
+});
 
-//   try {
-//     const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
-//       grant_type: 'refresh_token',
-//       refresh_token: refreshToken,
-//       client_id: CLIENT_ID,
-//       client_secret: CLIENT_SECRET
-//     }), {
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     });
-
-//     accessToken = response.data.access_token;
-//     accessTokenExpiresAt = new Date().getTime() + (response.data.expires_in * 1000);
-//     console.log('Refreshed access token:', accessToken);
-//   } catch (error) {
-//     console.error('Error refreshing access token:', error);
-//   }
-// });
-
-
-// How can I handle environment variables in a Node.js application deployed on
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
