@@ -2,7 +2,6 @@ import './App.css';
 import Menu from './Menu.js';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import useSWR from 'swr';
 import {
   initArrowNavigation,
   FocusableElement,
@@ -11,28 +10,46 @@ import {
 
 initArrowNavigation()
 
-async function fetcher(url) {
-  const response = await axios.get(url);
-  return response.data;
-}
 
 function App() {
   const [trackInfo, setTrackInfo] = useState({});
   const [isPlaying, setIsPlaying] = useState({});
-  const { data, error, mutate } = useSWR('/api/long-polling', fetcher, { revalidateOnFocus: false });
 
   useEffect(() => {
-    if (data) {
-      const { name, album, artist, is_playing } = data;
-      setIsPlaying(is_playing);
-      if (is_playing) {
-        setTrackInfo({ name, album, artist });
-      } else {
-        setTrackInfo({});
+    let isMounted = true;
+
+    async function fetchTrackInfo() {
+      try {
+        const response = await axios.get('/api/long-polling');
+        if (response.data) {
+          const { name, album, artist, is_playing } = response.data;
+          setIsPlaying(is_playing);
+          if (is_playing) {
+            setTrackInfo({ name, album, artist });
+          } else {
+            setTrackInfo({});
+          }
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 204) {
+          // No content, no changes detected
+          console.log('No changes in the current track');
+        } else {
+          console.error('Error fetching current track:', error.response?.data || error.message);
+        }
+      } finally {
+        if (isMounted) {
+          fetchTrackInfo(); // Continue long-polling
+        }
       }
-      mutate('/api/long-polling');
     }
-  }, [data]);
+
+    fetchTrackInfo();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
 
   return (

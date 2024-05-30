@@ -223,12 +223,14 @@ function trackChanges() {
         is_playing: nowPlaying,
       };
       notifyClients(trackInfo);
-    } else if (newTrack && nowPlaying === false) {
+    } else if (nowPlaying === false) {
       currentTrack = null;
       currentTrackId = null;
       notifyClients({ is_playing: false });
+    } else {
+      res.status(204).send(); // No Content
     }
-  }, 10000); // Check for changes every 5 seconds
+  }, 7000); // Check for changes every 5 seconds
 }
 
 trackChanges();
