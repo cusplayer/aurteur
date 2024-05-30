@@ -204,6 +204,7 @@ function trackChanges(res) {
 
 app.get('/api/token_refresher', async (req, res) => {
   const refreshToken = await kv.get('refreshToken');
+  console.log('kved refreshtoken:', refreshToken)
   // this code is so fucking wacky
   if (!refreshToken) {
     console.error('Refresh token is missing');
