@@ -15,7 +15,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://aurteur.com/api/callback';
 
 let accessToken = null;
-const userAccessToken = await kv.get('userAccessToken');
+// let userAccessToken = null;
 let refreshToken = null;
 let accessTokenExpiresAt = null;
 let currentTrackId = null;
@@ -86,6 +86,7 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
+
     await kv.set('userAccessToken', response.data.access_token);
     refreshToken = response.data.refresh_token;
     console.log('Ref token1:', refreshToken);
@@ -104,6 +105,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
   console.log('userAccessToken before fetching current track:', userAccessToken); // Add this line
   // await updateAccessToken(); // Ensure the access token is updated before making a request
   try {
+    const userAccessToken = await kv.get('userAccessToken');
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
         Authorization: `Bearer ${userAccessToken}`,
@@ -180,6 +182,7 @@ let nowPlaying = false;
 async function fetchCurrentTrack() {
   try {
     // await updateAccessToken();
+    const userAccessToken = await kv.get('userAccessToken');
     console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
