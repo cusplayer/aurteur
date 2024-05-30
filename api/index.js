@@ -216,7 +216,8 @@ app.get('/api/token_refresher', async (req, res) => {
       client_id: CLIENT_ID,
       }), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
           }
       })
       await kv.set('userAccessToken', response.data.access_token);

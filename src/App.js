@@ -16,7 +16,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState({});
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = false;
 
     async function fetchTrackInfo() {
       try {
@@ -29,10 +29,12 @@ function App() {
           } else {
             setTrackInfo({});
           }
+          isMounted = true;
         }
       } catch (error) {
         if (error.response && error.response.status === 204) {
           // No content, no changes detected
+          isMounted = true;
           console.log('No changes in the current track');
         } else {
           console.error('Error fetching current track:', error.response?.data || error.message);
