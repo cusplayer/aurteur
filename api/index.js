@@ -91,7 +91,7 @@ app.get('/api/callback', async (req, res) => {
 
     await kv.set('userAccessToken', response.data.access_token);
     await kv.set('refreshToken', response.data.refresh_token);
-    useAccessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+    // userAccessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
     res.redirect('/api/current-track');
   } catch (error) {
     console.error('Error during callback:', error);
