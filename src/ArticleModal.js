@@ -37,7 +37,6 @@ const ArticleModal = ({ fileName, closeModal }) => {
             <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
           </div>
         </div>
-        <button className="close-modal-button" onClick={closeModal}>Close</button>
       </div>
     </div>
   );

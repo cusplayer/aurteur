@@ -2,9 +2,7 @@
 kindle-sync:
   bookId: '29685'
   title: >-
-    The Fellowship of the Ring: Discover Middle-earth in the Bestselling Classic
-    Fantasy Novels before you watch 2022's Epic New Rings of Power Series (The
-    Lord of the Rings, Book 1)
+    The Lord of the Rings: The Fellowship of the Ring
   author: 'Tolkien, J. R. R.'
   highlightsCount: 24
 ---

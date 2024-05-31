@@ -2,8 +2,7 @@
 kindle-sync:
   bookId: '23713'
   title: >-
-    Blood, Sweat, and Pixels: The Triumphant, Turbulent Stories Behind How Video
-    Games Are Made
+    Blood, Sweat, and Pixels
   author: 'Schreier, Jason'
   highlightsCount: 28
 ---

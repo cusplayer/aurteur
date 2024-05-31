@@ -1,7 +1,7 @@
 ---
 kindle-sync:
   bookId: '38543'
-  title: 'Why We Sleep: Unlocking the Power of Sleep and Dreams'
+  title: 'Why We Sleep'
   author: 'Walker, Matthew'
   highlightsCount: 13
 ---

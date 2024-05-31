@@ -2,9 +2,7 @@
 kindle-sync:
   bookId: '21421'
   title: >-
-    The Two Towers: Discover Middle-earth in the Bestselling Classic Fantasy
-    Novels before you watch 2022's Epic New Rings of Power Series (The Lord of
-    the Rings, Book 2)
+    The Lord of the Rings: The Two Towers
   author: J. R. R. Tolkien
   asin: B002RI9QNK
   lastAnnotatedDate: '2024-01-17'

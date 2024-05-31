@@ -2,9 +2,7 @@
 kindle-sync:
   bookId: '4178'
   title: >-
-    The Return of the King: Discover Middle-earth in the Bestselling Classic
-    Fantasy Novels before you watch 2022's Epic New Rings of Power Series (The
-    Lord of the Rings, Book 3)
+    The Lord of the Rings: The Return of the King
   author: J. R. R. Tolkien
   asin: B002RIA062
   lastAnnotatedDate: '2024-02-10'

@@ -1,7 +1,7 @@
 ---
 kindle-sync:
   bookId: '14048'
-  title: 'The Hitchhiker''s Guide to the Galaxy: The Illustrated Edition'
+  title: 'The Hitchhiker''s Guide to the Galaxy'
   author: 'Adams, Douglas'
   highlightsCount: 1
 ---

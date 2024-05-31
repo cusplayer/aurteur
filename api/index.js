@@ -232,7 +232,6 @@ app.get('/api/articles/:fileName', (req, res) => {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    // Ð Ð°Ð·Ð´ÐµÐ»Ð¸ÑÑ ÑÐ¾Ð´ÐµÑÐ¶Ð¸Ð¼Ð¾Ðµ ÑÐ°Ð¹Ð»Ð° Ð½Ð° Ð¼ÐµÑÐ°Ð´Ð°Ð½Ð½ÑÐµ Ð¸ ÐºÐ¾Ð½ÑÐµÐ½Ñ ÑÑÐ°ÑÑÐ¸
     const { metadata, content } = splitArticleData(fileName, data);
 
     res.json({ metadata, content });
@@ -271,7 +270,7 @@ function splitArticleData(fileName, data) {
       metadata['date'] = new Date(metadata.date);
     }
 
-    const content = lines.slice(metadataLines.length + 2).join('\n');
+    const content = lines.slice(metadataLines.length + 1).join('\n');
 
     return { metadata, content };
   } catch (error) {
@@ -280,12 +279,6 @@ function splitArticleData(fileName, data) {
   }
 }
 
-
-function parseFullArticle(data) {
-  return data;
-}
-
-// ÐÐ±ÑÐ°Ð±Ð¾ÑÑÐ¸Ðº GET Ð·Ð°Ð¿ÑÐ¾ÑÐ° Ð´Ð»Ñ Ð¿Ð¾Ð»ÑÑÐµÐ½Ð¸Ñ ÑÐ¿Ð¸ÑÐºÐ° ÑÐ°Ð¹Ð»Ð¾Ð² Ð¸ Ð¸Ñ ÑÐ²Ð¾Ð¹ÑÑÐ²
 app.get('/api/articles', (req, res) => {
   fs.readdir(articlesDir, (err, files) => {
     if (err) {
@@ -305,7 +298,7 @@ app.get('/api/articles', (req, res) => {
         }
 
         try {
-          const article = parseArticle(data, fileName); // ÐÐµÑÐµÐ´Ð°ÐµÐ¼ ÑÐ°ÐºÐ¶Ðµ Ð¸Ð¼Ñ ÑÐ°Ð¹Ð»Ð°
+          const article = parseArticle(data, fileName);
           articles.push(article);
           if (articles.length === files.length) {
             res.send(articles);
@@ -319,7 +312,7 @@ app.get('/api/articles', (req, res) => {
   });
 });
 
-// Ð¤ÑÐ½ÐºÑÐ¸Ñ Ð´Ð»Ñ Ð¿Ð°ÑÑÐ¸Ð½Ð³Ð° ÑÐ¾Ð´ÐµÑÐ¶Ð¸Ð¼Ð¾Ð³Ð¾ ÑÐ°Ð¹Ð»Ð° .md Ð¸ Ð¿Ð¾Ð»ÑÑÐµÐ½Ð¸Ñ ÑÐ²Ð¾Ð¹ÑÑÐ²
+
 function parseArticle(data, fileName) {
   const lines = data.split('\n');
   let metadataLines = [];
@@ -359,7 +352,7 @@ function parseArticle(data, fileName) {
   }
 }
 
-// Ð¤ÑÐ½ÐºÑÐ¸Ñ Ð´Ð»Ñ Ð¿Ð¾Ð»ÑÑÐµÐ½Ð¸Ñ ÑÐ»ÑÑÐ°Ð¹Ð½Ð¾Ð¹ ÑÐ¸ÑÐ°ÑÑ Ð¸Ð· ÑÐ°Ð¹Ð»Ð°
+
 function getRandomQuoteFromFile() {
   const quotesPath = join(__dirname, 'quotes');
   const files = fs.readdirSync(quotesPath);
@@ -375,11 +368,8 @@ function getRandomQuoteFromFile() {
   }, {});
   const highlights = lines.slice(highlightsIndex + 1);
   const randomHighlight = highlights[Math.floor(Math.random() * highlights.length)];
-
-  // ÐÐ°ÑÐ¾Ð´Ð¸Ð¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ Ð´Ð»Ð¸Ð½Ð½Ð¾Ðµ ÑÐ¸ÑÐµ Ð¸ Ð¾Ð±ÑÐµÐ·Ð°ÐµÐ¼ ÑÑÑÐ¾ÐºÑ Ð¿Ð¾ÑÐ»Ðµ Ð½ÐµÐ³Ð¾
   const lastLongDashIndex = randomHighlight.lastIndexOf('â');
   const quote = randomHighlight.slice(0, lastLongDashIndex);
-
   const [location] = randomHighlight.slice(lastLongDashIndex + 1).split(' â ');
   const bookTitle = metadata.title;
   const author = metadata.author;
@@ -390,13 +380,9 @@ function getRandomQuoteFromFile() {
   };
 }
 
-// ÐÐ±ÑÐ°Ð±Ð¾ÑÑÐ¸Ðº GET Ð·Ð°Ð¿ÑÐ¾ÑÐ° Ðº /api/quote
 app.get('/api/quote', (req, res) => {
-  const currentDate = new Date().toISOString().split('T')[0]; // Ð¢ÐµÐºÑÑÐ°Ñ Ð´Ð°ÑÐ°
-
-  // ÐÑÐ¾Ð²ÐµÑÑÐµÐ¼, Ð¿ÑÐ¾ÑÐµÐ» Ð»Ð¸ ÑÐ¶Ðµ Ð´ÐµÐ½Ñ Ñ Ð¼Ð¾Ð¼ÐµÐ½ÑÐ° Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ ÑÐ¸ÑÐ°ÑÑ
+  const currentDate = new Date().toISOString().split('T')[0]; 
   if (currentDate !== lastUpdateDate) {
-    // ÐÑÐ±Ð¸ÑÐ°ÐµÐ¼ Ð½Ð¾Ð²ÑÑ ÑÐ¸ÑÐ°ÑÑ
     let processedQuote;
     let words;
     let newBookTitle;
@@ -405,18 +391,16 @@ app.get('/api/quote', (req, res) => {
       const { quote, bookTitle: bTitle, author: aName } = getRandomQuoteFromFile();
       newBookTitle  = bTitle;
       newAuthor  = aName;
-      processedQuote = quote.replace(/â location:.*$/, '');
+      processedQuote = quote.replace(/—.*$/, '');
       words = processedQuote.split(/\s+/).filter(word => word !== '');
-    } while (words.length < 3 || words.length > 200);
+    } while (words.length < 3 || words.length > 250);
 
-    // Ð¤Ð¾ÑÐ¼Ð°ÑÐ¸ÑÑÐµÐ¼ ÑÐ¸ÑÐ°ÑÑ Ð² ÑÐ¾ÑÐ¼Ð°ÑÐµ Markdown
     lastQuote = `${processedQuote}`;
     bookTitle = newBookTitle;
     author = newAuthor;
-    lastUpdateDate = currentDate; // ÐÐ±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð´Ð°ÑÑ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ
+    lastUpdateDate = currentDate;
   }
 
-  // ÐÑÐ¿ÑÐ°Ð²Ð»ÑÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÑÑ Ð²ÑÐ±ÑÐ°Ð½Ð½ÑÑ ÑÐ¸ÑÐ°ÑÑ ÐºÐ°Ðº Ð¾ÑÐ²ÐµÑ Ð½Ð° Ð·Ð°Ð¿ÑÐ¾Ñ
   res.json({ quote: lastQuote, bookTitle, author });
 });
 

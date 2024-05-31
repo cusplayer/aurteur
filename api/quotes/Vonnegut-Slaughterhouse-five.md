@@ -1,7 +1,7 @@
 ---
 kindle-sync:
   bookId: '64627'
-  title: 'Slaughterhouse-five: or, The children''s crusade, a duty-dance with death'
+  title: 'Slaughterhouse-five'
   author: Kurt Vonnegut
   highlightsCount: 17
 ---

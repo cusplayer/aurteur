@@ -6,7 +6,7 @@ const Quote = () =>  {
   const [author, setAuthor] = useState('');
   const [bookTitle, setBookTitle] = useState('');
   useEffect(() => {
-    axios.get('/api/quote')
+    axios.get('http://localhost:5000/api/quote')
       .then(response => {
         const data = response.data;
         setQuote(data.quote);

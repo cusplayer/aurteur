@@ -1,7 +1,7 @@
 ---
 kindle-sync:
   bookId: '14484'
-  title: 'Dune: The inspiration for the blockbuster film (The Dune Sequence Book 1)'
+  title: 'Dune'
   author: Frank Herbert
   asin: B004KA9UXO
   lastAnnotatedDate: '2022-05-07'

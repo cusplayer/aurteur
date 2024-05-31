@@ -2,8 +2,7 @@
 kindle-sync:
   bookId: '33870'
   title: >-
-    Fahrenheit 451: The gripping and inspiring classic of dystopian science
-    fiction
+    Fahrenheit 451
   author: Ray Bradbury
   asin: B00BAJ6GL2
   lastAnnotatedDate: '2018-06-03'
