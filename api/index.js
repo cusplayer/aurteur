@@ -88,7 +88,6 @@ app.get('/api/callback', async (req, res) => {
       }
     );
 
-
     await kv.set('userAccessToken', response.data.access_token);
     await kv.set('refreshToken', response.data.refresh_token);
     console.log('refreshed refreshtoken:', response.data.refresh_token);
@@ -246,6 +245,7 @@ app.get('/api/token_refresher', async (req, res) => {
   
     // await kv.set('accessToken', response.data.access_token);
     console.log('refreshed token:', response.data.access_token)
+    res.redirect('/.');
   } catch (error) {
       console.error('Error refreshing tokens:', error);
   }

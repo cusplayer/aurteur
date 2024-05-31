@@ -8,8 +8,7 @@ import {
   FocusableGroup
 } from '@arrow-navigation/react'
 
-initArrowNavigation()
-
+initArrowNavigation();
 
 function App() {
   const [trackInfo, setTrackInfo] = useState({});
@@ -45,7 +44,6 @@ function App() {
         }
       }
     }
-
     fetchTrackInfo();
 
     return () => {
