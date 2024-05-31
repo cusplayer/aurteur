@@ -4,7 +4,8 @@ import axios from 'axios';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'
 import moment from 'moment';
-import Skeleton from 'react-loading-skeleton';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const ArticleContent = ({ fileName }) => {
   const [metadata, setMetadata] = useState(null);
@@ -12,11 +13,14 @@ const ArticleContent = ({ fileName }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/articles/${fileName}`)
+    setLoading(true);
+    axios.get(`/api/articles/${fileName}`)
       .then(response => {
-        setMetadata(response.data.metadata);
-        setContent(response.data.content);
-        setLoading(false);
+        setTimeout(() => {
+          setMetadata(response.data.metadata);
+          setContent(response.data.content);
+          setLoading(false);
+        }, 3000);
       })
       .catch(error => {
         console.error('Error fetching article content:', error);
@@ -27,22 +31,35 @@ const ArticleContent = ({ fileName }) => {
   return (
     <div className="article-box">
       <h1>{fileName.split('.').slice(0, -1).join('.')}</h1>
-      <Markdown>---</Markdown>
-      {loading ? (
-        <Skeleton count={5} />
-      ) : (
-        metadata && (
+      <hr />
+      <SkeletonTheme baseColor="#F8F8FF" highlightColor="#000" width = "256px" borderRadius="2px">
+        {loading ? (
           <div className="article-metadata">
-            <h1>{metadata.title}</h1>
-            <p>Folder: {metadata.folder}</p>
-            <p>Tags: {metadata.tags.map(tag => `#${tag}`).join(' ')}</p>
-            <p>Date: {moment(metadata.date).format('DD/MM/YYYY')}</p>
+            <div className="article-metadata-skeleton"><Skeleton width={224} height={18.66} /></div>
+            <div className="article-metadata-skeleton"><Skeleton width={336} height={18.67} /></div>
+            <div className="article-metadata-skeleton"><Skeleton width={152} height={18.67} /></div>
           </div>
-        )
-      )}
-      <div className="article-content">
-        {loading ? <Skeleton count={10} /> : <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>}
-      </div>
+        ) : (
+          metadata && (
+            <div className="article-metadata">
+              <h1>{metadata.title}</h1>
+              <p>Folder: {metadata.folder}</p>
+              <p>Tags: {metadata.tags.map(tag => `#${tag}`).join(' ')}</p>
+              <p>Date: {moment(metadata.date).format('DD/MM/YYYY')}</p>
+            </div>
+          )
+        )}
+      </SkeletonTheme>
+      <hr />
+      <SkeletonTheme baseColor="#F8F8FF" highlightColor="#000" borderRadius="2px">
+        <div className="article-content">
+          {loading ? (
+            <div className="article-content-skeleton"><Skeleton height={336} /></div>
+          ) : (
+            <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
+          )}
+        </div>
+      </SkeletonTheme>
     </div>
   );
 };

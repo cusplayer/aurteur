@@ -20,7 +20,7 @@ const Menu = () => {
 
   useEffect(() => {
     // Запрос на сервер для получения списка статей
-    axios.get('http://localhost:5000/api/articles')
+    axios.get('/api/articles')
       .then(response => {
         if (Array.isArray(response.data)) {
           const allFolders = [...new Set(response.data.map(article => article.folder || 'feed'))]; // Получаем уникальные значения папок из статей
