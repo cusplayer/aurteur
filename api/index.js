@@ -132,6 +132,8 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
   });
 });
 
+notifyClients(trackInfo);
+
 function notifyClients(trackInfo) {
   longPollingClients.forEach(client => {
     client.json(trackInfo);
