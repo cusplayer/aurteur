@@ -270,7 +270,7 @@ function splitArticleData(fileName, data) {
       metadata['date'] = new Date(metadata.date);
     }
 
-    const content = lines.slice(metadataLines.length + 1).join('\n');
+    const content = lines.slice(metadataLines.length + 2).join('\n');
 
     return { metadata, content };
   } catch (error) {
