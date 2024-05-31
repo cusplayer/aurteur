@@ -219,11 +219,10 @@ app.get('/api/token_refresher', async (req, res) => {
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
+          // 'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
           },
       }
     );
-    console.log('id and secret:', CLIENT_ID, CLIENT_SECRET);
       console.log('refresh response:', response.data);
       await kv.set('userAccessToken', response.data.access_token);
       await kv.set('refreshToken', response.data.refresh_token);
