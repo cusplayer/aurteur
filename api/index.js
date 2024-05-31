@@ -42,8 +42,6 @@ async function authorize() {
 
     await kv.set('accessToken', response.data.access_token);
     accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
-
-    console.log('Access token:', accessToken);
   } catch (error) {
     console.error('Error during authorization:', error);
   }
@@ -77,8 +75,6 @@ app.get('/api/callback', async (req, res) => {
         grant_type: 'authorization_code',
         code: code,
         redirect_uri: REDIRECT_URI,
-        // client_id: CLIENT_ID,
-        // client_secret: CLIENT_SECRET,
       }),
       {
         headers: {
@@ -90,7 +86,6 @@ app.get('/api/callback', async (req, res) => {
 
     await kv.set('userAccessToken', response.data.access_token);
     await kv.set('refreshToken', response.data.refresh_token);
-    console.log('refreshed refreshtoken:', response.data.refresh_token);
     // userAccessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
     res.redirect('/.');
   } catch (error) {
@@ -148,20 +143,14 @@ let nowPlaying = false;
 
 async function fetchCurrentTrack() {
   try {
-    // await updateAccessToken();
     const userAccessToken = await kv.get('userAccessToken');
-    console.log('Before fetching current track, userAccessToken:', userAccessToken);
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
         Authorization: `Bearer ${userAccessToken}`,
       },
     });
-
-    console.log('Response on fetching:', response.data,);
     if (response.data && response.data.item) {
       nowPlaying = response.data.is_playing;
-      console.log('Current track:', response.data.item.name);
-      console.log('After fetching current track, userAccessToken:', userAccessToken);
       return response.data.item;
     } else {
       nowPlaying = false;
@@ -170,14 +159,12 @@ async function fetchCurrentTrack() {
   } catch (error) {
     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
     nowPlaying = false;
-    console.log('After fetching current track error, userAccessToken:', userAccessToken);
     return null;
   }
 }
 
 function trackChanges(res) {
   const intervalId = setInterval(async () => {
-    // await updateAccessToken();
     const newTrack = await fetchCurrentTrack();
     if (newTrack && (currentTrackId !== newTrack.id) && nowPlaying === true) {
       currentTrackId = newTrack.id;
@@ -204,17 +191,12 @@ function trackChanges(res) {
 
 app.get('/api/token_refresher', async (req, res) => {
   // this code is so fucking wacky
-  // if (!refreshToken) {
-  //   console.error('Refresh token is missing');
-  //   return;
-  //   }
   try {
     const refreshToken = await kv.get('refreshToken');
     console.log('kved refreshtoken:', refreshToken);
     const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
-      // client_id: CLIENT_ID,
       }), 
       {
         headers: {
@@ -223,28 +205,7 @@ app.get('/api/token_refresher', async (req, res) => {
           },
       }
     );
-      console.log('refresh response:', response.data);
-      await kv.set('userAccessToken', response.data.access_token);
-      // await kv.set('refreshToken', response.data.refresh_token);
-      // console.log('refreshed refreshtoken:', response.data.refresh_token);
-    
-    
-    //   const response = await axios.post(
-    //   'https://accounts.spotify.com/api/token',
-    //   qs.stringify({
-    //     grant_type: 'client_credentials',
-    //     client_id: CLIENT_ID,
-    //     client_secret: CLIENT_SECRET,
-    //   }),
-    //   {
-    //     headers: {
-    //       'Content-Type': 'application/x-www-form-urlencoded',
-    //     },
-    //   }
-    //   );
-  
-    // await kv.set('accessToken', response.data.access_token);
-    console.log('refreshed token:', response.data.access_token)
+    await kv.set('userAccessToken', response.data.access_token);
     res.redirect('/.');
   } catch (error) {
       console.error('Error refreshing tokens:', error);

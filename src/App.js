@@ -15,9 +15,13 @@ function App() {
   const [isPlaying, setIsPlaying] = useState({});
 
   useEffect(() => {
-    let isMounted = false;
-
+    let isMounted = true; // Set isMounted to true here
+  
     async function fetchTrackInfo() {
+      if (!isMounted) {
+        return;
+      }
+  
       try {
         const response = await axios.get('/api/long-polling');
         if (response.data) {
@@ -28,12 +32,10 @@ function App() {
           } else {
             setTrackInfo({});
           }
-          isMounted = true;
         }
       } catch (error) {
         if (error.response && error.response.status === 204) {
           // No content, no changes detected
-          isMounted = true;
           console.log('No changes in the current track');
         } else {
           console.error('Error fetching current track:', error.response?.data || error.message);
@@ -44,10 +46,11 @@ function App() {
         }
       }
     }
+  
     fetchTrackInfo();
-
+  
     return () => {
-      isMounted = false;
+      isMounted = false; // Set isMounted to false when the component is unmounted
     };
   }, []);
 
