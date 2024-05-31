@@ -41,20 +41,20 @@ async function authorize() {
     );
 
     await kv.set('accessToken', response.data.access_token);
-    accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
+    // accessTokenExpiresAt = new Date().getTime() + response.data.expires_in * 1000;
   } catch (error) {
     console.error('Error during authorization:', error);
   }
 }
 
 // Middleware for checking access token
-async function checkAccessToken(req, res, next) {
-  if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
-    authorize().then(() => next());
-  } else {
-    next();
-  }
-}
+// async function checkAccessToken(req, res, next) {
+//   if (!accessToken || new Date().getTime() >= accessTokenExpiresAt) {
+//     authorize().then(() => next());
+//   } else {
+//     next();
+//   }
+// }
 
 app.get('/api/login', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${qs.stringify({
@@ -94,7 +94,7 @@ app.get('/api/callback', async (req, res) => {
   }
 });
 
-app.get('/api/current-track', checkAccessToken, async (req, res) => {
+app.get('/api/current-track', async (req, res) => {
   try {
     const userAccessToken = await kv.get('userAccessToken');
     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -121,7 +121,7 @@ app.get('/api/current-track', checkAccessToken, async (req, res) => {
 
 let longPollingClients = [];
 
-app.get('/api/long-polling', checkAccessToken, async (req, res) => {
+app.get('/api/long-polling', async (req, res) => {
   trackChanges(res);
   const client = res;
   longPollingClients.push(client);
@@ -190,6 +190,7 @@ function trackChanges(res) {
 app.get('/api/token_refresher', async (req, res) => {
   // this code is so fucking wacky
   try {
+    authorize()
     const refreshToken = await kv.get('refreshToken');
     console.log('kved refreshtoken:', refreshToken);
     const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify({
