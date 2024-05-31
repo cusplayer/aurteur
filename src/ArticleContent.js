@@ -16,9 +16,11 @@ const ArticleContent = ({ fileName }) => {
     setLoading(true);
     axios.get(`/api/articles/${fileName}`)
       .then(response => {
-        setMetadata(response.data.metadata);
-        setContent(response.data.content);
-        setLoading(false);
+        setTimeout(() => {
+          setMetadata(response.data.metadata);
+          setContent(response.data.content);
+          setLoading(false);
+        }, 500);
       })
       .catch(error => {
         console.error('Error fetching article content:', error);
