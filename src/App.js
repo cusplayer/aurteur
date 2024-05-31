@@ -16,7 +16,7 @@ function App() {
 
   useEffect(() => {
     let isMounted = true; // Set isMounted to true here
-  
+    
     async function fetchTrackInfo() {
       if (!isMounted) {
         return;
@@ -46,14 +46,32 @@ function App() {
         }
       }
     }
-  
-    fetchTrackInfo();
-  
     return () => {
       isMounted = false; // Set isMounted to false when the component is unmounted
     };
   }, []);
+  
+  useEffect(() => {
+    async function fetchInitialTrackInfo() {
+      try {
+        const response = await axios.get('/api/current-track');
+        if (response.data) {
+          const { name, album, artist, is_playing } = response.data;
+          setIsPlaying(is_playing);
+          if (is_playing) {
+            setTrackInfo({ name, album, artist });
+          } else {
+            setTrackInfo({});
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching initial track:', error.response?.data || error.message);
+      }
+    }
 
+    fetchInitialTrackInfo();
+    fetchTrackInfo();
+  }, []);
 
   return (
     <div className="main-page">

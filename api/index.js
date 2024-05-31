@@ -94,32 +94,30 @@ app.get('/api/callback', async (req, res) => {
   }
 });
 
-// app.get('/api/current-track', checkAccessToken, async (req, res) => {
-//   try {
-//     const userAccessToken = await kv.get('userAccessToken');
-//     const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-//       headers: {
-//         Authorization: `Bearer ${userAccessToken}`,
-//       },
-//     });
-//     if (response.data && response.data.item) {
-//       const currentTrack = response.data.item;
-//       currentTrackId = currentTrack.id;
-//       const trackInfo = {
-//         name: currentTrack.name,
-//         album: currentTrack.album.name,
-//         artist: currentTrack.artists[0].name,
-//         is_playing: response.data.is_playing,
-//       };
-//       res.json(trackInfo);
-//     } else {
-//       res.status(204).send(); // No Content
-//     }
-//   } catch (error) {
-//     console.error('Error fetching current track:', error.response ? error.response.data : error.message);
-//     res.status(500).json({ error: 'Error fetching current track' });
-//   }
-// });
+app.get('/api/current-track', checkAccessToken, async (req, res) => {
+  try {
+    const userAccessToken = await kv.get('userAccessToken');
+    const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: {
+        Authorization: `Bearer ${userAccessToken}`,
+      },
+    });
+    if (response.data && response.data.item) {
+      const currentTrack = response.data.item;
+      currentTrackId = currentTrack.id;
+      const trackInfo = {
+        name: currentTrack.name,
+        album: currentTrack.album.name,
+        artist: currentTrack.artists[0].name,
+        is_playing: response.data.is_playing,
+      };
+      res.json(trackInfo);
+    }
+  } catch (error) {
+    console.error('Error fetching current track:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Error fetching current track' });
+  }
+});
 
 let longPollingClients = [];
 
@@ -131,8 +129,6 @@ app.get('/api/long-polling', checkAccessToken, async (req, res) => {
     longPollingClients = longPollingClients.filter(c => c !== client);
   });
 });
-
-notifyClients(trackInfo);
 
 function notifyClients(trackInfo) {
   longPollingClients.forEach(client => {
