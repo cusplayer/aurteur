@@ -220,13 +220,14 @@ app.get('/api/token_refresher', async (req, res) => {
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
           },
       }
     );
       console.log('refresh response:', response.data);
       await kv.set('userAccessToken', response.data.access_token);
       // await kv.set('refreshToken', response.data.refresh_token);
-      console.log('refreshed refreshtoken:', response.data.refresh_token);
+      // console.log('refreshed refreshtoken:', response.data.refresh_token);
     
     
     //   const response = await axios.post(
