@@ -22,8 +22,6 @@ let accessTokenExpiresAt = null;
 let currentTrack = null;
 let currentTrackId = null;
 
-authorize();
-
 async function authorize() {
   try {
     const response = await axios.post(
