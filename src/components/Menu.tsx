@@ -1,0 +1,25 @@
+import React, { useState, useEffect } from 'react';
+import { FolderName } from '../types/types';
+import { MenuItem } from 'components';
+
+interface MenuProps {
+  folderNames: FolderName[];
+  selectedFolder: FolderName | null;
+  onMenuItemClick: (folder: FolderName) => void;
+}
+
+export const Menu: React.FC<MenuProps> = ({
+  folderNames,
+  selectedFolder,
+  onMenuItemClick,
+}) => {
+  return (
+    <div>
+      <ul>
+        {folderNames.map((folder) => (
+          <MenuItem folder={folder} key={folder} selectedFolder={selectedFolder} onClick={() => onMenuItemClick(folder)} />
+        ))}
+      </ul>
+    </div>
+  );
+};
