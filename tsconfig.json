@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,7 +22,8 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
-      "components/*": ["components/*"]
+      "components/*": ["components/*"],
+      "api/*": ["api/*"]
     }
   },
   "include": ["src"],

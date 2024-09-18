@@ -14,7 +14,7 @@ export const getAllArticles = (): Article[] => {
 
     const { data, content } = matter(fileContents);
 
-    const title = data.fileName;
+    const title = data.title || fileName.replace('.md', '');
     const folder = data.folder || 'feed';
     const tags = data.tags ? data.tags.map((tag: string) => tag.trim()) : [];
     const date = data.date || '';

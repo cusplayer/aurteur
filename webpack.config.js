@@ -15,7 +15,7 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
       'components': path.resolve(__dirname, 'src/components'),
-      // 'pages': path.resolve(__dirname, 'src/pages'),
+      'api': path.resolve(__dirname, 'src/api'),
     },
   },
   module: {
@@ -29,6 +29,18 @@ module.exports = {
         enforce: 'pre',
         test: /\.js$/,
         loader: 'source-map-loader',
+      },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+            }
+          }
+        ]
       },
     ],
   },
