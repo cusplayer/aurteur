@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import * as style from './styles/app.module.css'
 import { Title, Menu, Path, SubMenu, Content } from 'components';
-import { getTextsMeta } from './apiService';
+import { getTextsMeta } from './api/apiService';
 import { FolderName, TextMeta } from './types/types';
 
 const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];

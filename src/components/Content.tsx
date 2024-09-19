@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getText } from '../apiService';
-import {Text, TextMeta} from '../types/types';
+import { getText } from '../api/apiService';
+import { Text, TextMeta } from '../types/types';
 import Markdown from 'react-markdown';
 
 interface ContentProps {
@@ -9,7 +9,7 @@ interface ContentProps {
 
 export const Content: React.FC<ContentProps> = ({selectedText}) => {
   const [text, setText] = useState<Text | null>(null);
-  const [thisTextDate, setThisTextDate] = useState<string>('f');
+  const [thisTextDate, setThisTextDate] = useState<string>('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -21,7 +21,6 @@ export const Content: React.FC<ContentProps> = ({selectedText}) => {
             setText(data);
             const formattedDate = new Date(data.date).toLocaleDateString(undefined);
             setThisTextDate(formattedDate);
-            console.log(thisTextDate);
           } else {
             // setError(`Text with title "${TextName}" not found`);
           }
