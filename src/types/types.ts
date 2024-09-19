@@ -1,12 +1,12 @@
 export type FolderName = 'feed' | 'designs' | 'ouvres' | 'contacts';
 
-export type ArticleMeta = {
+export type TextMeta = {
   title: string;
   folder: FolderName;
   tags: string[];
   date: Date;
 }
 
-export interface Article extends ArticleMeta {
+export interface Text extends TextMeta {
   content?: string;
 }

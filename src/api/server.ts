@@ -8,8 +8,8 @@ const PORT = process.env.PORT || 3005;
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/articles', allRouter);
-app.use('/api/articles', oneRouter);
+app.use('/api/Texts', allRouter);
+app.use('/api/Texts', oneRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

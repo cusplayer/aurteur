@@ -1,15 +1,15 @@
 import axios from "axios";
-import { Article, ArticleMeta } from './types/types';
+import { Text, TextMeta } from './types/types';
 
 const localhostAddress = 'http://localhost:3005'
 
-export const getArticlesMeta = async (options?: { signal?: AbortSignal }): Promise<Article[]> => {
-  const response = await axios.get(`${localhostAddress}/api/articles`, options);
+export const getTextsMeta = async (options?: { signal?: AbortSignal }): Promise<Text[]> => {
+  const response = await axios.get(`${localhostAddress}/api/Texts`, options);
   return response.data;
 };
 
-export const getArticle = async (title: string, options?: { signal?: AbortSignal }): Promise<Article | null> => {
-  const response = await axios.get<Article[]>(`${localhostAddress}/api/articles`, options);
-  const article = response.data.find((article) => article.title.toLowerCase() === title.toLowerCase());
-  return article || null;
+export const getText = async (title: string, options?: { signal?: AbortSignal }): Promise<Text | null> => {
+  const response = await axios.get<Text[]>(`${localhostAddress}/api/Texts`, options);
+  const Text = response.data.find((Text) => Text.title.toLowerCase() === title.toLowerCase());
+  return Text || null;
 };

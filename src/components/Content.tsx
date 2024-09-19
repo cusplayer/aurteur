@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { getArticle } from '../apiService';
-import {Article, ArticleMeta} from '../types/types';
+import { getText } from '../apiService';
+import {Text, TextMeta} from '../types/types';
 
 interface ContentProps {
-  selectedArticle: ArticleMeta['title'] | null;
+  selectedText: TextMeta['title'] | null;
 }
 
-export const Content: React.FC<ContentProps> = ({selectedArticle}) => {
-  const [aricle, setAricle] = useState<Article | null>(null);
+export const Content: React.FC<ContentProps> = ({selectedText}) => {
+  const [aricle, setAricle] = useState<Text | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
     const fetchAricle = async () => {
-      if (selectedArticle != null){
+      if (selectedText != null){
           try {
-          const data = await getArticle(selectedArticle, { signal: controller.signal });
+          const data = await getText(selectedText, { signal: controller.signal });
           if (data) {
             setAricle(data); // Если статья найдена, сохраняем её
           } else {
-            // setError(`Article with title "${articleName}" not found`);
+            // setError(`Text with title "${TextName}" not found`);
           }
         } catch (err) {
           if (err instanceof Error && err.name !== 'AbortError') {
-            // setError('Error fetching the article');
+            // setError('Error fetching the Text');
           }
         } finally {
           // setLoading(false); // Заканчиваем загрузку
@@ -35,10 +35,10 @@ export const Content: React.FC<ContentProps> = ({selectedArticle}) => {
     return () => {
       controller.abort();
     };
-  }, [selectedArticle]);
+  }, [selectedText]);
 
   return (
-    <div className="article-box">    
+    <div className="Text-box">    
       <p>
         {(aricle != null ? JSON.stringify(aricle)  : '')}
       </p>

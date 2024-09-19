@@ -11,8 +11,9 @@ export const Path: React.FC<PathProps> = ({selectedFolder, setSelectedFolder}) =
   useEffect(() => {
     setPathFoler(selectedFolder);
   }, [selectedFolder]);
+
   const handlePathClick = () => {
-    setSelectedFolder(null)
+    // setSelectedFolder(null)
   };
 
   return (

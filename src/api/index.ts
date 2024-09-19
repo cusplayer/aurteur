@@ -1,2 +1,2 @@
-export { allRouter, oneRouter } from './articlesRoutes';
-export { getAllArticles } from './articleParser';
+export { allRouter, oneRouter } from './TextsRoutes';
+export { getAllTexts } from './TextParser';
