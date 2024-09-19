@@ -6,7 +6,6 @@ import { getTextsMeta } from './api/apiService';
 import { FolderName, TextMeta } from './types/types';
 
 const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];
-console.log(style);
 export const App: React.FC = () => {
   const [ariclesMeta, setAriclesMeta] = useState<TextMeta[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<FolderName | null>(null);
