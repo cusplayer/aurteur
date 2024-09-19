@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import * as style from './styles/app.module.css'
 import { Title, Menu, Path, SubMenu, Content } from 'components';
 import { getTextsMeta } from './apiService';
-import { FolderName } from './types/types';
-import { Text, TextMeta } from './types/types';
+import { FolderName, TextMeta } from './types/types';
 
-const folderNames: FolderName[] = ['feed', 'designs', 'ouvres', 'contacts'];
+const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];
 console.log(style);
 export const App: React.FC = () => {
   const [ariclesMeta, setAriclesMeta] = useState<TextMeta[]>([]);
@@ -17,6 +16,7 @@ export const App: React.FC = () => {
   const handleMenuItemClick = (folder: FolderName) => {
     setSelectedFolder(folder);
     setSubMenuVisibility(true);
+    setSelectedText(null);
     setContentVisibility(false);
   };
 
@@ -46,11 +46,18 @@ export const App: React.FC = () => {
   return (
     <Router>
       <Title/>
-      <Path selectedFolder={selectedFolder} setSelectedFolder={setSelectedFolder}/>
+      <Path selectedFolder={selectedFolder} selectedText={selectedText} setSelectedFolder={setSelectedFolder}/>
       <div className={style.page}>
         <div className={style.navigationMenu}>
           <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
-          {subMenuVisibility && <SubMenu Text={ariclesMeta} selectedFolder={selectedFolder} setContentVisibility={setContentVisibility} setSelectedText={setSelectedText}/>}
+          
+          {subMenuVisibility && <SubMenu 
+          Text={ariclesMeta} 
+          selectedFolder={selectedFolder} 
+          setContentVisibility={setContentVisibility} 
+          setSelectedText={setSelectedText}
+          />}
+
         </div>
         {contentVisibility && <Content selectedText={selectedText}/>}
       </div>

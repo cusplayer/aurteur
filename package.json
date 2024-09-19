@@ -1,7 +1,7 @@
 {
   "name": "aurteur",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch src --ext ts,tsx --exec \"ts-node -r tsconfig-paths/register src/api/server.ts",
@@ -20,6 +20,7 @@
     "json-server": "^1.0.0-beta.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
     "react-router-dom": "^6.26.2",
     "typescript-plugin-css-modules": "^5.1.0"
   },

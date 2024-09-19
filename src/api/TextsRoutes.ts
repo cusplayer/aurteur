@@ -4,12 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import { Text } from '../types/types';
 
-// const router = Router();
-const TextsJsonPath = path.join(__dirname, '../../public/Texts/Texts.json');
+const TextsJsonPath = path.join(__dirname, '../../public/texts/Texts.json');
 
 export const allRouter = Router().get('/generate', (req, res) => {
   const Texts = getAllTexts();
-  const filePath = path.join(__dirname, '../../public/Texts/Texts.json');
+  const filePath = path.join(__dirname, '../../public/texts/Texts.json');
   fs.writeFileSync(filePath, JSON.stringify(Texts, null, 2));
   res.json({ message: 'Texts.json успешно создан' });
 });
@@ -24,4 +23,3 @@ export const oneRouter = Router().get('/', (req, res) => {
   res.json(Texts);
 });
 
-// export default router;

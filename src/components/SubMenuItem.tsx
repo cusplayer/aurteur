@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {Text, TextMeta} from '../types/types';
 
 interface SubMenuItemProps {

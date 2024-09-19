@@ -4,25 +4,27 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './src/index.tsx',
+  target: 'web',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',
     publicPath: '/',
   },
-  // mode: 'development',
-  // devtool: 'source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
       'components': path.resolve(__dirname, 'src/components'),
       'api': path.resolve(__dirname, 'src/api'),
     },
+    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: {
+          loader: 'ts-loader',
+        },
         exclude: /node_modules/,
       },
       {

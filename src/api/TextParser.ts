@@ -15,7 +15,7 @@ export const getAllTexts = (): Text[] => {
     const { data, content } = matter(fileContents);
 
     const title = data.title || fileName;
-    const folder = data.folder || 'feed';
+    const folder = data.folder || 'all';
     const tags = data.tags ? data.tags.map((tag: string) => tag.trim()) : [];
     const date = data.date || '';
 
