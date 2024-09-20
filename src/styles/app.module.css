@@ -1,9 +1,13 @@
-.page {
+.mainPageContainer {
   display: flex;
   flex-direction: row;
+  margin-top: 16px;
+  gap: 16px;
 }
 
 .navigationMenu {
   display: flex;
   flex-direction: row;
+  width: max-content;
+  gap: 16px;
 }

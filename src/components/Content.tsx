@@ -3,7 +3,6 @@ import { getText } from '../api/apiService';
 import { Text, TextMeta } from '../types/types';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'; 
-// rehypePlugins={[rehypeRaw]}
 
 interface ContentProps {
   selectedText: TextMeta['title'] | null;

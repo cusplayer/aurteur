@@ -12,6 +12,7 @@ export const App: React.FC = () => {
   const [subMenuVisibility, setSubMenuVisibility] = useState<boolean>(false);
   const [contentVisibility, setContentVisibility] = useState<boolean>(false);
   const [selectedText, setSelectedText] = useState<TextMeta['title'] | null>(null);
+  
   const handleMenuItemClick = (folder: FolderName) => {
     setSelectedFolder(folder);
     setSubMenuVisibility(true);
@@ -46,7 +47,7 @@ export const App: React.FC = () => {
     <Router>
       <Title/>
       <Path selectedFolder={selectedFolder} selectedText={selectedText} setSelectedFolder={setSelectedFolder}/>
-      <div className={style.page}>
+      <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
           <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
           
