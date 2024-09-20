@@ -5,3 +5,4 @@ export { Path } from './Path';
 export { SubMenu } from './SubMenu';
 export { SubMenuItem } from './SubMenuItem';
 export { Content } from './Content';
+export { AboutMe } from './AboutMe';

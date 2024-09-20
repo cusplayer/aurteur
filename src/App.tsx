@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import * as style from './styles/app.module.css'
-import { Title, Menu, Path, SubMenu, Content } from 'components';
+import { Title, Menu, Path, SubMenu, Content, AboutMe } from 'components';
 import { getTextsMeta } from './api/apiService';
 import { FolderName, TextMeta } from './types/types';
 
@@ -12,10 +12,14 @@ export const App: React.FC = () => {
   const [subMenuVisibility, setSubMenuVisibility] = useState<boolean>(false);
   const [contentVisibility, setContentVisibility] = useState<boolean>(false);
   const [selectedText, setSelectedText] = useState<TextMeta['title'] | null>(null);
-  
+
   const handleMenuItemClick = (folder: FolderName) => {
+    if (folder === 'about me') {
+      setSubMenuVisibility(false);
+    } else {
+      setSubMenuVisibility(true);
+    };
     setSelectedFolder(folder);
-    setSubMenuVisibility(true);
     setSelectedText(null);
     setContentVisibility(false);
   };
@@ -60,6 +64,7 @@ export const App: React.FC = () => {
 
         </div>
         {contentVisibility && <Content selectedText={selectedText}/>}
+        {selectedFolder === 'about me' && <AboutMe />}
       </div>
     </Router>
   );

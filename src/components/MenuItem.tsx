@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {FolderName} from '../types/types';
+import * as style from '../styles/menuItem.module.css';
 
 interface MenuItemProps {
   folder: FolderName;
@@ -11,7 +12,7 @@ interface MenuItemProps {
 export const MenuItem: React.FC<MenuItemProps> = ({folder, selectedFolder, onClick}) => {
 
   return (
-    <li className={`menu-item ${folder === selectedFolder ? 'selected' : ''}`} onClick={() => onClick(folder)}>
+    <li className={`${style.menuItem} ${folder === selectedFolder ? style.menuItemSelected : ''}`} onClick={() => onClick(folder)}>
       {selectedFolder === folder ? '> ' : ''} {folder}
     </li>
   );

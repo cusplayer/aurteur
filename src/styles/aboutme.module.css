@@ -1,0 +1,11 @@
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mainContactBox {
+  padding: 16px;
+  border: 1px solid #ccc;
+  height: min-content;
+}
