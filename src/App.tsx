@@ -14,14 +14,14 @@ export const App: React.FC = () => {
   const [selectedText, setSelectedText] = useState<TextMeta['title'] | null>(null);
 
   const handleMenuItemClick = (folder: FolderName) => {
+    setSelectedFolder(folder);
+    setSelectedText(null);
+    setContentVisibility(false);
     if (folder === 'about me') {
       setSubMenuVisibility(false);
     } else {
       setSubMenuVisibility(true);
     };
-    setSelectedFolder(folder);
-    setSelectedText(null);
-    setContentVisibility(false);
   };
 
   useEffect(() => {

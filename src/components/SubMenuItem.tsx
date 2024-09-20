@@ -15,7 +15,7 @@ export const SubMenuItem: React.FC<SubMenuItemProps> = ({Text, setContentVisibil
   };
 
   return (
-    <li className={`sub-menu-item`} onClick={subMenuClickHandler}>
+    <li className={`sub-menu-item`} onClick={subMenuClickHandler} style={{ cursor: 'pointer'}}>
       <div className="TextTitle"> {Text.title} </div>
       <div className="TextTags">{Text.tags && Text.tags.map(tag => `#${tag}`).join(' ')}</div>
     </li>

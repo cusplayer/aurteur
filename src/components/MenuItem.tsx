@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {FolderName} from '../types/types';
 import * as style from '../styles/menuItem.module.css';
 
