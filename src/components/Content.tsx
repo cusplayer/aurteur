@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getText } from '../api/apiService';
 import { Text, TextMeta } from '../types/types';
 import Markdown from 'react-markdown';
-// import rehypeRaw from 'rehype-raw'; 
+import rehypeRaw from 'rehype-raw'; 
 // rehypePlugins={[rehypeRaw]}
 
 interface ContentProps {
@@ -54,7 +54,7 @@ export const Content: React.FC<ContentProps> = ({selectedText}) => {
         Folder: {text.folder} | Date: {thisTextDate} | Tags: {text.tags && text.tags.map(tag => `#${tag}`).join(', ')}
       </div>
       <div className='text-itself'>
-        <Markdown>
+        <Markdown rehypePlugins={[rehypeRaw]}>
           {text.content}
         </Markdown>
       </div>
