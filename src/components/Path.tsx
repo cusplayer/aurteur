@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { FolderName, TextMeta } from '../types/types';
 import * as style from '../styles/path.module.css';
-import { getTextsMeta, getText } from '../api/apiService';
 
 interface PathProps {
   selectedFolder: FolderName | null;
   selectedText: TextMeta['title'] | null;
+  textsMeta: TextMeta[]
   setSelectedFolder: (folder: FolderName | null) => void;
   setSelectedText: (title: TextMeta['title'] | null) => void;
 }
@@ -15,6 +15,7 @@ const PATH_PREFIX = 'aurteur/';
 export const Path: React.FC<PathProps> = ({
   selectedFolder,
   selectedText,
+  textsMeta,
   setSelectedFolder,
   setSelectedText,
 }) => {
@@ -22,7 +23,6 @@ export const Path: React.FC<PathProps> = ({
   const [pathText, setPathText] = useState<TextMeta['title'] | null>(selectedText);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [textsMeta, setTextsMeta] = useState<TextMeta[]>([]);
   const [searchResults, setSearchResults] = useState<TextMeta[]>([]);
   const [caretPosition, setCaretPosition] = useState<number>(0);
   const [textWidth, setTextWidth] = useState<number>(0);
@@ -36,14 +36,6 @@ export const Path: React.FC<PathProps> = ({
     () => `${pathFolder ? `${pathFolder}/` : ''}${pathText || ''}`,
     [pathFolder, pathText]
   );
-
-  useEffect(() => {
-    const fetchTextsMeta = async () => {
-      const data = await getTextsMeta();
-      setTextsMeta(data);
-    };
-    fetchTextsMeta();
-  }, []);
 
   useEffect(() => {
     setPathFolder(selectedFolder);

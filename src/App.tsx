@@ -64,7 +64,13 @@ export const App: React.FC = () => {
   return (
     <Router>
       <Title/>
-      <Path selectedFolder={selectedFolder} selectedText={selectedText} setSelectedFolder={setSelectedFolder} setSelectedText={setSelectedText}/>
+      <Path 
+        selectedFolder={selectedFolder} 
+        selectedText={selectedText} 
+        setSelectedFolder={setSelectedFolder} 
+        setSelectedText={setSelectedText}
+        textsMeta={ariclesMeta}
+      />
       <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
           <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
@@ -74,6 +80,7 @@ export const App: React.FC = () => {
           selectedFolder={selectedFolder} 
           setContentVisibility={setContentVisibility} 
           setSelectedText={setSelectedText}
+          setSelectedFolder={setSelectedFolder}
           />}
 
         </div>
