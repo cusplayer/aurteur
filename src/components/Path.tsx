@@ -102,9 +102,6 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
     updateTextWidth(caretPos);
   };
   
-  
-  
-
   const handleResultClick = async (title: string) => {
     const text = await getText(title);
     if (text) {
@@ -127,53 +124,52 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
       setSearchResults([]);
     }
   };
-
+  
   return (
     <div
-  ref={pathContainerRef}
-  className={style.pathContainer}
-  onClick={!isEditing ? handlePathClick : undefined}
->
-  {isEditing ? (
-    <div
-      className={style.searchContainer}
-      style={{ '--cursor-position': `${textWidth}px` } as React.CSSProperties}
+    ref={pathContainerRef}
+    className={style.pathContainer}
+    onClick={!isEditing ? handlePathClick : undefined}
     >
-      <span ref={pathPrefixRef} className={style.pathPrefix}>
-        {PATH_PREFIX}
-      </span>
-      <input
-        ref={inputRef}
-        type="text"
-        value={searchQuery}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleCaretPositionChange}
-        onClick={handleCaretPositionChange}
-        className={style.searchInput}
-        placeholder={pathFull || ''}
-      />
-      <span ref={textMeasureRef} className={style.textMeasure}>
-        {searchQuery.substring(0, caretPosition)}
-      </span>
-      {searchResults.length > 0 && (
-        <ul className={style.searchResults}>
-          {searchResults.map((result) => (
-            <li
-              key={result.title}
-              onClick={() => handleResultClick(result.title)}
-              className={style.searchResultItem}
-            >
-              {result.title}
-            </li>
-          ))}
-        </ul>
+      {isEditing ? (
+        <div
+          className={style.searchContainer}
+          style={{ '--cursor-position': `${textWidth}px` } as React.CSSProperties}
+        >
+          <span ref={pathPrefixRef} className={style.pathPrefix}>
+            {PATH_PREFIX}
+          </span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={searchQuery}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleCaretPositionChange}
+            onClick={handleCaretPositionChange}
+            className={style.searchInput}
+            placeholder={pathFull || ''}
+          />
+          <span ref={textMeasureRef} className={style.textMeasure}>
+            {searchQuery.substring(0, caretPosition)}
+          </span>
+          {searchResults.length > 0 && (
+            <ul className={style.searchResults}>
+              {searchResults.map((result) => (
+                <li
+                  key={result.title}
+                  onClick={() => handleResultClick(result.title)}
+                  className={style.searchResultItem}
+                >
+                  {result.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : (
+        <div className={style.pathDisplay}>{`${PATH_PREFIX}${pathFull}`}</div>
       )}
     </div>
-  ) : (
-    <div className={style.pathDisplay}>{`${PATH_PREFIX}${pathFull}`}</div>
-  )}
-</div>
-
   );
 }  
