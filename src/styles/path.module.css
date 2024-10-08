@@ -4,10 +4,11 @@
   cursor: pointer;
   transition: background-color 0.3s;
   background-color: black;
-  color: #fff;
+  color: white;
   align-items: center;
   font-family: 'Consolas', Consolas, monospace;
   padding: 6px 12px;
+  /* box-shadow: inset 0px 1px 6px rgba(0, 0, 0, 0.2), inset 0px -1px 6px rgba(0, 0, 0, 0.2); */
 }
 
 .searchContainer {
@@ -18,7 +19,7 @@
 }
 
 .pathPrefix {
-  color: #ffffff;
+  color: white;
 }
 
 .searchInput {

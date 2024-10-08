@@ -3,6 +3,7 @@ import { getText } from '../api/apiService';
 import { Text, TextMeta } from '../types/types';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'; 
+import * as style from '../styles/content.module.css';
 
 interface ContentProps {
   selectedText: TextMeta['title'] | null;
@@ -47,7 +48,7 @@ export const Content: React.FC<ContentProps> = ({selectedText}) => {
   }
 
   return (
-    <div className="text-box">
+    <div className={style.text_box}>
       <h2 className="text-title"> {text.title.replace('.md', '')} </h2>
       <div className='text-meta'>
         Folder: {text.folder} | Date: {thisTextDate} | Tags: {text.tags && text.tags.map(tag => `#${tag}`).join(', ')}

@@ -74,15 +74,15 @@ export const App: React.FC = () => {
       <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
           <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
-          
-          {subMenuVisibility && <SubMenu 
-          Text={ariclesMeta} 
-          selectedFolder={selectedFolder} 
-          setContentVisibility={setContentVisibility} 
-          setSelectedText={setSelectedText}
-          setSelectedFolder={setSelectedFolder}
-          />}
-
+          {subMenuVisibility && 
+            <SubMenu 
+            Text={ariclesMeta} 
+            selectedFolder={selectedFolder} 
+            setContentVisibility={setContentVisibility} 
+            setSelectedText={setSelectedText}
+            setSelectedFolder={setSelectedFolder}
+            />
+          }
         </div>
         {contentVisibility && <Content selectedText={selectedText}/>}
         {selectedFolder === 'about me' && <AboutMe />}
