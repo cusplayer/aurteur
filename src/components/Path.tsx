@@ -10,20 +10,40 @@ interface PathProps {
   setSelectedText: (title: TextMeta['title'] | null) => void;
 }
 
-export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSelectedFolder, setSelectedText }) => {
-  const [pathFolder, setPathFolder] = useState<FolderName | null>(null);
-  const [pathText, setPathText] = useState<TextMeta['title'] | null>(null);
+const PATH_PREFIX = 'aurteur/';
+
+export const Path: React.FC<PathProps> = ({
+  selectedFolder,
+  selectedText,
+  setSelectedFolder,
+  setSelectedText,
+}) => {
+  const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
+  const [pathText, setPathText] = useState<TextMeta['title'] | null>(selectedText);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [textsMeta, setTextsMeta] = useState<TextMeta[]>([]);
   const [searchResults, setSearchResults] = useState<TextMeta[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const pathContainerRef = useRef<HTMLDivElement>(null);
-  const PATH_PREFIX = 'aurteur/';
   const [caretPosition, setCaretPosition] = useState<number>(0);
   const [textWidth, setTextWidth] = useState<number>(0);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const pathContainerRef = useRef<HTMLDivElement>(null);
   const textMeasureRef = useRef<HTMLSpanElement>(null);
   const pathPrefixRef = useRef<HTMLSpanElement>(null);
-  const pathFull = useMemo(() => `${(pathFolder != null ? pathFolder + '/' : '')}${(pathText != null ? pathText : '')}`, [pathFolder, pathText])
+
+  const pathFull = useMemo(
+    () => `${pathFolder ? `${pathFolder}/` : ''}${pathText || ''}`,
+    [pathFolder, pathText]
+  );
+
+  useEffect(() => {
+    const fetchTextsMeta = async () => {
+      const data = await getTextsMeta();
+      setTextsMeta(data);
+    };
+    fetchTextsMeta();
+  }, []);
 
   useEffect(() => {
     setPathFolder(selectedFolder);
@@ -31,9 +51,19 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
   }, [selectedFolder, selectedText]);
 
   useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+      const caretPos = inputRef.current?.selectionStart || 0;
+      setCaretPosition(caretPos);
+      updateTextWidth(caretPos);
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (!isEditing) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        isEditing &&
         pathContainerRef.current &&
         !pathContainerRef.current.contains(event.target as Node)
       ) {
@@ -49,61 +79,41 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
     };
   }, [isEditing]);
 
-  const handlePathClick = () => {
-    setIsEditing(true);
-    setTimeout(() => {
-      inputRef.current?.focus();
-      const caretPos = inputRef.current?.selectionStart || 0;
-      setCaretPosition(caretPos);
-      updateTextWidth(caretPos);
-    }, 0);
-  };
-  
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      const results = textsMeta.filter((text) =>
+        text.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, textsMeta]);
 
-  const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePathClick = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target;
     const query = input.value;
     setSearchQuery(query);
     const caretPos = input.selectionStart || 0;
     setCaretPosition(caretPos);
-  
     updateTextWidth(caretPos);
-  
-    if (query.length > 0) {
-      const textsMeta = await getTextsMeta();
-      setSearchResults(
-        textsMeta.filter((text) =>
-          text.title.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    } else {
-      setSearchResults([]);
-    }
   };
 
-  const updateTextWidth = (caretPos: number) => {
-    if (textMeasureRef.current && pathPrefixRef.current) {
-      const textBeforeCaret = searchQuery.substring(0, caretPos);
-      textMeasureRef.current.textContent = textBeforeCaret;
-  
-      const textWidth = textMeasureRef.current.offsetWidth;
-      const prefixWidth = pathPrefixRef.current.offsetWidth;
-  
-      setTextWidth(textWidth + prefixWidth);
-    }
-  };
-
-  const handleCaretPositionChange = (
-    event: React.SyntheticEvent<HTMLInputElement>
-  ) => {
+  const handleCaretPositionChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
     const caretPos = input.selectionStart || 0;
     setCaretPosition(caretPos);
     updateTextWidth(caretPos);
   };
-  
-  const handleResultClick = async (title: string) => {
-    const text = await getText(title);
+
+  const handleResultClick = (title: string) => {
+    const text = textsMeta.find((text) => text.title === title);
     if (text) {
       setPathFolder(text.folder);
       setPathText(text.title);
@@ -124,12 +134,22 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
       setSearchResults([]);
     }
   };
-  
+
+  const updateTextWidth = (caretPos: number) => {
+    if (textMeasureRef.current && pathPrefixRef.current) {
+      const textBeforeCaret = searchQuery.substring(0, caretPos);
+      textMeasureRef.current.textContent = textBeforeCaret;
+      const textWidth = textMeasureRef.current.offsetWidth;
+      const prefixWidth = pathPrefixRef.current.offsetWidth;
+      setTextWidth(textWidth + prefixWidth);
+    }
+  };
+
   return (
     <div
-    ref={pathContainerRef}
-    className={style.pathContainer}
-    onClick={!isEditing ? handlePathClick : undefined}
+      ref={pathContainerRef}
+      className={style.pathContainer}
+      onClick={!isEditing ? handlePathClick : undefined}
     >
       {isEditing ? (
         <div
@@ -148,7 +168,7 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
             onKeyUp={handleCaretPositionChange}
             onClick={handleCaretPositionChange}
             className={style.searchInput}
-            placeholder={pathFull || ''}
+            placeholder={pathFull}
           />
           <span ref={textMeasureRef} className={style.textMeasure}>
             {searchQuery.substring(0, caretPosition)}
@@ -172,4 +192,4 @@ export const Path: React.FC<PathProps> = ({ selectedFolder, selectedText, setSel
       )}
     </div>
   );
-}  
+};

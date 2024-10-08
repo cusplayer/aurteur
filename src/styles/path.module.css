@@ -7,7 +7,7 @@
   color: #fff;
   align-items: center;
   font-family: 'Consolas', Consolas, monospace;
-  padding: 4px 12px;
+  padding: 6px 12px;
 }
 
 .searchContainer {
@@ -51,7 +51,13 @@
   0% {
     opacity: 1;
   }
+  49% {
+    opacity: 1;
+  }
   50% {
+    opacity: 0;
+  }
+  99% {
     opacity: 0;
   }
   100% {
