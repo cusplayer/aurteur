@@ -1,7 +1,13 @@
+body{
+  padding: 0px;
+  margin: 0px;
+  font-family: 'Courier Prime', Courier, monospace;
+}
+
 .mainPageContainer {
   display: flex;
   flex-direction: row;
-  margin-top: 16px;
+  margin: 12px 12px 12px 12px;
   gap: 16px;
 }
 

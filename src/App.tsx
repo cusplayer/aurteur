@@ -47,10 +47,24 @@ export const App: React.FC = () => {
     };
   }, []);
 
+
+    useEffect(() => {
+      if (selectedText) {
+        setContentVisibility(true);
+      }
+    }, [selectedText]);
+
+
+    useEffect(() => {
+      if (selectedFolder && selectedFolder != 'about me') {
+        setSubMenuVisibility(true);
+      }
+    }, [selectedFolder]);
+
   return (
     <Router>
       <Title/>
-      <Path selectedFolder={selectedFolder} selectedText={selectedText} setSelectedFolder={setSelectedFolder}/>
+      <Path selectedFolder={selectedFolder} selectedText={selectedText} setSelectedFolder={setSelectedFolder} setSelectedText={setSelectedText}/>
       <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
           <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
