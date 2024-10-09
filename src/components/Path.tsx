@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { FolderName, TextMeta } from '../types/types';
+import { useContextSelector } from 'use-context-selector';
+import { PathStateContext } from './PathStateContext';
 import * as style from '../styles/path.module.css';
-import { usePathState } from './usePathState'; 
 
 interface PathProps {
   selectedFolder: FolderName | null;
@@ -20,8 +21,12 @@ export const Path: React.FC<PathProps> = ({
   setSelectedFolder,
   setSelectedText,
 }) => {
+  const pathFolder = useContextSelector(PathStateContext, (context) => context?.pathFolder);
+  const setPathFolder = useContextSelector(PathStateContext, (context) => context?.setPathFolder);
+  if (typeof pathFolder === 'undefined' || typeof setPathFolder === 'undefined') {
+    throw new Error('Path must be used within a PathStateProvider');
+  }
   // const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
-  const { pathFolder, setPathFolder } = usePathState();
   const [pathText, setPathText] = useState<TextMeta['title'] | null>(selectedText);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,8 +46,11 @@ export const Path: React.FC<PathProps> = ({
 
   useEffect(() => {
     setPathFolder(selectedFolder);
+  }, [selectedFolder]);
+
+  useEffect(() =>{
     setPathText(selectedText);
-  }, [selectedFolder, selectedText]);
+  }, [selectedText])
 
   useEffect(() => {
     if (isEditing) {

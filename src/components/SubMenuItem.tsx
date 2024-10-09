@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import {Text, TextMeta} from '../types/types';
-import { usePathState } from './usePathState'; 
+import { useContextSelector } from 'use-context-selector';
+import { PathStateContext } from './PathStateContext';
 
 interface SubMenuItemProps {
   Text: TextMeta;
   setContentVisibility: (visible: boolean) => void;
   setSelectedText: (Text: TextMeta['title'] | null) => void;
-  setSelectedFolder: (Text: TextMeta['folder'] | null) => void;
+  // setSelectedFolder: (Text: TextMeta['folder'] | null) => void;
 }
 
-export const SubMenuItem: React.FC<SubMenuItemProps> = ({Text, setContentVisibility, setSelectedText, setSelectedFolder }) => {
+export const SubMenuItem: React.FC<SubMenuItemProps> = ({Text, setContentVisibility, setSelectedText }) => {
+  const setPathFolder = useContextSelector(PathStateContext, (context) => context?.setPathFolder);
+  if (!setPathFolder) {
+    throw new Error('SubMenuItem must be used within a PathStateProvider');
+  }
 
-  const { setPathFolder } = usePathState();
   const subMenuClickHandler = () => {
     setSelectedText(Text.title);
     setPathFolder(Text.folder);
-    console.log(Text.folder)
     setContentVisibility(true);
   };
 

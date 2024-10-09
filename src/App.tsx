@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import * as style from './styles/app.module.css'
 import { Title, Menu, Path, SubMenu, Content, AboutMe } from 'components';
+import { PathStateProvider } from './components/PathStateProvider';
 import { getTextsMeta } from './api/apiService';
 import { FolderName, TextMeta } from './types/types';
 
@@ -67,6 +68,7 @@ export const App: React.FC = () => {
         <div className={style.topContainer}>
           <Title/>
         </div>
+        <PathStateProvider>
         <Path
             selectedFolder={selectedFolder} 
             selectedText={selectedText} 
@@ -94,6 +96,7 @@ export const App: React.FC = () => {
           {contentVisibility && <Content selectedText={selectedText}/>}
           {selectedFolder === 'about me' && <AboutMe />}
         </div>
+        </PathStateProvider>
       </div>
     </Router>
   );

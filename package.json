@@ -23,7 +23,9 @@
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.26.2",
     "rehype-raw": "^7.0.0",
-    "typescript-plugin-css-modules": "^5.1.0"
+    "scheduler": "^0.23.2",
+    "typescript-plugin-css-modules": "^5.1.0",
+    "use-context-selector": "^2.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

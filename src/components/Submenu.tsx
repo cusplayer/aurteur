@@ -17,15 +17,20 @@ export const SubMenu: React.FC<SubMenuProps> = ({ Text, selectedFolder, setConte
     ? Text
     : Text.filter((text) => text.folder === selectedFolder);
 
+  const sortedTexts = filteredTexts.sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return dateB - dateA;
+  });
+
   return (
     <ul className={style.subMenuList}>
-      {filteredTexts.map((text) => (
+      {sortedTexts.map((text) => (
         <SubMenuItem
           Text={text}
           key={text.title}
           setContentVisibility={setContentVisibility}
           setSelectedText={setSelectedText}
-          setSelectedFolder={setSelectedFolder}
         />
       ))}
     </ul>
