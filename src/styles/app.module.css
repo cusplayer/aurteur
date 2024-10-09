@@ -2,13 +2,51 @@ body{
   padding: 0px;
   margin: 0px;
   font-family: 'Roboto', Roboto, sans-serif;
+  max-height: 100vh;
 }
+
+.allContainer {
+  display: flex;
+  flex-direction: column;
+  /* gap: 5vh; */
+}
+
+.topContainer {
+  display: flex;
+  position: relative;
+  align-items: center;
+  min-height: 12vh;
+  max-height: 12vh;
+  z-index: 2;
+  background-color: white;
+  margin: 0px 16px;
+  padding: 0px 4px;
+  box-shadow: 0px 0px 16px rgb(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+.terminal {
+  position: absolute;
+  width: 100%;
+  top: calc(12vh - 12px); /* Поднимаем терминал на 16 пикселей под .topContainer */
+  height: calc(100vh - 12vh - 80vh + 80px); /* Высота, покрывающая оставшееся пространство, с учетом захода под mainPageContainer */
+  z-index: 1; /* Опускаем терминал под другие контейнеры */
+  background-color: rgba(0, 0, 0, 1); /* Для примера добавляем фон */
+}
+
 
 .mainPageContainer {
   display: flex;
+  position: relative;
   flex-direction: row;
-  margin: 12px 12px 12px 12px;
+  height: 80vh;
+  background-color: white;
+  z-index: 2;
+  margin: 0px 16px;
+  padding: 4px 4px;
   gap: 16px;
+  box-shadow: 0px 0px 16px rgb(0, 0, 0, 0.25);
+  border-radius: 4px;
 }
 
 .navigationMenu {

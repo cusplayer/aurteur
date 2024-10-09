@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {FolderName} from '../types/types';
 import * as style from '../styles/menuItem.module.css';
 

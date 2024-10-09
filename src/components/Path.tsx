@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { FolderName, TextMeta } from '../types/types';
 import * as style from '../styles/path.module.css';
+import { usePathState } from './usePathState'; 
 
 interface PathProps {
   selectedFolder: FolderName | null;
@@ -19,7 +20,8 @@ export const Path: React.FC<PathProps> = ({
   setSelectedFolder,
   setSelectedText,
 }) => {
-  const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
+  // const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
+  const { pathFolder, setPathFolder } = usePathState();
   const [pathText, setPathText] = useState<TextMeta['title'] | null>(selectedText);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

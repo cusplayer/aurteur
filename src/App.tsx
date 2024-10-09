@@ -63,29 +63,37 @@ export const App: React.FC = () => {
 
   return (
     <Router>
-      <Title/>
-      <Path 
-        selectedFolder={selectedFolder} 
-        selectedText={selectedText} 
-        setSelectedFolder={setSelectedFolder} 
-        setSelectedText={setSelectedText}
-        textsMeta={ariclesMeta}
-      />
-      <div className={style.mainPageContainer}>
-        <div className={style.navigationMenu}>
-          <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
-          {subMenuVisibility && 
-            <SubMenu 
-            Text={ariclesMeta} 
-            selectedFolder={selectedFolder} 
-            setContentVisibility={setContentVisibility} 
-            setSelectedText={setSelectedText}
-            setSelectedFolder={setSelectedFolder}
-            />
-          }
+      <div className={style.allContainer}>
+        <div className={style.topContainer}>
+          <Title/>
         </div>
-        {contentVisibility && <Content selectedText={selectedText}/>}
-        {selectedFolder === 'about me' && <AboutMe />}
+        <Path
+            selectedFolder={selectedFolder} 
+            selectedText={selectedText} 
+            setSelectedFolder={setSelectedFolder} 
+            setSelectedText={setSelectedText}
+            textsMeta={ariclesMeta}
+          />
+        <div className={style.terminal}>
+          
+        </div>
+
+        <div className={style.mainPageContainer}>
+          <div className={style.navigationMenu}>
+            <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
+            {subMenuVisibility && 
+              <SubMenu 
+              Text={ariclesMeta} 
+              selectedFolder={selectedFolder} 
+              setContentVisibility={setContentVisibility} 
+              setSelectedText={setSelectedText}
+              setSelectedFolder={setSelectedFolder}
+              />
+            }
+          </div>
+          {contentVisibility && <Content selectedText={selectedText}/>}
+          {selectedFolder === 'about me' && <AboutMe />}
+        </div>
       </div>
     </Router>
   );

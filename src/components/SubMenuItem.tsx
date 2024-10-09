@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {Text, TextMeta} from '../types/types';
+import { usePathState } from './usePathState'; 
 
 interface SubMenuItemProps {
   Text: TextMeta;
@@ -10,9 +11,11 @@ interface SubMenuItemProps {
 
 export const SubMenuItem: React.FC<SubMenuItemProps> = ({Text, setContentVisibility, setSelectedText, setSelectedFolder }) => {
 
+  const { setPathFolder } = usePathState();
   const subMenuClickHandler = () => {
     setSelectedText(Text.title);
-    setSelectedFolder(Text.folder);
+    setPathFolder(Text.folder);
+    console.log(Text.folder)
     setContentVisibility(true);
   };
 

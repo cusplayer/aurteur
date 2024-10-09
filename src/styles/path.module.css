@@ -1,4 +1,6 @@
 .pathContainer {
+  /* position: relative; */
+  z-index: 3;
   display: flex;
   flex-direction: row;
   cursor: pointer;
@@ -97,6 +99,7 @@
   color: #fff;
   display: inline;
 }
+
 .textMeasure {
   position: absolute;
   visibility: hidden;
