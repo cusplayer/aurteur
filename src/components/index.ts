@@ -6,3 +6,4 @@ export { SubMenu } from './SubMenu';
 export { SubMenuItem } from './SubMenuItem';
 export { Content } from './Content';
 export { AboutMe } from './AboutMe';
+export { FolderIcons } from './FolderIcons';

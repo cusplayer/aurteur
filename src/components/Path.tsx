@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { FolderName, TextMeta } from '../types/types';
 import { useContextSelector } from 'use-context-selector';
 import { PathStateContext } from './PathStateContext';
@@ -12,21 +12,28 @@ interface PathProps {
   setSelectedText: (title: TextMeta['title'] | null) => void;
 }
 
+export interface PathRef {
+  setPathFolder: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>;
+}
+
 const PATH_PREFIX = 'aurteur/';
 
-export const Path: React.FC<PathProps> = ({
+export const Path = forwardRef<PathRef, PathProps>(({
   selectedFolder,
   selectedText,
   textsMeta,
   setSelectedFolder,
   setSelectedText,
-}) => {
-  const pathFolder = useContextSelector(PathStateContext, (context) => context?.pathFolder);
-  const setPathFolder = useContextSelector(PathStateContext, (context) => context?.setPathFolder);
-  if (typeof pathFolder === 'undefined' || typeof setPathFolder === 'undefined') {
-    throw new Error('Path must be used within a PathStateProvider');
-  }
-  // const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
+}, ref) => {
+  // const pathFolder = useContextSelector(PathStateContext, (context) => context?.pathFolder);
+  // const setPathFolder = useContextSelector(PathStateContext, (context) => context?.setPathFolder);
+  // if (typeof pathFolder === 'undefined' || typeof setPathFolder === 'undefined') {
+  //   throw new Error('Path must be used within a PathStateProvider');
+  // }
+  const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
+  useImperativeHandle(ref, () => ({
+    setPathFolder,
+  }));
   const [pathText, setPathText] = useState<TextMeta['title'] | null>(selectedText);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -194,4 +201,4 @@ export const Path: React.FC<PathProps> = ({
       )}
     </div>
   );
-};
+});

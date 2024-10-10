@@ -2,10 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-// import path from 'path';
-// import HtmlWebpackPlugin from 'html-webpack-plugin';
-// import {CleanWebpackPlugin} from 'clean-webpack-plugin';
-
 module.exports = {
   entry: './src/index.tsx',
   target: 'web',
@@ -24,6 +20,19 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              icon: true,
+              exportType: 'named',
+            },
+          },
+        ],
+        exclude: /node_modules/,
+      },
       {
         test: /\.tsx?$/,
         use: {

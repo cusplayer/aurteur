@@ -1,0 +1,44 @@
+/* foldericons.module.css */
+
+.iconsContainer {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.iconImage {
+  stroke: black;
+}
+
+.icon:hover .iconImage {
+  fill: aquamarine;
+}
+
+.icon.selected .iconImage path{
+  stroke: black;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  height: 16px;
+  width: 16px;
+  color: gray;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.icon:hover {
+  /* background-color: aquamarine; */
+}
+
+.icon.selected {
+  background-color: white;
+}

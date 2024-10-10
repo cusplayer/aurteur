@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import * as style from './styles/app.module.css'
-import { Title, Menu, Path, SubMenu, Content, AboutMe } from 'components';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import * as style from './styles/app.module.css';
+import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons } from 'components';
 import { PathStateProvider } from './components/PathStateProvider';
 import { getTextsMeta } from './api/apiService';
 import { FolderName, TextMeta } from './types/types';
+import { PathRef } from './components/Path';
 
 const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];
+
 export const App: React.FC = () => {
+  const pathRef = useRef<PathRef>(null);
   const [ariclesMeta, setAriclesMeta] = useState<TextMeta[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<FolderName | null>(null);
   const [subMenuVisibility, setSubMenuVisibility] = useState<boolean>(false);
@@ -15,14 +18,22 @@ export const App: React.FC = () => {
   const [selectedText, setSelectedText] = useState<TextMeta['title'] | null>(null);
 
   const handleMenuItemClick = (folder: FolderName) => {
-    setSelectedFolder(folder);
+    if (folder === selectedFolder) {
+      setSelectedFolder(null);
+    } else {
+      setSelectedFolder(folder);
+    }
     setSelectedText(null);
     setContentVisibility(false);
-    if (folder === 'about me') {
-      setSubMenuVisibility(false);
-    } else {
-      setSubMenuVisibility(true);
-    };
+    setSubMenuVisibility(folder !== 'about me');
+  };
+
+  const handleSubMenuItemClick = (Text: TextMeta['title'], folder: FolderName | null) => {
+    if (pathRef.current) {
+      pathRef.current.setPathFolder(folder);
+    }
+    setSelectedText(Text);
+    setContentVisibility(true);
   };
 
   useEffect(() => {
@@ -34,10 +45,7 @@ export const App: React.FC = () => {
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Ошибка при загрузке:', error);
-          // setError('Ой, что-то пошло не так!');
         }
-      } finally {
-        // setLoading(false);
       }
     };
 
@@ -48,56 +56,44 @@ export const App: React.FC = () => {
     };
   }, []);
 
-
-    useEffect(() => {
-      if (selectedText) {
-        setContentVisibility(true);
-      }
-    }, [selectedText]);
-
-
-    useEffect(() => {
-      if (selectedFolder && selectedFolder != 'about me') {
-        setSubMenuVisibility(true);
-      }
-    }, [selectedFolder]);
-
   return (
     <Router>
-      <div className={style.allContainer}>
-        <div className={style.topContainer}>
-          <Title/>
-        </div>
-        <PathStateProvider>
-        <Path
-            selectedFolder={selectedFolder} 
-            selectedText={selectedText} 
-            setSelectedFolder={setSelectedFolder} 
+      <PathStateProvider>
+        <div className={style.allContainer}>
+          <div className={style.topContainer}>
+            <Title />
+          </div>
+          <Path
+            ref={pathRef}
+            selectedFolder={selectedFolder}
+            selectedText={selectedText}
+            setSelectedFolder={setSelectedFolder}
             setSelectedText={setSelectedText}
             textsMeta={ariclesMeta}
           />
-        <div className={style.terminal}>
-          
-        </div>
-
-        <div className={style.mainPageContainer}>
-          <div className={style.navigationMenu}>
-            <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick}/>
-            {subMenuVisibility && 
-              <SubMenu 
-              Text={ariclesMeta} 
-              selectedFolder={selectedFolder} 
-              setContentVisibility={setContentVisibility} 
-              setSelectedText={setSelectedText}
-              setSelectedFolder={setSelectedFolder}
-              />
-            }
+          <div className={style.terminal}>
+            <FolderIcons folderNames={folderNames} selectedFolder={selectedFolder} />
           </div>
-          {contentVisibility && <Content selectedText={selectedText}/>}
-          {selectedFolder === 'about me' && <AboutMe />}
+
+          <div className={style.mainPageContainer}>
+            <div className={style.navigationMenu}>
+              <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick} />
+              {subMenuVisibility && (
+                <SubMenu
+                  Text={ariclesMeta}
+                  selectedFolder={selectedFolder}
+                  setContentVisibility={setContentVisibility}
+                  setSelectedText={setSelectedText}
+                  setSelectedFolder={setSelectedFolder}
+                  handleSubMenuItemClick={handleSubMenuItemClick}
+                />
+              )}
+            </div>
+            {contentVisibility && <Content selectedText={selectedText} />}
+            {selectedFolder === 'about me' && <AboutMe />}
+          </div>
         </div>
-        </PathStateProvider>
-      </div>
+      </PathStateProvider>
     </Router>
   );
 };

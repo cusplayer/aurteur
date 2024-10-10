@@ -9,9 +9,10 @@ interface SubMenuProps {
   setContentVisibility: (visible: boolean) => void;
   setSelectedText: (Text: TextMeta['title'] | null) => void;
   setSelectedFolder: (Text: TextMeta['folder'] | null) => void;
+  handleSubMenuItemClick: (Text: TextMeta['title'], folder: FolderName | null) => void;
 }
 
-export const SubMenu: React.FC<SubMenuProps> = ({ Text, selectedFolder, setContentVisibility, setSelectedText, setSelectedFolder }) => {
+export const SubMenu: React.FC<SubMenuProps> = ({ Text, selectedFolder, setContentVisibility, setSelectedText, setSelectedFolder, handleSubMenuItemClick }) => {
 
   const filteredTexts = selectedFolder === 'all'
     ? Text
@@ -31,6 +32,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({ Text, selectedFolder, setConte
           key={text.title}
           setContentVisibility={setContentVisibility}
           setSelectedText={setSelectedText}
+          handleSubMenuItemClick={handleSubMenuItemClick}
         />
       ))}
     </ul>
