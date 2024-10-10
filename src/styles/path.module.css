@@ -44,10 +44,11 @@
   content: '';
   position: absolute;
   width: 9px;
-  height: 1em; 
+  height: 1.1em; 
   background-color: #fff;
+  mix-blend-mode: difference;
   animation: blinkCursor 1s steps(2, start) infinite;
-  top: 50%;
+  top: 45%;
   left: calc(var(--cursor-position, 0px));
   transform: translateY(-50%);
 }
