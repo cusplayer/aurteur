@@ -9,6 +9,8 @@ interface PathProps {
   setSelectedFolder: (folder: FolderName | null) => void;
   setSelectedText: (title: TextMeta['title'] | null) => void;
   onSetPathFolder: (setPathText: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>) => void;
+  setContentVisibility: (visible: boolean) =>void;
+  setSubMenuVisibility: (visible: boolean) =>void;
 }
 
 const PATH_PREFIX = 'aurteur/';
@@ -20,6 +22,8 @@ export const Path: React.FC<PathProps> = ({
   setSelectedFolder,
   setSelectedText,
   onSetPathFolder,
+  setContentVisibility,
+  setSubMenuVisibility,
 }) => {
   const [pathFolder, setPathFolder] = useState<TextMeta['folder'] | null>(selectedFolder);
   useEffect(() => {
@@ -118,6 +122,8 @@ export const Path: React.FC<PathProps> = ({
   const handleResultClick = (title: string) => {
     const text = textsMeta.find((text) => text.title === title);
     if (text) {
+      setContentVisibility(true);
+      setSubMenuVisibility(true);
       setPathFolder(text.folder);
       setPathText(text.title);
       setSelectedFolder(text.folder);

@@ -70,6 +70,8 @@ export const App: React.FC = () => {
           setSelectedFolder={setSelectedFolder}
           setSelectedText={setSelectedText}
           onSetPathFolder={handleSetPathFolder}
+          setSubMenuVisibility={setSubMenuVisibility}
+          setContentVisibility={setContentVisibility}
         />
         <div className={style.terminal}>
           <FolderIcons folderNames={folderNames} selectedFolder={selectedFolder} />
@@ -82,6 +84,7 @@ export const App: React.FC = () => {
               <SubMenu
                 Text={ariclesMeta}
                 selectedFolder={selectedFolder}
+                selectedText={selectedText}
                 setContentVisibility={setContentVisibility}
                 setSelectedText={setSelectedText}
                 setSelectedFolder={setSelectedFolder}
