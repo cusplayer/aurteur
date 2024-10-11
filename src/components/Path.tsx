@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { FolderName, TextMeta } from '../types/types';
-import { useContextSelector } from 'use-context-selector';
-import { PathStateContext } from './PathStateContext';
 import * as style from '../styles/path.module.css';
 
 interface PathProps {
@@ -10,30 +8,26 @@ interface PathProps {
   textsMeta: TextMeta[]
   setSelectedFolder: (folder: FolderName | null) => void;
   setSelectedText: (title: TextMeta['title'] | null) => void;
-}
-
-export interface PathRef {
-  setPathFolder: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>;
+  onSetPathFolder: (setPathText: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>) => void;
 }
 
 const PATH_PREFIX = 'aurteur/';
 
-export const Path = forwardRef<PathRef, PathProps>(({
+export const Path: React.FC<PathProps> = ({
   selectedFolder,
   selectedText,
   textsMeta,
   setSelectedFolder,
   setSelectedText,
-}, ref) => {
-  // const pathFolder = useContextSelector(PathStateContext, (context) => context?.pathFolder);
-  // const setPathFolder = useContextSelector(PathStateContext, (context) => context?.setPathFolder);
-  // if (typeof pathFolder === 'undefined' || typeof setPathFolder === 'undefined') {
-  //   throw new Error('Path must be used within a PathStateProvider');
-  // }
-  const [pathFolder, setPathFolder] = useState<FolderName | null>(selectedFolder);
-  useImperativeHandle(ref, () => ({
-    setPathFolder,
-  }));
+  onSetPathFolder,
+}) => {
+  const [pathFolder, setPathFolder] = useState<TextMeta['folder'] | null>(selectedFolder);
+  useEffect(() => {
+    if (onSetPathFolder) {
+      onSetPathFolder(setPathFolder);
+    }
+  }, [onSetPathFolder, setPathFolder]);
+
   const [pathText, setPathText] = useState<TextMeta['title'] | null>(selectedText);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -201,4 +195,4 @@ export const Path = forwardRef<PathRef, PathProps>(({
       )}
     </div>
   );
-});
+};
