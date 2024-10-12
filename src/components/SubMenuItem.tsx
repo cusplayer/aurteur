@@ -13,7 +13,9 @@ interface SubMenuItemProps {
 export const SubMenuItem: React.FC<SubMenuItemProps> = ({Text, selectedText, handleSubMenuItemClick }) => {
 
   return (
-    <li className={`${style.subMenuItem} ${Text.title === selectedText ? style.subMenuItemSelected : ''}`} onClick={() => handleSubMenuItemClick(Text.title, Text.folder)} style={{ cursor: 'pointer'}}>
+    <li className={`${style.subMenuItem} ${Text.title === selectedText ? style.subMenuItemSelected : ''}`} 
+      onClick={() => handleSubMenuItemClick(Text.title, Text.folder)} 
+      >
       <div className={style.textTitle}> {Text.title.replace('.md', '')} </div>
       <div className={style.textTags}>{Text.tags && Text.tags.map(tag => `#${tag}`).join(' ')}</div>
     </li>

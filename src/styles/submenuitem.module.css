@@ -1,5 +1,5 @@
 .subMenuItem {
-
+  cursor: pointer;
 }
 
 .subMenuItemSelected {
@@ -7,7 +7,7 @@
 }
 
 .textTitle {
-
+ 
 }
 
 .textTags {
