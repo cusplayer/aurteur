@@ -3,23 +3,21 @@ import { TextMeta } from '../types/types';
 import * as style from '../styles/path.module.css';
 
 interface PathSearchProps {
-  initialQuery: string;
   textsMeta: TextMeta[];
-  onResultSelect: (text: TextMeta) => void;
-  onCancel: () => void;
   pathPrefix: string;
   currentPath: string;
+  onResultSelect: (text: TextMeta) => void;
+  onCancel: () => void;
 }
 
 export const PathSearch: React.FC<PathSearchProps> = ({
-  initialQuery,
   textsMeta,
-  onResultSelect,
-  onCancel,
   pathPrefix,
   currentPath,
+  onResultSelect,
+  onCancel,
 }) => {
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<TextMeta[]>([]);
   const [caretPosition, setCaretPosition] = useState<number>(0);
   const [textWidth, setTextWidth] = useState<number>(0);

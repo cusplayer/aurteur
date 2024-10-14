@@ -1,15 +1,10 @@
 import fs from 'fs';
-// const fs = require('fs');
 import path from 'path';
-// const path = require('path');
 import matter from 'gray-matter';
-// const matter = require('matter');
 import { Text, TextMeta } from '../types/types';
 
 const TEXTS_DIR = path.join(__dirname, '../../public/texts');
 const OUTPUT_FILE = path.join(TEXTS_DIR, 'texts.json');
-
-// 
 
 const getAllTexts = (): Text[] => {
   const files = fs.readdirSync(TEXTS_DIR).filter((file : string) => file.endsWith('.md'));

@@ -76,7 +76,6 @@ export const Path: React.FC<PathProps> = ({
     >
       {isEditing ? (
         <PathSearch
-          initialQuery={pathText || ''}
           textsMeta={textsMeta}
           onResultSelect={handleResultSelect}
           onCancel={handleCancel}
