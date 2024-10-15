@@ -76,11 +76,11 @@ export const Path: React.FC<PathProps> = ({
     >
       {isEditing ? (
         <PathSearch
+          pathPrefix={PATH_PREFIX}
+          currentPath={pathFull}
           textsMeta={textsMeta}
           onResultSelect={handleResultSelect}
           onCancel={handleCancel}
-          pathPrefix={PATH_PREFIX}
-          currentPath={pathFull}
         />
       ) : (
         <div className={style.pathDisplay}>{`${PATH_PREFIX}${pathFull}`}</div>

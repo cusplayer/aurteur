@@ -74,7 +74,6 @@
   top: 100%;
   left: var(--prefix-width, 0px);
   background-color: #343434;
-  /* border: 1px solid #ccc; */
   border-radius: 4px;
   max-height: 200px;
   overflow-y: auto;
