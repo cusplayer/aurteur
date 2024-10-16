@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Text, TextMeta } from '../types/types';
 
-const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3005';
+const apiBaseUrl = process.env.REACT_APP_API_URL;
 
 export const getTextsMeta = async (options?: { signal?: AbortSignal }): Promise<TextMeta[]> => {
   const response = await axios.get<Text[]>(`${apiBaseUrl}/texts`, options);
