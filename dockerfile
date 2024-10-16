@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the app
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
 # Stage 2: Serve app with nginx
 FROM nginx:stable-alpine
