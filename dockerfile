@@ -13,6 +13,7 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+COPY .env.production ./
 # Accept build arguments and set environment variables.
 ARG NODE_ENV
 ARG REACT_APP_API_URL
