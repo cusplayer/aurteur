@@ -1,38 +1,38 @@
-# Use an official Node.js image as the base
+# Stage 1: Build the React app
 FROM node:18-alpine AS build
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock)
+# Copy package.json and package-lock.json
 COPY package*.json ./
-# For yarn users
-# COPY yarn.lock ./
 
 # Install dependencies
 RUN npm install
-# or
-# RUN yarn install
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the app
 RUN npm run build
-# or
-# RUN yarn build
 
-# Stage 2: Serve the app using Nginx
+# Stage 2: Serve app with nginx
 FROM nginx:stable-alpine
 
-# Copy the build output to the Nginx html directory
-COPY --from=build /app/build /usr/share/nginx/html
+# Install gettext for envsubst
+RUN apk add --no-cache gettext
 
-# Copy custom Nginx configuration if needed
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built assets from previous stage
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Remove default nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Copy custom nginx configuration template
+COPY nginx.conf /etc/nginx/conf.d/nginx.conf.template
+
+# Expose port (for documentation purposes only)
+EXPOSE 8080
+
+# Start nginx with envsubst to substitute the environment variables
+CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
