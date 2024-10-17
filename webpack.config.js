@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const Dotenv = require('dotenv');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, argv) => {
   const mode = argv.mode || 'development';
@@ -80,6 +81,11 @@ module.exports = (env, argv) => {
         template: './public/index.html',
       }),
       new webpack.DefinePlugin(envKeys),
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: 'public', to: 'public' },
+        ],
+      }),
     ],
     devServer: {
       static: {
