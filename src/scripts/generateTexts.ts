@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import chokidar from 'chokidar';
 import { Text, TextMeta } from '../types/types';
 
 const TEXTS_DIR = path.join(__dirname, '../../public/texts');
 const OUTPUT_FILE = path.join(TEXTS_DIR, 'texts.json');
 
 const getAllTexts = (): Text[] => {
-  const files = fs.readdirSync(TEXTS_DIR).filter((file : string) => file.endsWith('.md'));
+  const files = fs.readdirSync(TEXTS_DIR).filter((file: string) => file.endsWith('.md'));
 
   const texts: Text[] = files.map((fileName: string) => {
     const filePath = path.join(TEXTS_DIR, fileName);
@@ -43,3 +44,20 @@ const generateTextsJson = () => {
 };
 
 generateTextsJson();
+
+const watcher = chokidar.watch(`${TEXTS_DIR}/*.md`);
+
+watcher.on('change', (filePath) => {
+  console.log(`File ${filePath} has been changed`);
+  generateTextsJson();
+});
+
+watcher.on('add', (filePath) => {
+  console.log(`File ${filePath} has been added`);
+  generateTextsJson();
+});
+
+watcher.on('unlink', (filePath) => {
+  console.log(`File ${filePath} has been removed`);
+  generateTextsJson();
+});

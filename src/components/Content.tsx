@@ -18,7 +18,7 @@ export const Content: React.FC<ContentProps> = ({selectedText}) => {
     const fetchText = async () => {
       if (selectedText != null){
           try {
-          const data = await getText(selectedText, { signal: controller.signal });
+          const data = await getText(selectedText);
           if (data) {
             setText(data);
             const formattedDate = new Date(data.date).toLocaleDateString(undefined);

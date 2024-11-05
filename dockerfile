@@ -13,8 +13,13 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Copy environment file for production
 COPY .env.production ./
-# Accept build arguments and set environment variables.
+
+# Copy the public folder for any static assets needed during build
+COPY public ./public
+
+# Accept build arguments and set environment variables
 ARG NODE_ENV
 ARG REACT_APP_API_URL
 

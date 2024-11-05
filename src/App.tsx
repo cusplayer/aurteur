@@ -41,7 +41,7 @@ export const App: React.FC = () => {
     const controller = new AbortController();
     const fetchAriclesMeta = async () => {
       try {
-        const data = await getTextsMeta({ signal: controller.signal });
+        const data = await getTextsMeta();
         setAriclesMeta(data);
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
