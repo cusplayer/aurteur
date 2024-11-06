@@ -1,8 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import chokidar from 'chokidar';
 import { Text, TextMeta } from '../types/types';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const TEXTS_DIR = path.join(__dirname, '../../public/texts');
 const OUTPUT_FILE = path.join(TEXTS_DIR, 'texts.json');
@@ -43,21 +46,26 @@ const generateTextsJson = () => {
   console.log('texts.json successfully generated.');
 };
 
-generateTextsJson();
+const shouldRegenerateTextsJson = (): boolean => {
+  if (!fs.existsSync(OUTPUT_FILE)) {
+    return true;
+  }
 
-const watcher = chokidar.watch(`${TEXTS_DIR}/*.md`);
+  const textsJsonStat = fs.statSync(OUTPUT_FILE);
+  const textsJsonMtime = textsJsonStat.mtime;
 
-watcher.on('change', (filePath) => {
-  console.log(`File ${filePath} has been changed`);
+  const files = fs.readdirSync(TEXTS_DIR).filter((file: string) => file.endsWith('.md'));
+
+  return files.some((fileName) => {
+    const filePath = path.join(TEXTS_DIR, fileName);
+    const fileStat = fs.statSync(filePath);
+    return fileStat.mtime > textsJsonMtime;
+  });
+};
+
+if (shouldRegenerateTextsJson()) {
+  console.log('Changes detected in markdown files. Generating texts.json...');
   generateTextsJson();
-});
-
-watcher.on('add', (filePath) => {
-  console.log(`File ${filePath} has been added`);
-  generateTextsJson();
-});
-
-watcher.on('unlink', (filePath) => {
-  console.log(`File ${filePath} has been removed`);
-  generateTextsJson();
-});
+} else {
+  console.log('No changes detected in markdown files. Skipping texts.json generation.');
+}
