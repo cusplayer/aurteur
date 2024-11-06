@@ -24,7 +24,7 @@ body{
   /* margin: 0px 16px; */
   margin-left: 16px;
   padding: 0px 4px;
-  box-shadow: 0px 0px 16px rgb(0, 0, 0, 0.32);
+  box-shadow: -1484px 0px 415px 0px rgba(0, 0, 0, 0.00), -950px 0px 380px 0px rgba(0, 0, 0, 0.01), -534px 0px 320px 0px rgba(0, 0, 0, 0.03), -237px 0px 237px 0px rgba(0, 0, 0, 0.05), -59px 0px 131px 0px rgba(0, 0, 0, 0.06);
   border-radius: 4px;
 }
 
@@ -53,7 +53,7 @@ body{
   margin-left: 16px;
   padding: 4px 4px;
   gap: 16px;
-  box-shadow: 0px 0px 16px rgb(0, 0, 0, 0.32);
+  box-shadow: -1484px 0px 415px 0px rgba(0, 0, 0, 0.00), -950px 0px 380px 0px rgba(0, 0, 0, 0.01), -534px 0px 320px 0px rgba(0, 0, 0, 0.03), -237px 0px 237px 0px rgba(0, 0, 0, 0.05), -59px 0px 131px 0px rgba(0, 0, 0, 0.06);
   border-radius: 4px;
 }
 

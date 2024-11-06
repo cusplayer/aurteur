@@ -16,7 +16,7 @@
 }
 
 .icon:hover .iconImage {
-  fill: aquamarine;
+  fill: white;
 }
 
 .icon.selected .iconImage path{
