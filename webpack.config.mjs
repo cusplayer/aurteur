@@ -82,12 +82,12 @@ export default (env, argv) => {
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
-        template: './public/index.html',
+        template: './index.html',
       }),
       new webpack.DefinePlugin(envKeys),
       new CopyWebpackPlugin({
         patterns: [
-          { from: 'public', to: 'public' },
+          { from: 'public', to: '' },
         ],
       }),
     ],
