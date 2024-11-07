@@ -1,4 +1,4 @@
-body{
+body {
   padding: 0px;
   margin: 0px;
   font-family: 'Roboto', Roboto, sans-serif;
@@ -10,7 +10,6 @@ body{
   display: flex;
   flex-direction: column;
   height: 100vh;
-  /* gap: 5vh; */
 }
 
 .topContainer {
@@ -21,7 +20,6 @@ body{
   max-height: 12vh;
   z-index: 2;
   background-color: white;
-  /* margin: 0px 16px; */
   margin-left: 16px;
   padding: 0px 4px;
   box-shadow: -1484px 0px 415px 0px rgba(0, 0, 0, 0.00), -950px 0px 380px 0px rgba(0, 0, 0, 0.01), -534px 0px 320px 0px rgba(0, 0, 0, 0.03), -237px 0px 237px 0px rgba(0, 0, 0, 0.05), -59px 0px 131px 0px rgba(0, 0, 0, 0.06);
@@ -35,10 +33,8 @@ body{
   width: 100%;
   top: 11vh;
   bottom: calc(83vh - 84px);
-  /* height: calc(7vh + 80px); */
   z-index: 1;
   background-color: rgba(0, 0, 0, 1);
-  /* box-shadow: 0px 0px 32px 32px rgb(0, 0, 0, 1); */
 }
 
 
@@ -47,9 +43,9 @@ body{
   position: relative;
   flex-direction: row;
   flex-grow: 1;
+  height: 83vh;
   background-color: white;
   z-index: 2;
-  /* margin: 0px 16px; */
   margin-left: 16px;
   padding: 4px 4px;
   gap: 16px;
@@ -57,9 +53,16 @@ body{
   border-radius: 4px;
 }
 
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 .navigationMenu {
   display: flex;
   flex-direction: row;
   width: max-content;
   gap: 16px;
+  flex-shrink: 0;
 }

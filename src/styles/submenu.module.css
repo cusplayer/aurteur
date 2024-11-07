@@ -1,6 +1,9 @@
 .subMenuList {
   display: flex;
+  box-sizing: border-box;
   flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
   width: 196px;
   gap: 4px;
   list-style-type: none;

@@ -1,3 +1,10 @@
-.text_box{
-  font-family: 'Courier Prime', Courier, monospace;
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
+.text_box {
+  font-family: 'Source Sans 3', Source Sans 3, sans-serif;
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
 }

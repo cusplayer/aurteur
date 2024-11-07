@@ -92,8 +92,10 @@ export const App: React.FC = () => {
               />
             )}
           </div>
-          {contentVisibility && <Content selectedText={selectedText} />}
-          {selectedFolder === 'about me' && <AboutMe />}
+          <div className={style.contentContainer}>
+            {contentVisibility && <Content selectedText={selectedText} />}
+            {selectedFolder === 'about me' && <AboutMe />}
+          </div>
         </div>
       </div>
     </Router>

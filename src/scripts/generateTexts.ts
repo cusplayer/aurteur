@@ -46,26 +46,4 @@ const generateTextsJson = () => {
   console.log('texts.json successfully generated.');
 };
 
-const shouldRegenerateTextsJson = (): boolean => {
-  if (!fs.existsSync(OUTPUT_FILE)) {
-    return true;
-  }
-
-  const textsJsonStat = fs.statSync(OUTPUT_FILE);
-  const textsJsonMtime = textsJsonStat.mtime;
-
-  const files = fs.readdirSync(TEXTS_DIR).filter((file: string) => file.endsWith('.md'));
-
-  return files.some((fileName) => {
-    const filePath = path.join(TEXTS_DIR, fileName);
-    const fileStat = fs.statSync(filePath);
-    return fileStat.mtime > textsJsonMtime;
-  });
-};
-
-if (shouldRegenerateTextsJson()) {
-  console.log('Changes detected in markdown files. Generating texts.json...');
-  generateTextsJson();
-} else {
-  console.log('No changes detected in markdown files. Skipping texts.json generation.');
-}
+generateTextsJson();
