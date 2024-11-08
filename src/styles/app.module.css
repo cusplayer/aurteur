@@ -31,8 +31,8 @@ body {
   display: flex;
   flex-shrink: 0;
   width: 100%;
-  top: 11vh;
-  bottom: calc(83vh - 84px);
+  top: 10vh;
+  bottom: calc(84vh - 84px);
   z-index: 1;
   background-color: rgba(0, 0, 0, 1);
 }
@@ -43,7 +43,7 @@ body {
   position: relative;
   flex-direction: row;
   flex-grow: 1;
-  height: 83vh;
+  height: 84vh;
   background-color: white;
   z-index: 2;
   margin-left: 16px;

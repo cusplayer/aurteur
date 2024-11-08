@@ -1,1 +1,0 @@
-export { getTextsMeta, getText } from './apiService';

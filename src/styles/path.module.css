@@ -1,6 +1,6 @@
 .pathContainer {
   flex-shrink: 0;
-  height: 5vh;
+  height: 4vh;
   z-index: 3;
   display: flex;
   align-items: center;

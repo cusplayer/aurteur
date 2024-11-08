@@ -1,61 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { getText } from '../api/apiService';
-import { Text, TextMeta } from '../types/types';
+import React from 'react';
+import { Text } from '../types/types';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'; 
 import * as style from '../styles/content.module.css';
 
 interface ContentProps {
-  selectedText: TextMeta['title'] | null;
+  textData: Text | null;
 }
 
-export const Content: React.FC<ContentProps> = ({selectedText}) => {
-  const [text, setText] = useState<Text | null>(null);
-  const [thisTextDate, setThisTextDate] = useState<string>('');
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchText = async () => {
-      if (selectedText != null){
-          try {
-          const data = await getText(selectedText);
-          if (data) {
-            setText(data);
-            const formattedDate = new Date(data.date).toLocaleDateString(undefined);
-            setThisTextDate(formattedDate);
-          } else {
-            // setError(`Text with title "${TextName}" not found`);
-          }
-        } catch (err) {
-          if (err instanceof Error && err.name !== 'AbortError') {
-            // setError('Error fetching the Text');
-          }
-        } finally {
-          // setLoading(false);
-        }
-      }
-    };
-
-    fetchText();
-
-    return () => {
-      controller.abort();
-    };
-  }, [selectedText]);
-
-  if (text === null) {
-    return;
+export const Content: React.FC<ContentProps> = ({ textData }) => {
+  if (!textData) {
+    return null;
   }
+
+  const formattedDate = new Date(textData.date).toLocaleDateString(undefined);
 
   return (
     <div className={style.text_box}>
-      <h2 className="text-title"> {text.title.replace('.md', '')} </h2>
+      <h2 className="text-title"> {textData.title.replace('.md', '')} </h2>
       <div className='text-meta'>
-        Folder: {text.folder} | Date: {thisTextDate} | Tags: {text.tags && text.tags.map(tag => `#${tag}`).join(', ')}
+        Folder: {textData.folder} | Date: {formattedDate} | Tags: {textData.tags && textData.tags.map(tag => `#${tag}`).join(', ')}
       </div>
       <div className='text-itself'>
         <Markdown rehypePlugins={[rehypeRaw]}>
-          {text.content}
+          {textData.content}
         </Markdown>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as style from './styles/app.module.css';
 import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons } from 'components';
-import { getTextsMeta } from './api/apiService';
-import { FolderName, TextMeta } from './types/types';
+import { getTextsData } from './api/apiService';
+import { FolderName, Text, TextMeta } from './types/types';
 
 const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];
 
@@ -12,11 +12,14 @@ export const App: React.FC = () => {
   const handleSetPathFolder = (setPathFolder: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>) => {
     setPathFolderRef.current = setPathFolder;
   };
-  const [ariclesMeta, setAriclesMeta] = useState<TextMeta[]>([]);
+
+  const [textsData, setTextsData] = useState<Text[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<FolderName | null>(null);
   const [subMenuVisibility, setSubMenuVisibility] = useState<boolean>(false);
   const [contentVisibility, setContentVisibility] = useState<boolean>(false);
-  const [selectedText, setSelectedText] = useState<TextMeta['title'] | null>(null);
+  const [selectedText, setSelectedText] = useState<Text | null>(null);
+
+  const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,42 +33,57 @@ export const App: React.FC = () => {
     setSelectedText(null);
     setContentVisibility(false);
     setSubMenuVisibility(folder !== 'about me');
+    setNavigationSource('menu');
+
     if (folder === 'about me') {
-      navigate('/aboutme');
+      navigate('/about');
     } else {
       navigate('/');
     }
   };
 
-  const handleSubMenuItemClick = (Text: TextMeta['title'], folder: FolderName | null) => {
+  const handleSubMenuItemClick = (textTitle: Text['title'], folder: FolderName | null) => {
     if (setPathFolderRef.current) {
       setPathFolderRef.current(folder);
     }
-    if (selectedFolder === null) {
-      setSubMenuVisibility(true);
-      setSelectedFolder(folder)
+
+    if (selectedFolder !== 'all') {
+      if (selectedFolder === null) {
+        setSubMenuVisibility(true);
+        setSelectedFolder(folder);
+      } else if (selectedFolder !== folder) {
+        setSelectedFolder(folder);
+      }
     }
-    setSelectedText(Text);
+
+    const textData = textsData.find((text) => text.title === textTitle) || null;
+    setSelectedText(textData);
     setContentVisibility(true);
-    navigate(`/${encodeURIComponent(Text)}`);
-    // navigate(`/${encodeURIComponent(Text.slice(0, -3))}`);
+
+    const currentPath = decodeURIComponent(location.pathname.substring(1));
+    if (currentPath.toLowerCase() !== textTitle.toLowerCase()) {
+      setNavigationSource('submenu');
+      navigate(`/${encodeURIComponent(textTitle)}`);
+    }
   };
 
-  
   useEffect(() => {
     const controller = new AbortController();
-    const fetchAriclesMeta = async () => {
+
+    const loadTextsData = async () => {
       try {
-        const data = await getTextsMeta();
-        setAriclesMeta(data);
+        const data = await getTextsData();
+        setTextsData(data);
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Ошибка при загрузке:', error);
+          console.error('Error loading data:', error);
         }
       }
     };
 
-    fetchAriclesMeta();
+    if (textsData.length === 0) {
+      loadTextsData();
+    }
 
     return () => {
       controller.abort();
@@ -73,22 +91,50 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const path = location.pathname;
-    const pathSegment = decodeURIComponent(path.substring(1));
-    console.log(pathSegment);
-    if (pathSegment === 'aboutme') {
-      setSelectedFolder('about me');
-      setContentVisibility(false);
-      setSubMenuVisibility(false);
-    } else {
-      console.log(ariclesMeta)
-      const matchingArticle = ariclesMeta.find((text) => text.title.toLowerCase() === pathSegment.toLowerCase());
-      console.log(matchingArticle);
-      const folder = matchingArticle ? matchingArticle.folder : null;
-      console.log(folder);
-      handleSubMenuItemClick(pathSegment, folder);
+    if (textsData.length > 0) {
+      const path = location.pathname;
+      const pathSegment = decodeURIComponent(path.substring(1));
+
+      if (pathSegment.length === 0) {
+        if (navigationSource === 'menu') {
+          setSelectedText(null);
+          setContentVisibility(false);
+          setSubMenuVisibility(selectedFolder !== 'about me' && selectedFolder !== null);
+        } else {
+          setSelectedFolder(null);
+          setSelectedText(null);
+          setContentVisibility(false);
+          setSubMenuVisibility(false);
+        }
+      } else if (pathSegment === 'about') {
+        setSelectedFolder('about me');
+        setContentVisibility(false);
+        setSubMenuVisibility(false);
+      } else {
+        const matchingText = textsData.find((text) => text.title.toLowerCase() === pathSegment.toLowerCase());
+        if (matchingText) {
+          if (setPathFolderRef.current) {
+            setPathFolderRef.current(matchingText.folder);
+          }
+
+          if (selectedFolder !== 'all') {
+            if (selectedFolder === null || selectedFolder !== matchingText.folder) {
+              setSubMenuVisibility(true);
+              setSelectedFolder(matchingText.folder);
+            }
+          }
+
+          setSelectedText(matchingText);
+          setContentVisibility(true);
+        } else {
+          console.warn(`Text not found for pathSegment: ${pathSegment}`);
+        }
+      }
+      setNavigationSource(null);
     }
-  }, [location.pathname]);
+  }, [textsData, location.pathname]);
+
+  const textsMeta: TextMeta[] = textsData.map(({ content, ...meta }) => meta);
 
   return (
     <div className={style.allContainer}>
@@ -97,10 +143,13 @@ export const App: React.FC = () => {
       </div>
       <Path
         selectedFolder={selectedFolder}
-        selectedText={selectedText}
-        textsMeta={ariclesMeta}
+        selectedText={selectedText?.title || null}
+        textsMeta={textsMeta}
         setSelectedFolder={setSelectedFolder}
-        setSelectedText={setSelectedText}
+        setSelectedText={(title) => {
+          const text = textsData.find((t) => t.title === title) || null;
+          setSelectedText(text);
+        }}
         onSetPathFolder={handleSetPathFolder}
         setSubMenuVisibility={setSubMenuVisibility}
         setContentVisibility={setContentVisibility}
@@ -114,18 +163,21 @@ export const App: React.FC = () => {
           <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick} />
           {subMenuVisibility && (
             <SubMenu
-              Text={ariclesMeta}
+              Text={textsMeta}
               selectedFolder={selectedFolder}
-              selectedText={selectedText}
+              selectedText={selectedText?.title || null}
               setContentVisibility={setContentVisibility}
-              setSelectedText={setSelectedText}
+              setSelectedText={(title) => {
+                const text = textsData.find((t) => t.title === title) || null;
+                setSelectedText(text);
+              }}
               setSelectedFolder={setSelectedFolder}
               handleSubMenuItemClick={handleSubMenuItemClick}
             />
           )}
         </div>
         <div className={style.contentContainer}>
-          {contentVisibility && <Content selectedText={selectedText} />}
+          {contentVisibility && selectedText && <Content textData={selectedText} />}
           {selectedFolder === 'about me' && <AboutMe />}
         </div>
       </div>
