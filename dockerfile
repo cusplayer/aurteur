@@ -1,3 +1,5 @@
+# docker build -t aurteur-test .
+# docker run -p 8080:8080 aurteur-test
 # Stage 1: Build the React app
 FROM node:18-alpine AS build
 
