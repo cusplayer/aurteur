@@ -19,7 +19,7 @@ const getAllTexts = (): Text[] => {
 
     const { data, content } = matter(fileContents);
 
-    const title = data.title || fileName;
+    const title = (data.title || fileName).replace(/\.md$/, '');
     const folder = data.folder || 'all';
     const tags = Array.isArray(data.tags) ? data.tags.map((tag: string) => tag.trim()) : [];
     const date = data.date || '';
