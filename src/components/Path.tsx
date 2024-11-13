@@ -41,7 +41,8 @@ export const Path: React.FC<PathProps> = ({
   }, [selectedFolder]);
 
   useEffect(() => {
-    setPathText(selectedText);
+    const selectedTextMeta = textsMeta.find((text) => text.title === selectedText);
+    setPathText(selectedTextMeta ? `${selectedTextMeta.title}${selectedTextMeta.titleExt}` : selectedText);
   }, [selectedText]);
 
   const pathFull = useMemo(

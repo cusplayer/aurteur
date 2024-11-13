@@ -19,13 +19,15 @@ const getAllTexts = (): Text[] => {
 
     const { data, content } = matter(fileContents);
 
-    const title = (data.title || fileName).replace(/\.md$/, '');
+    const title = (data.title || fileName).split('.').slice(0, -1).join('.');
+    const titleExt = '.' + (data.title || fileName).split('.').pop();
     const folder = data.folder || 'all';
     const tags = Array.isArray(data.tags) ? data.tags.map((tag: string) => tag.trim()) : [];
     const date = data.date || '';
 
     const textMeta: TextMeta = {
       title,
+      titleExt,
       folder,
       date,
       tags,
