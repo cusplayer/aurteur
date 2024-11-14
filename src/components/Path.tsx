@@ -46,7 +46,7 @@ export const Path: React.FC<PathProps> = ({
   }, [selectedText]);
 
   const pathFull = useMemo(
-    () => `${pathFolder ? `${pathFolder}/` : ''}${pathText || ''}`,
+    () => `${pathFolder ? `${pathFolder}${pathFolder != 'about me' ? '/' : ''}` : ''}${pathText || ''}`,
     [pathFolder, pathText]
   );
 

@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [subMenuVisibility, setSubMenuVisibility] = useState<boolean>(false);
   const [contentVisibility, setContentVisibility] = useState<boolean>(false);
   const [selectedText, setSelectedText] = useState<Text | null>(null);
+  const [hoveredFolder, setHoveredFolder] = useState<FolderName | null>(null);
 
   const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | null>(null);
 
@@ -155,12 +156,22 @@ export const App: React.FC = () => {
         setContentVisibility={setContentVisibility}
       />
       <div className={style.terminal}>
-        <FolderIcons folderNames={folderNames} selectedFolder={selectedFolder} />
+        <FolderIcons
+          folderNames={folderNames}
+          selectedFolder={selectedFolder}
+          setHoveredFolder={setHoveredFolder}
+          hoveredFolder={hoveredFolder}
+          onFolderIconClick={handleMenuItemClick}
+        />
       </div>
-
       <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
-          <Menu folderNames={folderNames} selectedFolder={selectedFolder} onMenuItemClick={handleMenuItemClick} />
+          <Menu
+            folderNames={folderNames}
+            selectedFolder={selectedFolder}
+            onMenuItemClick={handleMenuItemClick}
+            setHoveredFolder={setHoveredFolder}
+          />
           {subMenuVisibility && (
             <SubMenu
               Text={textsMeta}

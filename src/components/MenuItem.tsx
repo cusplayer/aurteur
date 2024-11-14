@@ -6,13 +6,19 @@ interface MenuItemProps {
   folder: FolderName;
   selectedFolder: FolderName | null;
   onClick: (folder: FolderName) => void;
+  setHoveredFolder: (folder: FolderName | null) => void;
 }
 
-export const MenuItem: React.FC<MenuItemProps> = ({folder, selectedFolder, onClick}) => {
-
+export const MenuItem: React.FC<MenuItemProps> = ({ folder, selectedFolder, onClick, setHoveredFolder }) => {
   return (
-    <li className={`${style.menuItem} ${folder === selectedFolder ? style.menuItemSelected : ''}`} onClick={() => onClick(folder)}>
+    <li
+      className={`${style.menuItem} ${folder === selectedFolder ? style.menuItemSelected : ''}`}
+      onClick={() => onClick(folder)}
+      onMouseEnter={() => setHoveredFolder(folder)}
+      onMouseLeave={() => setHoveredFolder(null)}
+    >
       {selectedFolder === folder ? '> ' : ''} {folder}
     </li>
   );
 };
+

@@ -5,6 +5,7 @@
 }
 
 .mainContactBox {
+  width: fit-content;
   padding: 16px;
   border: 1px solid #ccc;
   height: min-content;

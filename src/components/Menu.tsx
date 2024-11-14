@@ -7,18 +7,21 @@ interface MenuProps {
   folderNames: FolderName[];
   selectedFolder: FolderName | null;
   onMenuItemClick: (folder: FolderName) => void;
+  setHoveredFolder: (folder: FolderName | null) => void;
 }
 
-export const Menu: React.FC<MenuProps> = ({
-  folderNames,
-  selectedFolder,
-  onMenuItemClick,
-}) => {
+export const Menu: React.FC<MenuProps> = ({ folderNames, selectedFolder, onMenuItemClick, setHoveredFolder }) => {
   return (
     <div>
       <ul className={style.menuList}>
         {folderNames.map((folder) => (
-          <MenuItem folder={folder} key={folder} selectedFolder={selectedFolder} onClick={() => onMenuItemClick(folder)} />
+          <MenuItem
+            folder={folder}
+            key={folder}
+            selectedFolder={selectedFolder}
+            onClick={() => onMenuItemClick(folder)}
+            setHoveredFolder={setHoveredFolder}
+          />
         ))}
       </ul>
     </div>
