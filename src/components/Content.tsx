@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from '../types/types';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'; 
+import remarkGfm from 'remark-gfm';
 import * as style from '../styles/content.module.css';
 
 interface ContentProps {
@@ -22,7 +23,7 @@ export const Content: React.FC<ContentProps> = ({ textData }) => {
         Folder: {textData.folder} | Date: {formattedDate} | Tags: {textData.tags && textData.tags.map(tag => `#${tag}`).join(', ')}
       </div>
       <div className='text-itself'>
-        <Markdown rehypePlugins={[rehypeRaw]}>
+        <Markdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
           {textData.content}
         </Markdown>
       </div>
