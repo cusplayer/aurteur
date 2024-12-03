@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as style from './styles/app.module.css';
-import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons } from 'components';
+import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons, Modal } from 'components';
 import { getTextsData } from './api/apiService';
+import { useWindowSize } from './hooks/useWindowSize';
 import { FolderName, Text, TextMeta } from './types/types';
 
 const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];
 
 export const App: React.FC = () => {
+  const { width } = useWindowSize();
+  const isMobile = width <= 767;
   const setPathFolderRef = useRef<React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>> | null>(null);
   const handleSetPathFolder = (setPathFolder: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>) => {
     setPathFolderRef.current = setPathFolder;
@@ -142,28 +145,32 @@ export const App: React.FC = () => {
       <div className={style.topContainer}>
         <Title />
       </div>
-      <Path
-        selectedFolder={selectedFolder}
-        selectedText={selectedText?.title || null}
-        textsMeta={textsMeta}
-        setSelectedFolder={setSelectedFolder}
-        setSelectedText={(title) => {
-          const text = textsData.find((t) => t.title === title) || null;
-          setSelectedText(text);
-        }}
-        onSetPathFolder={handleSetPathFolder}
-        setSubMenuVisibility={setSubMenuVisibility}
-        setContentVisibility={setContentVisibility}
-      />
-      <div className={style.terminal}>
-        <FolderIcons
-          folderNames={folderNames}
-          selectedFolder={selectedFolder}
-          setHoveredFolder={setHoveredFolder}
-          hoveredFolder={hoveredFolder}
-          onFolderIconClick={handleMenuItemClick}
-        />
-      </div>
+      {!isMobile && (
+        <>
+          <Path
+            selectedFolder={selectedFolder}
+            selectedText={selectedText?.title || null}
+            textsMeta={textsMeta}
+            setSelectedFolder={setSelectedFolder}
+            setSelectedText={(title) => {
+              const text = textsData.find((t) => t.title === title) || null;
+              setSelectedText(text);
+            }}
+            onSetPathFolder={handleSetPathFolder}
+            setSubMenuVisibility={setSubMenuVisibility}
+            setContentVisibility={setContentVisibility}
+          />
+          <div className={style.terminal}>
+            <FolderIcons
+              folderNames={folderNames}
+              selectedFolder={selectedFolder}
+              setHoveredFolder={setHoveredFolder}
+              hoveredFolder={hoveredFolder}
+              onFolderIconClick={handleMenuItemClick}
+            />
+          </div>
+        </>
+      )}
       <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
           <Menu
@@ -187,10 +194,19 @@ export const App: React.FC = () => {
             />
           )}
         </div>
-        <div className={style.contentContainer}>
-          {contentVisibility && selectedText && <Content textData={selectedText} />}
-          {selectedFolder === 'about me' && <AboutMe />}
-        </div>
+        {isMobile ? (
+          <Modal
+            isVisible={contentVisibility && selectedText !== null}
+            onClose={() => setContentVisibility(false)}
+          >
+            {selectedText && <Content textData={selectedText} />}
+          </Modal>
+        ) : (
+          <div className={style.contentContainer}>
+            {contentVisibility && selectedText && <Content textData={selectedText} />}
+            {selectedFolder === 'about me' && <AboutMe />}
+          </div>
+        )}
       </div>
     </div>
   );
