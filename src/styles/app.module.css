@@ -67,3 +67,26 @@ body {
   flex-shrink: 0;
 }
 
+@media (max-width: 767px) {
+  .terminal {
+    visibility: hidden;
+  }
+
+  .topContainer {
+    margin-left: 0px;
+  }
+
+  .mainPageContainer {
+    flex-direction: column;
+    padding: 0px;
+    margin-left: 0px;
+  }
+
+  .navigationMenu {
+    flex-direction: column;
+  }
+
+  .contentContainer {
+    padding: 8px;
+  }
+}

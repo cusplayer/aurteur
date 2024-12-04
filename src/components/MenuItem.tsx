@@ -1,5 +1,6 @@
 import React from 'react';
 import {FolderName} from '../types/types';
+import { useWindowSize } from '../hooks/useWindowSize';
 import * as style from '../styles/menuItem.module.css';
 
 interface MenuItemProps {
@@ -10,6 +11,8 @@ interface MenuItemProps {
 }
 
 export const MenuItem: React.FC<MenuItemProps> = ({ folder, selectedFolder, onClick, setHoveredFolder }) => {
+  const { width } = useWindowSize();
+  const isMobile = width <= 767;
   return (
     <li
       className={`${style.menuItem} ${folder === selectedFolder ? style.menuItemSelected : ''}`}
@@ -17,7 +20,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({ folder, selectedFolder, onCl
       onMouseEnter={() => setHoveredFolder(folder)}
       onMouseLeave={() => setHoveredFolder(null)}
     >
-      {selectedFolder === folder ? '> ' : ''} {folder}
+      {(selectedFolder === folder && !isMobile) ? '> ' : ''} {folder}
     </li>
   );
 };
