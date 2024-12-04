@@ -77,10 +77,16 @@ body {
   }
 
   .mainPageContainer {
+    flex-direction: column;
+    padding: 0px;
     margin-left: 0px;
   }
 
   .navigationMenu {
     flex-direction: column;
+  }
+
+  .contentContainer {
+    padding: 8px;
   }
 }

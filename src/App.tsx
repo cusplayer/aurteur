@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   const [selectedText, setSelectedText] = useState<Text | null>(null);
   const [hoveredFolder, setHoveredFolder] = useState<FolderName | null>(null);
 
-  const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | null>(null);
+  const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | 'modalClose' | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -101,6 +101,10 @@ export const App: React.FC = () => {
 
       if (pathSegment.length === 0) {
         if (navigationSource === 'menu') {
+          setSelectedText(null);
+          setContentVisibility(false);
+          setSubMenuVisibility(selectedFolder !== 'about me' && selectedFolder !== null);
+        } else if (navigationSource === 'modalClose') {
           setSelectedText(null);
           setContentVisibility(false);
           setSubMenuVisibility(selectedFolder !== 'about me' && selectedFolder !== null);
@@ -195,12 +199,21 @@ export const App: React.FC = () => {
           )}
         </div>
         {isMobile ? (
-          <Modal
-            isVisible={contentVisibility && selectedText !== null}
-            onClose={() => setContentVisibility(false)}
-          >
-            {selectedText && <Content textData={selectedText} />}
-          </Modal>
+          <>
+            <Modal
+              isVisible={contentVisibility && selectedText !== null}
+              onClose={() => {
+                setContentVisibility(false); 
+                setSelectedText(null); 
+                navigate('/');
+                setNavigationSource('modalClose');}}
+            >
+              {selectedText && <Content textData={selectedText} />}
+            </Modal>
+            <div className={style.contentContainer}>
+              {selectedFolder === 'about me' && <AboutMe />}
+            </div>
+          </>
         ) : (
           <div className={style.contentContainer}>
             {contentVisibility && selectedText && <Content textData={selectedText} />}

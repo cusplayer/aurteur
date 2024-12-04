@@ -10,9 +10,9 @@
 
 @media (max-width: 767px) {
   .menuList {
+    gap: 0px;
     flex-direction: row;
-    gap: 4px;
-    width: 100%;
+    width: 100vw;
     justify-content: space-between;
     list-style-type: none;
     padding: 0;
