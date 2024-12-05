@@ -1,10 +1,12 @@
 .iconsContainer {
-  position: absolute;
+  /* position: absolute; */
+  height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   gap: 4px;
-  bottom: 4px;
+  /* top: calc(16vh + 20px); */
+  /* bottom: 4px; */
 }
 
 .iconImage {
