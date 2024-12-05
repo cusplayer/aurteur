@@ -14,7 +14,7 @@
 @media (max-width: 767px) {
   .subMenuList {
     width: 100%;
-    gap: 4px;
+    gap: 8px;
     list-style-type: none;
     padding: 0px 8px;
   }

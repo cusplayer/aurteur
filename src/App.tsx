@@ -151,19 +151,20 @@ export const App: React.FC = () => {
       </div>
       {!isMobile && (
         <>
+          {/* <div className={style.pathSpacer}></div> */}
           <Path
-            selectedFolder={selectedFolder}
-            selectedText={selectedText?.title || null}
-            textsMeta={textsMeta}
-            setSelectedFolder={setSelectedFolder}
-            setSelectedText={(title) => {
-              const text = textsData.find((t) => t.title === title) || null;
-              setSelectedText(text);
-            }}
-            onSetPathFolder={handleSetPathFolder}
-            setSubMenuVisibility={setSubMenuVisibility}
-            setContentVisibility={setContentVisibility}
-          />
+              selectedFolder={selectedFolder}
+              selectedText={selectedText?.title || null}
+              textsMeta={textsMeta}
+              setSelectedFolder={setSelectedFolder}
+              setSelectedText={(title) => {
+                const text = textsData.find((t) => t.title === title) || null;
+                setSelectedText(text);
+              }}
+              onSetPathFolder={handleSetPathFolder}
+              setSubMenuVisibility={setSubMenuVisibility}
+              setContentVisibility={setContentVisibility}
+            />
           <div className={style.terminal}>
             <FolderIcons
               folderNames={folderNames}
