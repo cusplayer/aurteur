@@ -1,0 +1,21 @@
+.loaderContainer {
+    font-family: 'Courier New', Courier, monospace;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+    z-index: 1;
+    user-select: none;
+    font-family: monospace;
+  }
+  
+  .loaderSymbol {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+  }
+  

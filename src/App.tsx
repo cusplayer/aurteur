@@ -1,7 +1,8 @@
+//App.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as style from './styles/app.module.css';
-import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons, Modal } from 'components';
+import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons, Modal, Loader } from 'components';
 import { getTextsData } from './api/apiService';
 import { useWindowSize } from './hooks/useWindowSize';
 import { FolderName, Text, TextMeta } from './types/types';
@@ -25,6 +26,10 @@ export const App: React.FC = () => {
 
   const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | 'modalClose' | null>(null);
 
+  // Стейты для загрузчика
+  const [showLoader, setShowLoader] = useState(false);
+  const [loaderRotations, setLoaderRotations] = useState<number | undefined>(undefined);
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -47,6 +52,9 @@ export const App: React.FC = () => {
   };
 
   const handleSubMenuItemClick = (textTitle: Text['title'], folder: FolderName | null) => {
+
+    setShowLoader(true);
+    setLoaderRotations(1); 
     if (setPathFolderRef.current) {
       setPathFolderRef.current(folder);
     }
@@ -144,6 +152,22 @@ export const App: React.FC = () => {
 
   const textsMeta: TextMeta[] = textsData.map(({ content, ...meta }) => meta);
 
+  useEffect(() => {
+      setShowLoader(true);
+      setLoaderRotations(2); 
+  }, []);
+
+  // useEffect(() => {
+  //   if (selectedText) {
+  //     setShowLoader(true);
+  //     setLoaderRotations(1); 
+  //   }
+  // }, [setSelectedText, selectedText]);
+
+  const handleLoaderFinish = () => {
+    setShowLoader(false);
+  };
+
   return (
     <div className={style.allContainer}>
       <div className={style.topContainer}>
@@ -173,7 +197,7 @@ export const App: React.FC = () => {
             />
         </>
       )}
-      <div className={style.mainPageContainer}>
+      <div className={style.mainPageContainer} style={{position: 'relative'}}>
         <div className={style.navigationMenu}>
           <Menu
             folderNames={folderNames}
@@ -219,6 +243,11 @@ export const App: React.FC = () => {
           </div>
         )}
       </div>
+      <Loader 
+          rotations={loaderRotations} 
+          loading={showLoader} 
+          onFinish={handleLoaderFinish} 
+        />
     </div>
   );
 };
