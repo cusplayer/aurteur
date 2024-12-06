@@ -1,55 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
 
-body {
-  padding: 0px;
-  margin: 0px;
+html, body {
+  margin: 0;
+  padding: 0;
   font-family: 'Noto Sans', sans-serif;
-  max-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  min-height: 100dvh;
 }
 
 .allContainer {
   display: flex;
-  flex-direction: column-reverse;
-  height: 100vh;
+  flex-direction: column;
+  height: 100dvh;
+  background: 
+    linear-gradient(rgba(18, 16, 16, 0.9) 50%, rgba(0, 0, 0, 1) 50%), 
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: cover;
+  background-size: 100% 2px;
 }
 
 .topContainer {
   display: flex;
-  position: relative;
   align-items: center;
-  min-height: 12vh;
-  max-height: 12vh;
+  min-height: 12dvh;
+  max-height: 12dvh;
   z-index: 10;
-  /* background-color: white; */
   margin-left: 8px;
-  padding: 0px 4px;
-  box-shadow: -1484px 0px 415px 0px rgba(0, 0, 0, 0.00), -950px 0px 380px 0px rgba(0, 0, 0, 0.01), -534px 0px 320px 0px rgba(0, 0, 0, 0.03), -237px 0px 237px 0px rgba(0, 0, 0, 0.05), -59px 0px 131px 0px rgba(0, 0, 0, 0.06);
-  border-radius: 4px;
-}
-
-.terminal {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  width: 100%;
-  height: 100%;
-  /* bottom: calc(84vh - 96px); */
-  bottom: 0vh;
-  z-index: 1;
-  /* padding-top: calc(16vh + 5px); */
-  background: linear-gradient(rgba(18, 16, 16, 0.9) 50%, rgba(0, 0, 0, 1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  background-size: cover;
-  background-size: 100% 2px;
   filter: blur(.2px);
 }
 
-@media screen{
-  .terminal {
-    animation: scanlines infinite 55s linear ;
+@media screen {
+  .allContainer {
+    animation: scanlines infinite 55s linear;
   }
-} 
+}
+
 @keyframes scanlines {
   from {
     background-position: 0 0;
@@ -58,16 +47,15 @@ body {
     background-position: 0 -10px;
   }
 }
+
 a {
-  color:antiquewhite;
+  color: antiquewhite;
 }
+
 .mainPageContainer {
   display: flex;
-  /* position: relative; */
   flex-direction: row;
   flex-grow: 1;
-  min-height: 82vh;
-  max-height: 82vh;
   background: rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(2.5px);
   -webkit-backdrop-filter: blur(2.5px);
@@ -77,8 +65,14 @@ a {
   margin-left: 16px;
   padding: 4px 4px 0px 0px;
   gap: 16px;
-  box-shadow: -1484px 0px 415px 0px rgba(0, 0, 0, 0.00), -950px 0px 380px 0px rgba(0, 0, 0, 0.01), -534px 0px 320px 0px rgba(0, 0, 0, 0.03), -237px 0px 237px 0px rgba(0, 0, 0, 0.05), -59px 0px 131px 0px rgba(0, 0, 0, 0.06);
+  box-shadow: 
+    -1484px 0px 415px 0px rgba(0, 0, 0, 0.00), 
+    -950px 0px 380px 0px rgba(0, 0, 0, 0.01), 
+    -534px 0px 320px 0px rgba(0, 0, 0, 0.03), 
+    -237px 0px 237px 0px rgba(0, 0, 0, 0.05), 
+    -59px 0px 131px 0px rgba(0, 0, 0, 0.06);
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .contentContainer {
@@ -96,12 +90,8 @@ a {
 }
 
 @media (max-width: 767px) {
-  .terminal {
-    visibility: hidden;
-  }
-
   .topContainer {
-    margin-left: 0px;
+    margin: 0px;
   }
 
   .mainPageContainer {

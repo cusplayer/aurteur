@@ -146,36 +146,33 @@ export const App: React.FC = () => {
 
   return (
     <div className={style.allContainer}>
-      <div className={style.terminal}>
-        <div className={style.topContainer}>
-          <Title />
-        </div>
-        {!isMobile && (
-          <>
-            {/* <div className={style.pathSpacer}></div> */}
-            <Path
-                selectedFolder={selectedFolder}
-                selectedText={selectedText?.title || null}
-                textsMeta={textsMeta}
-                setSelectedFolder={setSelectedFolder}
-                setSelectedText={(title) => {
-                  const text = textsData.find((t) => t.title === title) || null;
-                  setSelectedText(text);
-                }}
-                onSetPathFolder={handleSetPathFolder}
-                setSubMenuVisibility={setSubMenuVisibility}
-                setContentVisibility={setContentVisibility}
-              />
-              <FolderIcons
-                folderNames={folderNames}
-                selectedFolder={selectedFolder}
-                setHoveredFolder={setHoveredFolder}
-                hoveredFolder={hoveredFolder}
-                onFolderIconClick={handleMenuItemClick}
-              />
-          </>
-        )}
+      <div className={style.topContainer}>
+        <Title />
       </div>
+      {!isMobile && (
+        <>
+          <Path
+              selectedFolder={selectedFolder}
+              selectedText={selectedText?.title || null}
+              textsMeta={textsMeta}
+              setSelectedFolder={setSelectedFolder}
+              setSelectedText={(title) => {
+                const text = textsData.find((t) => t.title === title) || null;
+                setSelectedText(text);
+              }}
+              onSetPathFolder={handleSetPathFolder}
+              setSubMenuVisibility={setSubMenuVisibility}
+              setContentVisibility={setContentVisibility}
+            />
+            <FolderIcons
+              folderNames={folderNames}
+              selectedFolder={selectedFolder}
+              setHoveredFolder={setHoveredFolder}
+              hoveredFolder={hoveredFolder}
+              onFolderIconClick={handleMenuItemClick}
+            />
+        </>
+      )}
       <div className={style.mainPageContainer}>
         <div className={style.navigationMenu}>
           <Menu

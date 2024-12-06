@@ -32,21 +32,23 @@ export const FolderIcons: React.FC<FolderIconsProps> = ({
   };
 
   return (
-    <div className={style.iconsContainer}>
-      {folderNames.map((folder) => (
-        <div
-          key={folder}
-          className={`${style.folderIcon} ${selectedFolder === folder ? style.selected : ''} ${
-            hoveredFolder === folder ? style.hovered : ''
-          }`}
-          title={folder}
-          onMouseEnter={() => setHoveredFolder(folder)}
-          onMouseLeave={() => setHoveredFolder(null)}
-          onClick={() => onFolderIconClick(folder)}
-        >
-          {getIconComponent(folder)}
-        </div>
-      ))}
+    <div className={style.folderIconsWrapper}>
+      <div className={style.iconsContainer}>
+        {folderNames.map((folder) => (
+          <div
+            key={folder}
+            className={`${style.folderIcon} ${selectedFolder === folder ? style.selected : ''} ${
+              hoveredFolder === folder ? style.hovered : ''
+            }`}
+            title={folder}
+            onMouseEnter={() => setHoveredFolder(folder)}
+            onMouseLeave={() => setHoveredFolder(null)}
+            onClick={() => onFolderIconClick(folder)}
+          >
+            {getIconComponent(folder)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

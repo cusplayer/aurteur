@@ -1,12 +1,18 @@
+.folderIconsWrapper {
+  position: absolute;
+  min-height: 100%;
+  width: 16px;
+  filter: blur(.2px);
+}
+
 .iconsContainer {
-  /* position: absolute; */
+  position: absolute;
   height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   gap: 4px;
-  /* top: calc(16vh + 20px); */
-  /* bottom: 4px; */
+  top: calc(18dvh + 5px);
 }
 
 .iconImage {

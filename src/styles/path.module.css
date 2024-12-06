@@ -8,7 +8,7 @@
   transition: background-color 0.3s;
   color: white;
   font-family: 'Consolas', Consolas, monospace;
-  /* filter: blur(.2px); */
+  filter: blur(.2px);
 }
 
 .searchContainer {
@@ -75,6 +75,7 @@
   top: 100%;
   left: var(--prefix-width, 0px);
   background-color: #343434;
+  color: white;
   border-radius: 4px;
   max-height: 200px;
   overflow-y: auto;
