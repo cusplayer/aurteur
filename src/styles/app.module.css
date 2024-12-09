@@ -29,7 +29,7 @@ body {
   min-height: 12dvh;
   max-height: 12dvh;
   z-index: 10;
-  margin-left: 8px;
+  margin-left: 10px;
   filter: blur(.2px);
 }
 
@@ -48,6 +48,15 @@ body {
   }
 }
 
+.pathContainer {
+  padding: 0px 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  max-height: 4dvh;
+}
+
 a {
   color: antiquewhite;
 }
@@ -57,8 +66,8 @@ a {
   flex-direction: row;
   flex-grow: 1;
   background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(2.5px);
   -webkit-backdrop-filter: blur(2.5px);
+  backdrop-filter: blur(2.5px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   color: white;
   z-index: 2;
@@ -79,6 +88,7 @@ a {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  align-content: center;
 }
 
 .navigationMenu {
@@ -89,15 +99,31 @@ a {
   flex-shrink: 0;
 }
 
+.iconImage {
+  /* top: 50%; */
+}
+
 @media (max-width: 767px) {
+  .allContainer {
+    background-size: 100% 1px;
+  }
+
   .topContainer {
+    min-height: 8dvh;
+    max-height: 8dvh;
     margin: 0px;
+  }
+
+  .pathContainer {
+    padding: 0px 4px;
   }
 
   .mainPageContainer {
     flex-direction: column;
     padding: 0px;
     margin-left: 0px;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .navigationMenu {
@@ -105,6 +131,6 @@ a {
   }
 
   .contentContainer {
-    padding: 8px;
+    overflow: hidden;
   }
 }

@@ -7,9 +7,10 @@ import * as style from '../styles/content.module.css';
 
 interface ContentProps {
   textData: Text | null;
+  isMobile?: boolean;
 }
 
-export const Content: React.FC<ContentProps> = ({ textData }) => {
+export const Content: React.FC<ContentProps> = ({ textData, isMobile = false }) => {
   if (!textData) {
     return null;
   }
@@ -18,7 +19,7 @@ export const Content: React.FC<ContentProps> = ({ textData }) => {
 
   return (
     <div className={style.text_box}>
-      <h2 className="text-title"> {textData.title.replace('.md', '')} </h2>
+      <h2 className="text-title">{textData.title.replace('.md', '')}</h2>
       <div className='text-meta'>
         Folder: {textData.folder} | Date: {formattedDate} | Tags: {textData.tags && textData.tags.map(tag => `#${tag}`).join(', ')}
       </div>

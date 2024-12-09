@@ -9,4 +9,3 @@ export { Content } from './Content';
 export { AboutMe } from './AboutMe';
 export { FolderIcons } from './FolderIcons';
 export { Loader } from './RotatingLoader';
-export { Modal } from './Modal';

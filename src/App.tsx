@@ -1,10 +1,10 @@
-//App.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as style from './styles/app.module.css';
-import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons, Modal, Loader } from 'components';
+import { Title, Menu, Path, SubMenu, Content, AboutMe, FolderIcons, Loader } from 'components';
 import { getTextsData } from './api/apiService';
 import { useWindowSize } from './hooks/useWindowSize';
+import { ReactComponent as ArrowIcon } from './icons/ArrowUp.svg';
 import { FolderName, Text, TextMeta } from './types/types';
 
 const folderNames: FolderName[] = ['all', 'designs', 'ouvres', 'about me'];
@@ -13,6 +13,7 @@ export const App: React.FC = () => {
   const { width } = useWindowSize();
   const isMobile = width <= 767;
   const setPathFolderRef = useRef<React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>> | null>(null);
+
   const handleSetPathFolder = (setPathFolder: React.Dispatch<React.SetStateAction<TextMeta['folder'] | null>>) => {
     setPathFolderRef.current = setPathFolder;
   };
@@ -23,15 +24,22 @@ export const App: React.FC = () => {
   const [contentVisibility, setContentVisibility] = useState<boolean>(false);
   const [selectedText, setSelectedText] = useState<Text | null>(null);
   const [hoveredFolder, setHoveredFolder] = useState<FolderName | null>(null);
-
-  const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | 'modalClose' | null>(null);
-
-  // Стейты для загрузчика
+  const [navigationSource, setNavigationSource] = useState<'menu' | 'submenu' | 'initial' | 'mobileReturn' | null>(null);
   const [showLoader, setShowLoader] = useState(false);
   const [loaderRotations, setLoaderRotations] = useState<number | undefined>(undefined);
-  
+  const [runId, setRunId] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const restartLoader = (rotations: number) => {
+    setLoaderRotations(rotations);
+    setShowLoader(true);
+    setRunId(prev => prev + 1);
+  };
+
+  useEffect(() => {
+    setLoaderRotations(2); 
+  }, []);
 
   const handleMenuItemClick = (folder: FolderName) => {
     if (folder === selectedFolder) {
@@ -52,9 +60,6 @@ export const App: React.FC = () => {
   };
 
   const handleSubMenuItemClick = (textTitle: Text['title'], folder: FolderName | null) => {
-
-    setShowLoader(true);
-    setLoaderRotations(1); 
     if (setPathFolderRef.current) {
       setPathFolderRef.current(folder);
     }
@@ -71,6 +76,7 @@ export const App: React.FC = () => {
     const textData = textsData.find((text) => text.title === textTitle) || null;
     setSelectedText(textData);
     setContentVisibility(true);
+    restartLoader(1);
 
     const currentPath = decodeURIComponent(location.pathname.substring(1));
     if (currentPath.toLowerCase() !== textTitle.toLowerCase()) {
@@ -112,9 +118,12 @@ export const App: React.FC = () => {
           setSelectedText(null);
           setContentVisibility(false);
           setSubMenuVisibility(selectedFolder !== 'about me' && selectedFolder !== null);
-        } else if (navigationSource === 'modalClose') {
+        } else if (navigationSource === 'mobileReturn') {
           setSelectedText(null);
           setContentVisibility(false);
+          if (selectedFolder === 'all' && setPathFolderRef.current) {
+            setPathFolderRef.current('all');
+          }
           setSubMenuVisibility(selectedFolder !== 'about me' && selectedFolder !== null);
         } else {
           setSelectedFolder(null);
@@ -152,20 +161,19 @@ export const App: React.FC = () => {
 
   const textsMeta: TextMeta[] = textsData.map(({ content, ...meta }) => meta);
 
-  useEffect(() => {
-      setShowLoader(true);
-      setLoaderRotations(2); 
-  }, []);
-
-  // useEffect(() => {
-  //   if (selectedText) {
-  //     setShowLoader(true);
-  //     setLoaderRotations(1); 
-  //   }
-  // }, [setSelectedText, selectedText]);
-
   const handleLoaderFinish = () => {
     setShowLoader(false);
+  };
+
+
+  const handleContentBack = () => {
+    setContentVisibility(false);
+    setSelectedText(null);
+    setNavigationSource('mobileReturn');
+    navigate('/');
+    if (selectedFolder !== 'about me') {
+      setSubMenuVisibility(true);
+    }
   };
 
   return (
@@ -173,29 +181,34 @@ export const App: React.FC = () => {
       <div className={style.topContainer}>
         <Title />
       </div>
+      <div className={style.pathContainer}>
+        <Path
+          selectedFolder={selectedFolder}
+          selectedText={selectedText?.title || null}
+          textsMeta={textsMeta}
+          setSelectedFolder={setSelectedFolder}
+          setSelectedText={(title) => {
+            const text = textsData.find((t) => t.title === title) || null;
+            setSelectedText(text);
+          }}
+          onSetPathFolder={handleSetPathFolder}
+          setSubMenuVisibility={setSubMenuVisibility}
+          setContentVisibility={setContentVisibility}
+        />
+        {isMobile && contentVisibility && selectedText && (
+          <div onClick={handleContentBack}>
+            <ArrowIcon className={style.iconImage} />
+          </div>
+        )}
+      </div>
       {!isMobile && (
-        <>
-          <Path
-              selectedFolder={selectedFolder}
-              selectedText={selectedText?.title || null}
-              textsMeta={textsMeta}
-              setSelectedFolder={setSelectedFolder}
-              setSelectedText={(title) => {
-                const text = textsData.find((t) => t.title === title) || null;
-                setSelectedText(text);
-              }}
-              onSetPathFolder={handleSetPathFolder}
-              setSubMenuVisibility={setSubMenuVisibility}
-              setContentVisibility={setContentVisibility}
-            />
-            <FolderIcons
-              folderNames={folderNames}
-              selectedFolder={selectedFolder}
-              setHoveredFolder={setHoveredFolder}
-              hoveredFolder={hoveredFolder}
-              onFolderIconClick={handleMenuItemClick}
-            />
-        </>
+        <FolderIcons
+          folderNames={folderNames}
+          selectedFolder={selectedFolder}
+          setHoveredFolder={setHoveredFolder}
+          hoveredFolder={hoveredFolder}
+          onFolderIconClick={handleMenuItemClick}
+        />
       )}
       <div className={style.mainPageContainer} style={{position: 'relative'}}>
         <div className={style.navigationMenu}>
@@ -205,7 +218,7 @@ export const App: React.FC = () => {
             onMenuItemClick={handleMenuItemClick}
             setHoveredFolder={setHoveredFolder}
           />
-          {subMenuVisibility && (
+          {!isMobile && subMenuVisibility && (
             <SubMenu
               Text={textsMeta}
               selectedFolder={selectedFolder}
@@ -221,33 +234,42 @@ export const App: React.FC = () => {
           )}
         </div>
         {isMobile ? (
-          <>
-            <Modal
-              isVisible={contentVisibility && selectedText !== null}
-              onClose={() => {
-                setContentVisibility(false); 
-                setSelectedText(null); 
-                navigate('/');
-                setNavigationSource('modalClose');}}
-            >
-              {selectedText && <Content textData={selectedText} />}
-            </Modal>
-            <div className={style.contentContainer}>
-              {selectedFolder === 'about me' && <AboutMe />}
-            </div>
-          </>
+          <div className={style.contentContainer}>
+            {selectedFolder === 'about me' && !contentVisibility && <AboutMe />}
+            {selectedFolder !== 'about me' && !contentVisibility && subMenuVisibility && (
+              <SubMenu
+                Text={textsMeta}
+                selectedFolder={selectedFolder}
+                selectedText={selectedText?.title || null}
+                setContentVisibility={setContentVisibility}
+                setSelectedText={(title) => {
+                  const text = textsData.find((t) => t.title === title) || null;
+                  setSelectedText(text);
+                }}
+                setSelectedFolder={setSelectedFolder}
+                handleSubMenuItemClick={handleSubMenuItemClick}
+              />
+            )}
+            {contentVisibility && selectedText && (
+              <Content 
+                textData={selectedText} 
+                isMobile={isMobile} 
+              />
+            )}
+          </div>
         ) : (
           <div className={style.contentContainer}>
-            {contentVisibility && selectedText && <Content textData={selectedText} />}
+            {contentVisibility && selectedText && <Content textData={selectedText} isMobile={false} />}
             {selectedFolder === 'about me' && <AboutMe />}
           </div>
         )}
       </div>
       <Loader 
-          rotations={loaderRotations} 
-          loading={showLoader} 
-          onFinish={handleLoaderFinish} 
-        />
+        rotations={loaderRotations} 
+        loading={showLoader} 
+        runId={runId}
+        onFinish={handleLoaderFinish} 
+      />
     </div>
   );
 };

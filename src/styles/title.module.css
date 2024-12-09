@@ -1,6 +1,13 @@
 .name {
+    font-family: 'Courier New', Courier, monospace;
     color: white;
     white-space: pre;
     filter: blur(.5px);
     font-size: 0.8em;
 }
+
+@media (max-width: 767px) {
+    .name {
+        font-size: 0.7em;
+    }
+  }

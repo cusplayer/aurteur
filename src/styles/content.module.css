@@ -16,8 +16,8 @@ sup {
   line-height: 0;
 }
 
-/* @media (max-width: 767px) {
+@media (max-width: 767px) {
   .text_box {
-
+    margin: 0px 8px;
   }
-} */
+}

@@ -1,7 +1,9 @@
 .pathContainer {
   flex-shrink: 0;
-  height: 6vh;
+  height: 4vh;
   z-index: 4;
+  min-width: 80%;
+  max-width: 100%;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -12,7 +14,6 @@
 }
 
 .searchContainer {
-  margin: 6px 16px;
   position: relative;
   display: flex;
   align-items: center;
@@ -95,7 +96,6 @@
 }
 
 .pathDisplay {
-  margin: 6px 16px;
   color: #fff;
   display: inline;
 }
@@ -108,4 +108,11 @@
   font-size: inherit;
   font-weight: inherit;
   letter-spacing: inherit;
+}
+
+@media (max-width: 767px) {
+  .pathContainer {
+    flex-shrink: 1;
+    height: 5dvh;
+  }
 }

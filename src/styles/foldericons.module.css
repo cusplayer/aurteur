@@ -12,7 +12,7 @@
   flex-direction: column;
   justify-content: space-around;
   gap: 4px;
-  top: calc(18dvh + 5px);
+  top: calc(16dvh + 4px);
 }
 
 .iconImage {
