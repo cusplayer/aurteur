@@ -112,6 +112,7 @@ a {
     min-height: 8dvh;
     max-height: 8dvh;
     margin: 0px;
+    filter: none;
   }
 
   .pathContainer {
