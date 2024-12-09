@@ -1,17 +1,19 @@
 .pathContainer {
   flex-shrink: 0;
   height: 4vh;
-  z-index: 3;
+  z-index: 4;
+  min-width: 80%;
+  max-width: 100%;
   display: flex;
   align-items: center;
   cursor: pointer;
   transition: background-color 0.3s;
   color: white;
   font-family: 'Consolas', Consolas, monospace;
+  filter: blur(.2px);
 }
 
 .searchContainer {
-  margin: 6px 16px;
   position: relative;
   display: flex;
   align-items: center;
@@ -74,6 +76,7 @@
   top: 100%;
   left: var(--prefix-width, 0px);
   background-color: #343434;
+  color: white;
   border-radius: 4px;
   max-height: 200px;
   overflow-y: auto;
@@ -93,7 +96,6 @@
 }
 
 .pathDisplay {
-  margin: 6px 16px;
   color: #fff;
   display: inline;
 }
@@ -106,4 +108,11 @@
   font-size: inherit;
   font-weight: inherit;
   letter-spacing: inherit;
+}
+
+@media (max-width: 767px) {
+  .pathContainer {
+    flex-shrink: 1;
+    height: 5dvh;
+  }
 }

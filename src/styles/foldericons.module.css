@@ -1,10 +1,18 @@
+.folderIconsWrapper {
+  position: absolute;
+  min-height: 100%;
+  width: 16px;
+  filter: blur(.2px);
+}
+
 .iconsContainer {
   position: absolute;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   gap: 4px;
-  bottom: 4px;
+  top: calc(16dvh + 4px);
 }
 
 .iconImage {
@@ -19,7 +27,7 @@
   justify-content: center;
   align-items: center;
   width: 16px;
-  height: 16px;
+  height: 19px;
   font-size: 14px;
   color: black;
   cursor: pointer;

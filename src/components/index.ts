@@ -8,4 +8,4 @@ export { SubMenuItem } from './SubMenuItem';
 export { Content } from './Content';
 export { AboutMe } from './AboutMe';
 export { FolderIcons } from './FolderIcons';
-export { Modal } from './Modal';
+export { Loader } from './RotatingLoader';
