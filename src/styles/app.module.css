@@ -100,7 +100,7 @@ a {
 }
 
 .iconImage {
-  /* top: 50%; */
+  height: auto;
 }
 
 @media (max-width: 767px) {
