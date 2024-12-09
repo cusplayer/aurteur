@@ -54,7 +54,6 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  max-height: 4dvh;
 }
 
 a {
@@ -105,7 +104,8 @@ a {
 
 @media (max-width: 767px) {
   .allContainer {
-    background-size: 100% 1px;
+    background: rgba(18, 16, 16, 0.9);
+    background-size: 100%;
   }
 
   .topContainer {

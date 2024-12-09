@@ -8,6 +8,7 @@
 
 @media (max-width: 767px) {
     .name {
-        font-size: 0.7em;
+        filter: none;
+        font-size: 0.6em;
     }
   }
