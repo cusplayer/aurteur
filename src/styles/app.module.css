@@ -54,7 +54,6 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  max-height: 4dvh;
 }
 
 a {
@@ -100,18 +99,20 @@ a {
 }
 
 .iconImage {
-  /* top: 50%; */
+  height: auto;
 }
 
 @media (max-width: 767px) {
   .allContainer {
-    background-size: 100% 1px;
+    background: rgba(18, 16, 16, 0.9);
+    background-size: 100%;
   }
 
   .topContainer {
     min-height: 8dvh;
     max-height: 8dvh;
     margin: 0px;
+    filter: none;
   }
 
   .pathContainer {
